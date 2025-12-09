@@ -511,6 +511,14 @@ export default function UploadPage() {
             last_sync_at: new Date().toISOString(),
           }, { onConflict: 'user_id,provider' });
         }
+
+        const normalizedData = createNormalizedData(metrics);
+        await supabase.from('wearable_data').insert({
+          user_id: user.id,
+          source,
+          normalized: normalizedData,
+          raw_filename: file.name,
+        });
       } catch (err) {
         errors.push(`${file.name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
@@ -537,6 +545,63 @@ export default function UploadPage() {
     if (lower.includes('zepp') || lower.includes('amazfit')) return 'amazfit';
     if (lower.includes('xiaomi') || lower.includes('mi fit') || lower.includes('mifit')) return 'xiaomi';
     return 'manual';
+  }
+
+  function createNormalizedData(metrics: ParsedMetric[]): {
+    hrv?: number;
+    resting_hr?: number;
+    sleep_hours?: number;
+    steps?: number;
+    recovery_score?: number;
+  } {
+    if (metrics.length === 0) return {};
+
+    const latest = metrics[metrics.length - 1];
+    const normalized: {
+      hrv?: number;
+      resting_hr?: number;
+      sleep_hours?: number;
+      steps?: number;
+      recovery_score?: number;
+    } = {};
+
+    const hrvValues = metrics.filter(m => m.hrv).map(m => m.hrv!);
+    if (hrvValues.length > 0) {
+      normalized.hrv = Math.round(hrvValues.reduce((a, b) => a + b, 0) / hrvValues.length);
+    } else if (latest.hrv) {
+      normalized.hrv = Math.round(latest.hrv);
+    }
+
+    const rhrValues = metrics.filter(m => m.resting_heart_rate).map(m => m.resting_heart_rate!);
+    if (rhrValues.length > 0) {
+      normalized.resting_hr = Math.round(rhrValues.reduce((a, b) => a + b, 0) / rhrValues.length);
+    } else if (latest.resting_heart_rate) {
+      normalized.resting_hr = latest.resting_heart_rate;
+    }
+
+    const sleepValues = metrics.filter(m => m.sleep_duration_minutes).map(m => m.sleep_duration_minutes!);
+    if (sleepValues.length > 0) {
+      const avgMinutes = sleepValues.reduce((a, b) => a + b, 0) / sleepValues.length;
+      normalized.sleep_hours = Math.round((avgMinutes / 60) * 10) / 10;
+    } else if (latest.sleep_duration_minutes) {
+      normalized.sleep_hours = Math.round((latest.sleep_duration_minutes / 60) * 10) / 10;
+    }
+
+    const stepsValues = metrics.filter(m => m.steps).map(m => m.steps!);
+    if (stepsValues.length > 0) {
+      normalized.steps = Math.round(stepsValues.reduce((a, b) => a + b, 0) / stepsValues.length);
+    } else if (latest.steps) {
+      normalized.steps = latest.steps;
+    }
+
+    const recoveryValues = metrics.filter(m => m.recovery_score).map(m => m.recovery_score!);
+    if (recoveryValues.length > 0) {
+      normalized.recovery_score = Math.round(recoveryValues.reduce((a, b) => a + b, 0) / recoveryValues.length);
+    } else if (latest.recovery_score) {
+      normalized.recovery_score = latest.recovery_score;
+    }
+
+    return normalized;
   }
 
   function getFileIcon(filename: string) {

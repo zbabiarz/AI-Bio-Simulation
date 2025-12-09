@@ -28,7 +28,24 @@ import {
   Brain,
   Upload,
   ArrowRight,
+  Watch,
+  Zap,
 } from 'lucide-react';
+
+interface NormalizedWearableData {
+  hrv?: number;
+  resting_hr?: number;
+  sleep_hours?: number;
+  steps?: number;
+  recovery_score?: number;
+}
+
+interface WearableDataEntry {
+  id: string;
+  source: string;
+  normalized: NormalizedWearableData;
+  created_at: string;
+}
 
 export default function DashboardPage() {
   const { user, profile } = useAuth();
@@ -36,6 +53,7 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<MetricsSummary | null>(null);
   const [goals, setGoals] = useState<HealthGoal[]>([]);
   const [badges, setBadges] = useState<UserBadge[]>([]);
+  const [latestWearable, setLatestWearable] = useState<WearableDataEntry | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,7 +65,7 @@ export default function DashboardPage() {
   async function fetchData() {
     const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
 
-    const [metricsRes, goalsRes, badgesRes] = await Promise.all([
+    const [metricsRes, goalsRes, badgesRes, wearableRes] = await Promise.all([
       supabase
         .from('health_metrics')
         .select('*')
@@ -66,6 +84,13 @@ export default function DashboardPage() {
         .eq('user_id', user!.id)
         .order('earned_at', { ascending: false })
         .limit(3),
+      supabase
+        .from('wearable_data')
+        .select('id, source, normalized, created_at')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
     if (metricsRes.data) {
@@ -74,6 +99,7 @@ export default function DashboardPage() {
     }
     if (goalsRes.data) setGoals(goalsRes.data);
     if (badgesRes.data) setBadges(badgesRes.data);
+    if (wearableRes.data) setLatestWearable(wearableRes.data);
     setLoading(false);
   }
 
@@ -150,6 +176,62 @@ export default function DashboardPage() {
           Here's an overview of your health metrics from the past 30 days
         </p>
       </div>
+
+      {latestWearable && (
+        <div className="bg-gradient-to-r from-slate-800 to-slate-800/50 rounded-xl border border-slate-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                <Watch className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Latest Wearable Data</h3>
+                <p className="text-sm text-slate-400">
+                  From {latestWearable.source} - {format(parseISO(latestWearable.created_at), 'MMM d, yyyy h:mm a')}
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/upload"
+              className="text-sm text-emerald-400 hover:text-emerald-300"
+            >
+              Upload new
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+            <WearableMetricCard
+              icon={Heart}
+              label="HRV"
+              value={latestWearable.normalized.hrv}
+              unit="ms"
+            />
+            <WearableMetricCard
+              icon={Zap}
+              label="Resting HR"
+              value={latestWearable.normalized.resting_hr}
+              unit="bpm"
+            />
+            <WearableMetricCard
+              icon={Moon}
+              label="Sleep"
+              value={latestWearable.normalized.sleep_hours}
+              unit="hrs"
+            />
+            <WearableMetricCard
+              icon={Footprints}
+              label="Steps"
+              value={latestWearable.normalized.steps}
+              unit=""
+            />
+            <WearableMetricCard
+              icon={Battery}
+              label="Recovery"
+              value={latestWearable.normalized.recovery_score}
+              unit="%"
+            />
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
@@ -421,6 +503,30 @@ function MetricCard({ icon: Icon, label, value, unit, color, trend }: MetricCard
             {Math.abs(trend)}%
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+interface WearableMetricCardProps {
+  icon: React.ElementType;
+  label: string;
+  value?: number;
+  unit: string;
+}
+
+function WearableMetricCard({ icon: Icon, label, value, unit }: WearableMetricCardProps) {
+  return (
+    <div className="bg-slate-700/30 rounded-lg p-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className="w-4 h-4 text-emerald-400" />
+        <span className="text-slate-400 text-xs">{label}</span>
+      </div>
+      <div>
+        <span className="text-xl font-bold text-white">
+          {value !== undefined ? value.toLocaleString() : '--'}
+        </span>
+        {unit && <span className="text-slate-400 text-sm ml-1">{unit}</span>}
       </div>
     </div>
   );

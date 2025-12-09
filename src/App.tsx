@@ -5,6 +5,8 @@ import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import UploadPage from './pages/UploadPage';
 import DevicesPage from './pages/DevicesPage';
+import ConnectPage from './pages/ConnectPage';
+import ConnectCallbackPage from './pages/ConnectCallbackPage';
 import SimulationsPage from './pages/SimulationsPage';
 import GoalsPage from './pages/GoalsPage';
 import CoachPage from './pages/CoachPage';
@@ -81,6 +83,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DevicesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/connect"
+        element={
+          <ProtectedRoute>
+            <ConnectPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/connect/callback/:provider"
+        element={
+          <ProtectedRoute>
+            <ConnectCallbackPage />
           </ProtectedRoute>
         }
       />
