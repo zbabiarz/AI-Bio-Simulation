@@ -130,16 +130,16 @@ export default function AdminPage() {
   function getActionIcon(action: string) {
     switch (action) {
       case 'upload_data':
-        return <Upload className="w-4 h-4 text-emerald-400" />;
+        return <Upload className="w-4 h-4 text-primary" />;
       case 'run_simulation':
         return <Brain className="w-4 h-4 text-blue-400" />;
       case 'create_goal':
       case 'complete_goal':
         return <Target className="w-4 h-4 text-amber-400" />;
       case 'chat_with_coach':
-        return <MessageSquare className="w-4 h-4 text-teal-400" />;
+        return <MessageSquare className="w-4 h-4 text-primaryAccent" />;
       default:
-        return <Activity className="w-4 h-4 text-slate-400" />;
+        return <Activity className="w-4 h-4 text-gray-600" />;
     }
   }
 
@@ -156,7 +156,7 @@ export default function AdminPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -168,8 +168,8 @@ export default function AdminPage() {
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-          <p className="text-slate-400 text-sm">Monitor platform usage and user activity</p>
+          <h1 className="text-2xl font-bold text-primaryDeep">Admin Dashboard</h1>
+          <p className="text-gray-600 text-sm">Monitor platform usage and user activity</p>
         </div>
       </div>
 
@@ -183,9 +183,9 @@ export default function AdminPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-primary" />
             User Growth (30 Days)
           </h3>
           <div className="h-64">
@@ -213,8 +213,8 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
             <Activity className="w-5 h-5 text-blue-400" />
             Activity Distribution
           </h3>
@@ -247,20 +247,20 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-400" />
             User Management
           </h3>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search users..."
-              className="bg-slate-900/50 border border-slate-600 rounded-lg py-2 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-64"
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 pl-10 pr-4 text-primaryDeep placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary w-64"
             />
           </div>
         </div>
@@ -268,7 +268,7 @@ export default function AdminPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-left text-slate-400 text-sm border-b border-slate-700">
+              <tr className="text-left text-gray-600 text-sm border-b border-gray-200">
                 <th className="pb-3 font-medium">User</th>
                 <th className="pb-3 font-medium">Email</th>
                 <th className="pb-3 font-medium">Joined</th>
@@ -278,20 +278,20 @@ export default function AdminPage() {
             </thead>
             <tbody className="text-sm">
               {filteredUsers.slice(0, 10).map((user) => (
-                <tr key={user.id} className="border-b border-slate-700/50">
+                <tr key={user.id} className="border-b border-gray-200">
                   <td className="py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-full flex items-center justify-center text-white text-xs font-semibold">
                         {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-white">{user.full_name || 'No name'}</span>
+                      <span className="text-primaryDeep">{user.full_name || 'No name'}</span>
                     </div>
                   </td>
-                  <td className="py-3 text-slate-400">{user.email}</td>
-                  <td className="py-3 text-slate-400">
+                  <td className="py-3 text-gray-600">{user.email}</td>
+                  <td className="py-3 text-gray-600">
                     {format(parseISO(user.created_at), 'MMM d, yyyy')}
                   </td>
-                  <td className="py-3 text-slate-400">
+                  <td className="py-3 text-gray-600">
                     {format(parseISO(user.updated_at), 'MMM d, yyyy')}
                   </td>
                   <td className="py-3">
@@ -300,7 +300,7 @@ export default function AdminPage() {
                         Admin
                       </span>
                     ) : user.onboarding_completed ? (
-                      <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">
+                      <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
                         Active
                       </span>
                     ) : (
@@ -316,8 +316,8 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-amber-400" />
           Recent Activity
         </h3>
@@ -326,16 +326,16 @@ export default function AdminPage() {
           {recentActivity.map((activity) => (
             <div
               key={activity.id}
-              className="flex items-center gap-4 bg-slate-700/30 rounded-lg p-3"
+              className="flex items-center gap-4 bg-gray-50 rounded-lg p-3"
             >
               {getActionIcon(activity.action)}
               <div className="flex-1">
-                <p className="text-white text-sm">{formatAction(activity.action)}</p>
-                <p className="text-slate-500 text-xs">
+                <p className="text-primaryDeep text-sm">{formatAction(activity.action)}</p>
+                <p className="text-gray-600 text-xs">
                   User: {activity.user_id.slice(0, 8)}...
                 </p>
               </div>
-              <span className="text-slate-500 text-xs">
+              <span className="text-gray-600 text-xs">
                 {format(parseISO(activity.created_at), 'MMM d, h:mm a')}
               </span>
             </div>
@@ -356,18 +356,18 @@ interface StatCardProps {
 function StatCard({ icon: Icon, label, value, color }: StatCardProps) {
   const colorClasses = {
     blue: 'from-blue-500/20 to-blue-500/5 text-blue-400',
-    emerald: 'from-emerald-500/20 to-emerald-500/5 text-emerald-400',
-    teal: 'from-teal-500/20 to-teal-500/5 text-teal-400',
+    emerald: 'from-primary/20 to-primary/5 text-primary',
+    teal: 'from-primaryAccent/20 to-primaryAccent/5 text-primaryAccent',
     amber: 'from-amber-500/20 to-amber-500/5 text-amber-400',
     rose: 'from-rose-500/20 to-rose-500/5 text-rose-400',
     cyan: 'from-cyan-500/20 to-cyan-500/5 text-cyan-400',
   };
 
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-4 border border-slate-700/50`}>
+    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-4 border border-gray-200`}>
       <Icon className="w-5 h-5 mb-2" />
-      <p className="text-2xl font-bold text-white">{value.toLocaleString()}</p>
-      <p className="text-slate-400 text-xs">{label}</p>
+      <p className="text-2xl font-bold text-primaryDeep">{value.toLocaleString()}</p>
+      <p className="text-gray-600 text-xs">{label}</p>
     </div>
   );
 }

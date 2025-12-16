@@ -138,7 +138,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -146,18 +146,18 @@ export default function DashboardPage() {
   if (metrics.length === 0) {
     return (
       <div className="max-w-3xl mx-auto text-center py-16">
-        <div className="w-20 h-20 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <Upload className="w-10 h-10 text-slate-500" />
+        <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <Upload className="w-10 h-10 text-gray-400" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-3">
+        <h2 className="text-2xl font-bold text-primaryDeep mb-3">
           Welcome to AIMD, {profile?.full_name?.split(' ')[0] || 'there'}!
         </h2>
-        <p className="text-slate-400 mb-8 max-w-md mx-auto">
+        <p className="text-gray-600 mb-8 max-w-md mx-auto">
           Start your health journey by uploading your wearable data. We support data from Oura Ring, Apple Watch, Garmin, Whoop, and more.
         </p>
         <Link
           to="/upload"
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition-all"
+          className="inline-flex items-center gap-2 bg-primary hover:bg-primaryDark text-white font-semibold py-3 px-6 rounded-lg transition-all"
         >
           Upload Your Data
           <ArrowRight className="w-5 h-5" />
@@ -169,31 +169,31 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-1">
+        <h1 className="text-2xl font-bold text-primaryDeep mb-1">
           Welcome back, {profile?.full_name?.split(' ')[0] || 'there'}
         </h1>
-        <p className="text-slate-400">
+        <p className="text-gray-600">
           Here's an overview of your health metrics from the past 30 days
         </p>
       </div>
 
       {latestWearable && (
-        <div className="bg-gradient-to-r from-slate-800 to-slate-800/50 rounded-xl border border-slate-700 p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                <Watch className="w-5 h-5 text-emerald-400" />
+              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Watch className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">Latest Wearable Data</h3>
-                <p className="text-sm text-slate-400">
+                <h3 className="text-lg font-semibold text-primaryDeep">Latest Wearable Data</h3>
+                <p className="text-sm text-gray-500">
                   From {latestWearable.source} - {format(parseISO(latestWearable.created_at), 'MMM d, yyyy h:mm a')}
                 </p>
               </div>
             </div>
             <Link
               to="/upload"
-              className="text-sm text-emerald-400 hover:text-emerald-300"
+              className="text-sm text-primary hover:text-primaryDark"
             >
               Upload new
             </Link>
@@ -269,9 +269,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Heart className="w-5 h-5 text-rose-400" />
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+            <Heart className="w-5 h-5 text-red-500" />
             HRV Trend
           </h3>
           <div className="h-64">
@@ -279,25 +279,25 @@ export default function DashboardPage() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="hrvGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#1A5BE9" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#1A5BE9" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="date" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    border: '1px solid #334155',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                   }}
-                  labelStyle={{ color: '#f1f5f9' }}
+                  labelStyle={{ color: '#001E65' }}
                 />
                 <Area
                   type="monotone"
                   dataKey="hrv"
-                  stroke="#f43f5e"
+                  stroke="#1A5BE9"
                   fill="url(#hrvGradient)"
                   strokeWidth={2}
                 />
@@ -306,9 +306,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Moon className="w-5 h-5 text-blue-400" />
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+            <Moon className="w-5 h-5 text-blue-600" />
             Sleep Duration
           </h3>
           <div className="h-64">
@@ -316,26 +316,26 @@ export default function DashboardPage() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="sleepGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#4578FD" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#4578FD" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} domain={[0, 12]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="date" stroke="#6b7280" fontSize={12} />
+                <YAxis stroke="#6b7280" fontSize={12} domain={[0, 12]} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    border: '1px solid #334155',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                   }}
-                  labelStyle={{ color: '#f1f5f9' }}
+                  labelStyle={{ color: '#001E65' }}
                   formatter={(value: number) => [`${value} hrs`, 'Sleep']}
                 />
                 <Area
                   type="monotone"
                   dataKey="sleep"
-                  stroke="#6366f1"
+                  stroke="#4578FD"
                   fill="url(#sleepGradient)"
                   strokeWidth={2}
                 />
@@ -346,34 +346,34 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Target className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
               Active Goals
             </h3>
             <Link
               to="/goals"
-              className="text-sm text-emerald-400 hover:text-emerald-300"
+              className="text-sm text-primary hover:text-primaryDark"
             >
               View all
             </Link>
           </div>
           {goals.length === 0 ? (
-            <p className="text-slate-400 text-sm">No active goals. Set your first goal!</p>
+            <p className="text-gray-500 text-sm">No active goals. Set your first goal!</p>
           ) : (
             <div className="space-y-3">
               {goals.map((goal) => (
-                <div key={goal.id} className="bg-slate-700/30 rounded-lg p-3">
+                <div key={goal.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white text-sm font-medium">{goal.title}</span>
-                    <span className="text-emerald-400 text-xs">
+                    <span className="text-primaryDeep text-sm font-medium">{goal.title}</span>
+                    <span className="text-primary text-xs">
                       {Math.round((goal.current_value / goal.target_value) * 100)}%
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-slate-600 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
+                      className="h-full bg-primary rounded-full transition-all"
                       style={{ width: `${Math.min((goal.current_value / goal.target_value) * 100, 100)}%` }}
                     />
                   </div>
@@ -383,31 +383,31 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Award className="w-5 h-5 text-amber-400" />
+            <h3 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+              <Award className="w-5 h-5 text-amber-500" />
               Recent Badges
             </h3>
             <Link
               to="/achievements"
-              className="text-sm text-emerald-400 hover:text-emerald-300"
+              className="text-sm text-primary hover:text-primaryDark"
             >
               View all
             </Link>
           </div>
           {badges.length === 0 ? (
-            <p className="text-slate-400 text-sm">No badges yet. Keep tracking to earn badges!</p>
+            <p className="text-gray-500 text-sm">No badges yet. Keep tracking to earn badges!</p>
           ) : (
             <div className="space-y-3">
               {badges.map((ub) => (
                 <div key={ub.id} className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
-                    <Award className="w-5 h-5 text-amber-400" />
+                  <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-200">
+                    <Award className="w-5 h-5 text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">{ub.badge?.name}</p>
-                    <p className="text-slate-400 text-xs">{ub.badge?.points} pts</p>
+                    <p className="text-primaryDeep text-sm font-medium">{ub.badge?.name}</p>
+                    <p className="text-gray-500 text-xs">{ub.badge?.points} pts</p>
                   </div>
                 </div>
               ))}
@@ -415,17 +415,17 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl p-6 border border-emerald-500/30">
+        <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
           <div className="flex items-center gap-2 mb-4">
-            <Brain className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-lg font-semibold text-white">AI Insight</h3>
+            <Brain className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-primaryDeep">AI Insight</h3>
           </div>
-          <p className="text-slate-300 text-sm mb-4">
+          <p className="text-gray-700 text-sm mb-4">
             Based on your recent data, your HRV has been improving. Consider maintaining your current sleep schedule for continued recovery gains.
           </p>
           <Link
             to="/simulations"
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-medium"
+            className="inline-flex items-center gap-2 text-primary hover:text-primaryDark text-sm font-medium"
           >
             Run a simulation
             <ArrowRight className="w-4 h-4" />
@@ -433,31 +433,31 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Activity className="w-5 h-5 text-teal-400" />
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+          <Activity className="w-5 h-5 text-primary" />
           Daily Steps
         </h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
-              <YAxis stroke="#94a3b8" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="date" stroke="#6b7280" fontSize={12} />
+              <YAxis stroke="#6b7280" fontSize={12} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1e293b',
-                  border: '1px solid #334155',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px',
                 }}
-                labelStyle={{ color: '#f1f5f9' }}
+                labelStyle={{ color: '#001E65' }}
               />
               <Line
                 type="monotone"
                 dataKey="steps"
-                stroke="#14b8a6"
+                stroke="#1A5BE9"
                 strokeWidth={2}
-                dot={{ fill: '#14b8a6', r: 3 }}
+                dot={{ fill: '#1A5BE9', r: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -478,27 +478,27 @@ interface MetricCardProps {
 
 function MetricCard({ icon: Icon, label, value, unit, color, trend }: MetricCardProps) {
   const colorClasses = {
-    rose: 'from-rose-500/20 to-rose-500/5 text-rose-400',
-    indigo: 'from-blue-500/20 to-blue-500/5 text-blue-400',
-    amber: 'from-amber-500/20 to-amber-500/5 text-amber-400',
-    emerald: 'from-emerald-500/20 to-emerald-500/5 text-emerald-400',
+    rose: 'bg-red-50 text-red-600 border-red-200',
+    indigo: 'bg-blue-50 text-blue-600 border-blue-200',
+    amber: 'bg-amber-50 text-amber-600 border-amber-200',
+    emerald: 'bg-primary/10 text-primary border-primary/20',
   };
 
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-4 border border-slate-700/50`}>
+    <div className={`${colorClasses[color]} rounded-xl p-4 border`}>
       <div className="flex items-center gap-2 mb-3">
         <Icon className="w-5 h-5" />
-        <span className="text-slate-300 text-sm">{label}</span>
+        <span className="text-gray-700 text-sm">{label}</span>
       </div>
       <div className="flex items-end justify-between">
         <div>
-          <span className="text-2xl font-bold text-white">
+          <span className="text-2xl font-bold text-primaryDeep">
             {value !== null ? value.toLocaleString() : '--'}
           </span>
-          {unit && <span className="text-slate-400 text-sm ml-1">{unit}</span>}
+          {unit && <span className="text-gray-600 text-sm ml-1">{unit}</span>}
         </div>
         {trend !== undefined && (
-          <div className={`flex items-center gap-1 text-xs ${trend >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+          <div className={`flex items-center gap-1 text-xs ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {trend >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
             {Math.abs(trend)}%
           </div>
@@ -517,16 +517,16 @@ interface WearableMetricCardProps {
 
 function WearableMetricCard({ icon: Icon, label, value, unit }: WearableMetricCardProps) {
   return (
-    <div className="bg-slate-700/30 rounded-lg p-3">
+    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
       <div className="flex items-center gap-2 mb-1">
-        <Icon className="w-4 h-4 text-emerald-400" />
-        <span className="text-slate-400 text-xs">{label}</span>
+        <Icon className="w-4 h-4 text-primary" />
+        <span className="text-gray-600 text-xs">{label}</span>
       </div>
       <div>
-        <span className="text-xl font-bold text-white">
+        <span className="text-xl font-bold text-primaryDeep">
           {value !== undefined ? value.toLocaleString() : '--'}
         </span>
-        {unit && <span className="text-slate-400 text-sm ml-1">{unit}</span>}
+        {unit && <span className="text-gray-600 text-sm ml-1">{unit}</span>}
       </div>
     </div>
   );

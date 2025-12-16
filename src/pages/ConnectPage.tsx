@@ -16,14 +16,14 @@ const providers: Provider[] = [
   {
     id: 'oura',
     name: 'Oura',
-    color: 'bg-slate-700 hover:bg-slate-600',
+    color: 'bg-primary hover:bg-primaryDeep',
     icon: '⭕',
     authUrl: 'https://cloud.ouraring.com/oauth/authorize',
   },
   {
     id: 'fitbit',
     name: 'Fitbit',
-    color: 'bg-teal-600 hover:bg-teal-500',
+    color: 'bg-primary hover:bg-primaryDeep',
     icon: '💚',
     authUrl: 'https://www.fitbit.com/oauth2/authorize',
   },
@@ -37,7 +37,7 @@ const providers: Provider[] = [
   {
     id: 'garmin',
     name: 'Garmin',
-    color: 'bg-blue-600 hover:bg-blue-500',
+    color: 'bg-primary hover:bg-primaryDeep',
     icon: '🔵',
     authUrl: 'https://connect.garmin.com/oauthConfirm',
   },
@@ -131,7 +131,7 @@ export default function ConnectPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -139,28 +139,28 @@ export default function ConnectPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">Connect Your Devices</h1>
-        <p className="text-slate-400">
+        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Connect Your Devices</h1>
+        <p className="text-gray-600">
           Link your wearable devices to automatically sync your health data.
         </p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-white mb-4">OAuth Connections</h2>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-primaryDeep mb-4">OAuth Connections</h2>
         <div className="space-y-3">
           {providers.map((provider) => {
             const connected = isConnected(provider.id);
             return (
               <div
                 key={provider.id}
-                className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{provider.icon}</span>
                   <div>
-                    <p className="font-medium text-white">{provider.name}</p>
+                    <p className="font-medium text-primaryDeep">{provider.name}</p>
                     {connected && (
-                      <p className="text-sm text-emerald-400 flex items-center gap-1">
+                      <p className="text-sm text-primary flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
                         Connected
                       </p>
@@ -194,23 +194,23 @@ export default function ConnectPage() {
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
-        <h2 className="text-lg font-semibold text-white mb-2">Manual Upload</h2>
-        <p className="text-slate-400 text-sm mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-primaryDeep mb-2">Manual Upload</h2>
+        <p className="text-gray-600 text-sm mb-4">
           Don't see your device? You can manually upload exported data files.
         </p>
         <Link
           to="/upload"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primaryDeep text-white font-medium rounded-lg transition-colors"
         >
           <Upload className="w-5 h-5" />
           Upload Data File Instead
         </Link>
       </div>
 
-      <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-        <p className="text-sm text-slate-400">
-          <strong className="text-slate-300">Note:</strong> OAuth connections require API credentials
+      <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <p className="text-sm text-gray-600">
+          <strong className="text-gray-700">Note:</strong> OAuth connections require API credentials
           to be configured. Contact your administrator if connections are not working.
         </p>
       </div>

@@ -129,15 +129,15 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">Settings</h1>
-        <p className="text-slate-400">Manage your account and preferences</p>
+        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Settings</h1>
+        <p className="text-gray-400">Manage your account and preferences</p>
       </div>
 
       {message && (
         <div
           className={`flex items-center gap-2 p-4 rounded-lg ${
             message.type === 'success'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+              ? 'bg-primary/10 text-primary border border-primary/30'
               : 'bg-red-500/10 text-red-400 border border-red-500/30'
           }`}
         >
@@ -150,39 +150,39 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <User className="w-5 h-5 text-emerald-400" />
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+          <User className="w-5 h-5 text-primary" />
           Profile Information
         </h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Full Name
             </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full bg-white border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
             </label>
             <div className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-slate-500" />
-              <span className="text-slate-400">{profile?.email}</span>
+              <Mail className="w-5 h-5 text-gray-400" />
+              <span className="text-gray-400">{profile?.email}</span>
             </div>
           </div>
 
           <button
             onClick={handleSaveProfile}
             disabled={saving}
-            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-2.5 px-4 rounded-lg transition-all disabled:opacity-50"
+            className="flex items-center gap-2 bg-gradient-to-r from-primary to-primaryAccent hover:from-primaryDark hover:to-primaryAccent text-white font-semibold py-2.5 px-4 rounded-lg transition-all disabled:opacity-50"
           >
             {saving ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -194,8 +194,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
           <Bell className="w-5 h-5 text-amber-400" />
           Notifications
         </h2>
@@ -203,38 +203,38 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-white font-medium">Weekly Summary</p>
-              <p className="text-slate-400 text-sm">Receive a weekly email with your health insights</p>
+              <p className="text-primaryDeep font-medium">Weekly Summary</p>
+              <p className="text-gray-400 text-sm">Receive a weekly email with your health insights</p>
             </div>
-            <div className="w-12 h-7 bg-emerald-500 rounded-full p-1 cursor-pointer">
+            <div className="w-12 h-7 bg-primary rounded-full p-1 cursor-pointer">
               <div className="w-5 h-5 bg-white rounded-full ml-auto" />
             </div>
           </label>
 
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-white font-medium">Goal Reminders</p>
-              <p className="text-slate-400 text-sm">Get notified about goal progress</p>
+              <p className="text-primaryDeep font-medium">Goal Reminders</p>
+              <p className="text-gray-400 text-sm">Get notified about goal progress</p>
             </div>
-            <div className="w-12 h-7 bg-slate-600 rounded-full p-1 cursor-pointer">
-              <div className="w-5 h-5 bg-slate-400 rounded-full" />
+            <div className="w-12 h-7 bg-gray-200 rounded-full p-1 cursor-pointer">
+              <div className="w-5 h-5 bg-gray-600 rounded-full" />
             </div>
           </label>
 
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-white font-medium">New Badge Alerts</p>
-              <p className="text-slate-400 text-sm">Celebrate when you earn new badges</p>
+              <p className="text-primaryDeep font-medium">New Badge Alerts</p>
+              <p className="text-gray-400 text-sm">Celebrate when you earn new badges</p>
             </div>
-            <div className="w-12 h-7 bg-emerald-500 rounded-full p-1 cursor-pointer">
+            <div className="w-12 h-7 bg-primary rounded-full p-1 cursor-pointer">
               <div className="w-5 h-5 bg-white rounded-full ml-auto" />
             </div>
           </label>
         </div>
       </div>
 
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
           <Shield className="w-5 h-5 text-blue-400" />
           Data & Privacy
         </h2>
@@ -242,16 +242,16 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-white font-medium">Export Your Data</p>
-              <p className="text-slate-400 text-sm">Download all your health data in JSON format</p>
+              <p className="text-primaryDeep font-medium">Export Your Data</p>
+              <p className="text-gray-400 text-sm">Download all your health data in JSON format</p>
             </div>
             <button
               onClick={handleExportData}
               disabled={exporting}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors disabled:opacity-50"
             >
               {exporting ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
               ) : (
                 <Download className="w-4 h-4" />
               )}
@@ -261,12 +261,12 @@ export default function SettingsPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-white font-medium">Privacy Policy & Data Rights</p>
-              <p className="text-slate-400 text-sm">View policy, manage consents, and submit data requests</p>
+              <p className="text-primaryDeep font-medium">Privacy Policy & Data Rights</p>
+              <p className="text-gray-400 text-sm">View policy, manage consents, and submit data requests</p>
             </div>
             <Link
               to="/privacy"
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
             >
               <FileText className="w-4 h-4" />
               View
@@ -274,12 +274,12 @@ export default function SettingsPage() {
             </Link>
           </div>
 
-          <div className="pt-4 border-t border-slate-700">
-            <div className="flex items-start gap-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-              <Lock className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+          <div className="pt-4 border-t border-gray-200">
+            <div className="flex items-start gap-3 bg-primary/10 border border-primary/30 rounded-lg p-4">
+              <Lock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-white font-medium text-sm">HIPAA Compliant</p>
-                <p className="text-slate-400 text-xs mt-1">
+                <p className="text-primaryDeep font-medium text-sm">HIPAA Compliant</p>
+                <p className="text-gray-400 text-xs mt-1">
                   Your data is encrypted at rest (AES-256) and in transit (TLS 1.3). All access to your health information is logged and audited.
                 </p>
               </div>
@@ -294,7 +294,7 @@ export default function SettingsPage() {
           Danger Zone
         </h2>
 
-        <p className="text-slate-300 text-sm mb-4">
+        <p className="text-gray-700 text-sm mb-4">
           Once you delete your account, there is no going back. All your health data, goals, badges, and history will be permanently removed. This action is logged for compliance purposes.
         </p>
 
@@ -315,7 +315,7 @@ export default function SettingsPage() {
             </button>
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
             >
               Cancel
             </button>

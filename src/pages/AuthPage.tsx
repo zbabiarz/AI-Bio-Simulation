@@ -35,52 +35,52 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex">
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
         <div className="max-w-lg">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-[#1A5BE9] rounded-xl flex items-center justify-center">
               <Activity className="w-7 h-7 text-white" />
             </div>
-            <span className="text-3xl font-bold text-white">AIMD</span>
+            <span className="text-3xl font-bold text-[#0D2B6B]">AIMD</span>
           </div>
 
-          <h1 className="text-4xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl font-bold text-[#0D2B6B] mb-6 leading-tight">
             AI-Powered Bio-Simulation for Your Health Journey
           </h1>
 
-          <p className="text-slate-400 text-lg mb-10">
+          <p className="text-gray-600 text-lg mb-10">
             Upload your wearable data and unlock personalized insights, predictions, and actionable recommendations powered by advanced AI.
           </p>
 
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Heart className="w-5 h-5 text-emerald-400" />
+              <div className="w-10 h-10 bg-[#1A5BE9]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Heart className="w-5 h-5 text-[#1A5BE9]" />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-1">Health Insights</h3>
-                <p className="text-slate-400 text-sm">Understand your HRV, sleep patterns, and recovery metrics in depth.</p>
+                <h3 className="text-[#0D2B6B] font-semibold mb-1">Health Insights</h3>
+                <p className="text-gray-600 text-sm">Understand your HRV, sleep patterns, and recovery metrics in depth.</p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Brain className="w-5 h-5 text-teal-400" />
+              <div className="w-10 h-10 bg-[#1A5BE9]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Brain className="w-5 h-5 text-[#1A5BE9]" />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-1">Bio-Simulations</h3>
-                <p className="text-slate-400 text-sm">See how changes in your habits could impact your health outcomes.</p>
+                <h3 className="text-[#0D2B6B] font-semibold mb-1">Bio-Simulations</h3>
+                <p className="text-gray-600 text-sm">See how changes in your habits could impact your health outcomes.</p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Zap className="w-5 h-5 text-cyan-400" />
+              <div className="w-10 h-10 bg-[#1A5BE9]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Zap className="w-5 h-5 text-[#1A5BE9]" />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-1">AI Bio-Coach</h3>
-                <p className="text-slate-400 text-sm">Get personalized guidance from your AI health assistant.</p>
+                <h3 className="text-[#0D2B6B] font-semibold mb-1">AI Bio-Coach</h3>
+                <p className="text-gray-600 text-sm">Get personalized guidance from your AI health assistant.</p>
               </div>
             </div>
           </div>
@@ -90,39 +90,39 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#1A5BE9] rounded-xl flex items-center justify-center">
               <Activity className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">AIMD</span>
+            <span className="text-2xl font-bold text-[#0D2B6B]">AIMD</span>
           </div>
 
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50">
-            <h2 className="text-2xl font-bold text-white mb-2">
+          <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
+            <h2 className="text-2xl font-bold text-[#0D2B6B] mb-2">
               {isLogin ? 'Welcome back' : 'Create your account'}
             </h2>
-            <p className="text-slate-400 mb-8">
+            <p className="text-gray-600 mb-8">
               {isLogin ? 'Sign in to access your health dashboard' : 'Start your personalized health journey'}
             </p>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 mb-6">
-                <p className="text-red-400 text-sm">{error}</p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <p className="text-red-600 text-sm">{error}</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {!isLogin && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                      className="w-full bg-white border border-gray-200 rounded-lg py-3 pl-11 pr-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1A5BE9] focus:border-transparent transition-all"
                       placeholder="John Doe"
                       required={!isLogin}
                     />
@@ -131,16 +131,16 @@ export default function AuthPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    className="w-full bg-white border border-gray-200 rounded-lg py-3 pl-11 pr-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1A5BE9] focus:border-transparent transition-all"
                     placeholder="you@example.com"
                     required
                   />
@@ -148,16 +148,16 @@ export default function AuthPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-3 pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                    className="w-full bg-white border border-gray-200 rounded-lg py-3 pl-11 pr-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1A5BE9] focus:border-transparent transition-all"
                     placeholder="••••••••"
                     required
                     minLength={6}
@@ -168,7 +168,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#1A5BE9] hover:bg-[#0D2B6B] text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -184,17 +184,17 @@ export default function AuthPage() {
             <div className="mt-6 text-center">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-slate-400 hover:text-white transition-colors text-sm"
+                className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
               >
                 {isLogin ? "Don't have an account? " : 'Already have an account? '}
-                <span className="text-emerald-400 font-medium">
+                <span className="text-[#1A5BE9] font-medium">
                   {isLogin ? 'Sign up' : 'Sign in'}
                 </span>
               </button>
             </div>
           </div>
 
-          <p className="text-center text-slate-500 text-xs mt-6">
+          <p className="text-center text-gray-500 text-xs mt-6">
             By continuing, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>

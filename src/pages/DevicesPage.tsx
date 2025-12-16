@@ -48,7 +48,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'apple',
     name: 'Apple Watch / Health',
     logo: '',
-    color: 'bg-slate-700',
+    color: 'bg-gray-100',
     oauthSupported: true,
     fileTypes: ['.xml', '.json'],
     description: 'Sync heart rate, activity, sleep, and workout data from Apple Health.',
@@ -58,7 +58,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'oura',
     name: 'Oura Ring',
     logo: '',
-    color: 'bg-slate-800',
+    color: 'bg-white',
     oauthSupported: true,
     fileTypes: ['.csv', '.json'],
     description: 'Sync sleep, readiness, activity, and HRV data from your Oura Ring.',
@@ -78,7 +78,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'whoop',
     name: 'WHOOP',
     logo: '',
-    color: 'bg-teal-600',
+    color: 'bg-primaryAccent',
     oauthSupported: true,
     fileTypes: ['.csv', '.json'],
     description: 'Sync strain, recovery, sleep, and HRV data from your WHOOP band.',
@@ -88,7 +88,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'fitbit',
     name: 'Fitbit',
     logo: '',
-    color: 'bg-teal-500',
+    color: 'bg-primaryAccent',
     oauthSupported: true,
     fileTypes: ['.csv', '.xml'],
     description: 'Sync steps, heart rate, sleep, and activity data from Fitbit.',
@@ -255,7 +255,7 @@ export default function DevicesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -263,16 +263,16 @@ export default function DevicesPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">Connect Your Devices</h1>
-        <p className="text-slate-400">
+        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Connect Your Devices</h1>
+        <p className="text-gray-500">
           Connect your wearable devices to automatically sync health data or upload files manually.
         </p>
       </div>
 
       {connectedDevices.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Wifi className="w-5 h-5 text-emerald-400" />
+          <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+            <Wifi className="w-5 h-5 text-primary" />
             Connected Devices ({connectedDevices.length})
           </h2>
 
@@ -284,7 +284,7 @@ export default function DevicesPage() {
               return (
                 <div
                   key={connection.id}
-                  className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50"
+                  className="bg-white rounded-xl p-5 border border-gray-200"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -292,11 +292,11 @@ export default function DevicesPage() {
                         <Watch className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-white font-semibold">{provider.name}</h3>
+                        <h3 className="text-primaryDeep font-semibold">{provider.name}</h3>
                         <div className="flex items-center gap-3 mt-1">
                           <span className={`flex items-center gap-1 text-xs ${
                             connection.sync_status === 'active'
-                              ? 'text-emerald-400'
+                              ? 'text-primary'
                               : connection.sync_status === 'error'
                               ? 'text-red-400'
                               : 'text-amber-400'
@@ -314,12 +314,12 @@ export default function DevicesPage() {
                               ? 'Sync Error'
                               : 'Paused'}
                           </span>
-                          <span className="text-slate-500 text-xs">
+                          <span className="text-gray-400 text-xs">
                             via {connection.connection_type === 'oauth' ? 'OAuth' : 'Manual Upload'}
                           </span>
                         </div>
                         {connection.last_sync_at && (
-                          <p className="text-slate-500 text-xs mt-1">
+                          <p className="text-gray-400 text-xs mt-1">
                             Last synced: {format(parseISO(connection.last_sync_at), 'MMM d, yyyy h:mm a')}
                           </p>
                         )}
@@ -333,7 +333,7 @@ export default function DevicesPage() {
                       {connection.connection_type === 'manual' && (
                         <Link
                           to={`/upload?device=${connection.provider}`}
-                          className="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep text-sm rounded-lg transition-colors"
                         >
                           <Upload className="w-4 h-4" />
                           Upload
@@ -343,7 +343,7 @@ export default function DevicesPage() {
                         <button
                           onClick={() => handleSync(connection)}
                           disabled={syncing === connection.provider}
-                          className="flex items-center gap-2 px-3 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-sm rounded-lg transition-colors disabled:opacity-50"
+                          className="flex items-center gap-2 px-3 py-2 bg-primary/20 hover:bg-primary/30 text-primary text-sm rounded-lg transition-colors disabled:opacity-50"
                         >
                           <RefreshCw className={`w-4 h-4 ${syncing === connection.provider ? 'animate-spin' : ''}`} />
                           {syncing === connection.provider ? 'Syncing...' : 'Sync Now'}
@@ -366,7 +366,7 @@ export default function DevicesPage() {
       )}
 
       <div>
-        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
           <Smartphone className="w-5 h-5 text-blue-400" />
           Available Devices
         </h2>
@@ -376,21 +376,21 @@ export default function DevicesPage() {
             <button
               key={provider.id}
               onClick={() => setSelectedDevice(provider)}
-              className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-emerald-500/50 transition-all text-left group"
+              className="bg-white rounded-xl p-5 border border-gray-200 hover:border-primary/50 transition-all text-left group"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className={`w-12 h-12 ${provider.color} rounded-xl flex items-center justify-center`}>
-                  <Watch className="w-6 h-6 text-white" />
+                  <Watch className="w-6 h-6 text-primaryDeep" />
                 </div>
-                <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
               </div>
-              <h3 className="text-white font-semibold mb-1">{provider.name}</h3>
-              <p className="text-slate-400 text-sm mb-3 line-clamp-2">{provider.description}</p>
+              <h3 className="text-primaryDeep font-semibold mb-1">{provider.name}</h3>
+              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{provider.description}</p>
               <div className="flex flex-wrap gap-1">
                 {provider.fileTypes.map((type) => (
                   <span
                     key={type}
-                    className="px-2 py-0.5 bg-slate-700/50 text-slate-400 text-xs rounded"
+                    className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded"
                   >
                     {type}
                   </span>
@@ -402,15 +402,15 @@ export default function DevicesPage() {
       </div>
 
       {connectedDevices.length === 0 && (
-        <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-xl p-6 border border-emerald-500/30 text-center">
-          <WifiOff className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">No Devices Connected</h3>
-          <p className="text-slate-400 text-sm mb-4">
+        <div className="bg-primary/10 rounded-xl p-6 border border-primary/30 text-center">
+          <WifiOff className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-primaryDeep mb-2">No Devices Connected</h3>
+          <p className="text-gray-600 text-sm mb-4">
             Connect your wearable device to start tracking your health data automatically, or upload your data files manually.
           </p>
           <Link
             to="/upload"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-2.5 px-4 rounded-lg transition-all"
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 px-4 rounded-lg transition-all"
           >
             <Upload className="w-5 h-5" />
             Upload Data Manually
@@ -448,14 +448,14 @@ function DeviceConnectionModal({
 }: DeviceConnectionModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-xl p-6 w-full max-w-lg border border-slate-700">
+      <div className="bg-white rounded-xl p-6 w-full max-w-lg border border-gray-200">
         <div className="flex items-center gap-4 mb-6">
           <div className={`w-14 h-14 ${provider.color} rounded-xl flex items-center justify-center`}>
-            <Watch className="w-7 h-7 text-white" />
+            <Watch className="w-7 h-7 text-primaryDeep" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Connect {provider.name}</h2>
-            <p className="text-slate-400 text-sm">{provider.description}</p>
+            <h2 className="text-xl font-bold text-primaryDeep">Connect {provider.name}</h2>
+            <p className="text-gray-600 text-sm">{provider.description}</p>
           </div>
         </div>
 
@@ -464,13 +464,13 @@ function DeviceConnectionModal({
             <button
               onClick={onOAuthConnect}
               disabled={connecting}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-4 px-4 rounded-xl flex items-center justify-between transition-all disabled:opacity-50"
+              className="w-full bg-primary hover:bg-primaryDark text-white font-semibold py-4 px-4 rounded-xl flex items-center justify-between transition-all disabled:opacity-50"
             >
               <div className="flex items-center gap-3">
                 <Link2 className="w-5 h-5" />
                 <div className="text-left">
                   <p className="font-semibold">Connect with {provider.name}</p>
-                  <p className="text-emerald-100 text-xs">Automatic sync - Recommended</p>
+                  <p className="text-white/80 text-xs">Automatic sync - Recommended</p>
                 </div>
               </div>
               {connecting ? (
@@ -484,33 +484,33 @@ function DeviceConnectionModal({
           <Link
             to={`/upload?device=${provider.id}`}
             onClick={onManualConnect}
-            className="w-full bg-slate-700 hover:bg-slate-600 text-white py-4 px-4 rounded-xl flex items-center justify-between transition-colors"
+            className="w-full bg-gray-100 hover:bg-gray-50 text-primaryDeep py-4 px-4 rounded-xl flex items-center justify-between transition-colors"
           >
             <div className="flex items-center gap-3">
               <Upload className="w-5 h-5" />
               <div className="text-left">
                 <p className="font-semibold">Upload Files Manually</p>
-                <p className="text-slate-400 text-xs">
+                <p className="text-gray-600 text-xs">
                   Supports {provider.fileTypes.join(', ')}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-400" />
+            <ChevronRight className="w-5 h-5 text-gray-600" />
           </Link>
         </div>
 
-        <div className="bg-slate-700/30 rounded-lg p-4 mb-6">
-          <h4 className="text-white font-medium text-sm mb-2 flex items-center gap-2">
-            <Settings className="w-4 h-4 text-slate-400" />
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <h4 className="text-primaryDeep font-medium text-sm mb-2 flex items-center gap-2">
+            <Settings className="w-4 h-4 text-gray-600" />
             How to Export Data
           </h4>
-          <p className="text-slate-400 text-sm">{provider.exportInstructions}</p>
+          <p className="text-gray-600 text-sm">{provider.exportInstructions}</p>
         </div>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            className="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
           >
             Cancel
           </button>

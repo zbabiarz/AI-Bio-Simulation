@@ -254,14 +254,14 @@ export default function SimulationsPage() {
     <div className="max-w-5xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Bio-Simulations</h1>
-          <p className="text-slate-400">
+          <h1 className="text-2xl font-bold text-primaryDeep mb-2">Bio-Simulations</h1>
+          <p className="text-gray-500">
             Explore how changes in your habits could impact your health outcomes
           </p>
         </div>
         <button
           onClick={() => setShowHistory(!showHistory)}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
         >
           <History className="w-5 h-5" />
           History
@@ -269,17 +269,17 @@ export default function SimulationsPage() {
       </div>
 
       {Object.keys(currentMetrics).length === 0 ? (
-        <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700/50 text-center">
-          <Brain className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">No Data Available</h3>
-          <p className="text-slate-400 text-sm">
+        <div className="bg-white rounded-xl p-8 border border-gray-200 text-center">
+          <Brain className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-primaryDeep mb-2">No Data Available</h3>
+          <p className="text-gray-600 text-sm">
             Upload your wearable data first to run bio-simulations
           </p>
         </div>
       ) : (
         <>
-          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-xl p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-400" />
               Your Current Averages (30 days)
             </h3>
@@ -300,7 +300,7 @@ export default function SimulationsPage() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Quick Scenarios</h3>
+            <h3 className="text-lg font-semibold text-primaryDeep mb-4">Quick Scenarios</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {simulationScenarios.map((scenario) => (
                 <button
@@ -308,49 +308,49 @@ export default function SimulationsPage() {
                   onClick={() => handleScenarioClick(scenario)}
                   className={`p-4 rounded-xl border text-left transition-all ${
                     activeScenario === scenario.id
-                      ? 'bg-emerald-500/20 border-emerald-500/50'
-                      : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600'
+                      ? 'bg-primary/20 border-primary/50'
+                      : 'bg-white border-gray-200 hover:border-gray-700'
                   }`}
                 >
-                  <scenario.icon className={`w-6 h-6 mb-3 ${activeScenario === scenario.id ? 'text-emerald-400' : 'text-slate-400'}`} />
-                  <p className="text-white font-medium text-sm mb-1">{scenario.title}</p>
-                  <p className="text-slate-400 text-xs">{scenario.description}</p>
+                  <scenario.icon className={`w-6 h-6 mb-3 ${activeScenario === scenario.id ? 'text-primary' : 'text-gray-600'}`} />
+                  <p className="text-primaryDeep font-medium text-sm mb-1">{scenario.title}</p>
+                  <p className="text-gray-600 text-xs">{scenario.description}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-            <h3 className="text-lg font-semibold text-white mb-4">Custom Simulation</h3>
+          <div className="bg-white rounded-xl p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-primaryDeep mb-4">Custom Simulation</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Sleep Change (minutes)</label>
+                <label className="block text-sm text-gray-600 mb-2">Sleep Change (minutes)</label>
                 <input
                   type="number"
                   value={customChanges.sleep_duration_minutes || ''}
                   onChange={(e) => setCustomChanges({ ...customChanges, sleep_duration_minutes: parseInt(e.target.value) || 0 })}
                   placeholder="+60"
-                  className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="block text-sm text-slate-400 mb-2">Activity Change (minutes)</label>
+                <label className="block text-sm text-gray-600 mb-2">Activity Change (minutes)</label>
                 <input
                   type="number"
                   value={customChanges.activity_minutes || ''}
                   onChange={(e) => setCustomChanges({ ...customChanges, activity_minutes: parseInt(e.target.value) || 0 })}
                   placeholder="+30"
-                  className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="block text-sm text-slate-400 mb-2">HRV Change (ms)</label>
+                <label className="block text-sm text-gray-600 mb-2">HRV Change (ms)</label>
                 <input
                   type="number"
                   value={customChanges.hrv || ''}
                   onChange={(e) => setCustomChanges({ ...customChanges, hrv: parseInt(e.target.value) || 0 })}
                   placeholder="+5"
-                  className="w-full bg-slate-900/50 border border-slate-600 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
@@ -358,7 +358,7 @@ export default function SimulationsPage() {
             <button
               onClick={() => runSimulation(customChanges)}
               disabled={simulating || Object.values(customChanges).every((v) => !v)}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-primary hover:bg-primaryDark text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {simulating ? (
                 <>
@@ -375,10 +375,10 @@ export default function SimulationsPage() {
           </div>
 
           {result && (
-            <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-xl p-6 border border-emerald-500/30">
+            <div className="bg-primary/10 rounded-xl p-6 border border-primary/30">
               <div className="flex items-center gap-2 mb-6">
-                <Brain className="w-6 h-6 text-emerald-400" />
-                <h3 className="text-lg font-semibold text-white">Simulation Results</h3>
+                <Brain className="w-6 h-6 text-primary" />
+                <h3 className="text-lg font-semibold text-primaryDeep">Simulation Results</h3>
               </div>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
@@ -390,23 +390,23 @@ export default function SimulationsPage() {
               </div>
 
               <div className="flex items-center gap-4 mb-6 text-sm">
-                <div className="flex items-center gap-2 text-slate-400">
+                <div className="flex items-center gap-2 text-gray-600">
                   <Clock className="w-4 h-4" />
                   <span>Expected in {result.timeframe_days} days</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-400">
+                <div className="flex items-center gap-2 text-gray-600">
                   <Info className="w-4 h-4" />
                   <span>{result.confidence}% confidence</span>
                 </div>
               </div>
 
               {recommendations.length > 0 && (
-                <div className="bg-slate-800/50 rounded-lg p-4">
-                  <h4 className="text-white font-medium mb-3">Recommendations</h4>
+                <div className="bg-white rounded-lg p-4">
+                  <h4 className="text-primaryDeep font-medium mb-3">Recommendations</h4>
                   <ul className="space-y-2">
                     {recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
-                        <ArrowRight className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <li key={i} className="flex items-start gap-2 text-gray-700 text-sm">
+                        <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                         {rec}
                       </li>
                     ))}
@@ -419,26 +419,26 @@ export default function SimulationsPage() {
       )}
 
       {showHistory && pastSimulations.length > 0 && (
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <History className="w-5 h-5 text-slate-400" />
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+            <History className="w-5 h-5 text-gray-600" />
             Past Simulations
           </h3>
           <div className="space-y-3">
             {pastSimulations.map((sim) => (
-              <div key={sim.id} className="bg-slate-700/30 rounded-lg p-4">
+              <div key={sim.id} className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-white text-sm font-medium">
+                  <span className="text-primaryDeep text-sm font-medium">
                     {Object.entries(sim.changes)
                       .filter(([, v]) => v)
                       .map(([k, v]) => `${k.replace('_', ' ')}: ${v > 0 ? '+' : ''}${v}`)
                       .join(', ')}
                   </span>
-                  <span className="text-slate-500 text-xs">
+                  <span className="text-gray-400 text-xs">
                     {format(parseISO(sim.created_at), 'MMM d, yyyy')}
                   </span>
                 </div>
-                <div className="flex gap-4 text-xs text-slate-400">
+                <div className="flex gap-4 text-xs text-gray-600">
                   <span>Fitness: {sim.predictions.fitness_impact > 0 ? '+' : ''}{sim.predictions.fitness_impact}%</span>
                   <span>Recovery: {sim.predictions.recovery_improvement > 0 ? '+' : ''}{sim.predictions.recovery_improvement}%</span>
                   <span>Confidence: {sim.predictions.confidence}%</span>
@@ -465,18 +465,18 @@ function MetricDisplay({ icon: Icon, label, value, unit, color }: MetricDisplayP
     rose: 'text-rose-400',
     blue: 'text-blue-400',
     amber: 'text-amber-400',
-    emerald: 'text-emerald-400',
+    emerald: 'text-primary',
   };
 
   return (
-    <div className="bg-slate-700/30 rounded-lg p-3">
+    <div className="bg-gray-50 rounded-lg p-3">
       <div className="flex items-center gap-2 mb-1">
         <Icon className={`w-4 h-4 ${colorClasses[color]}`} />
-        <span className="text-slate-400 text-xs">{label}</span>
+        <span className="text-gray-600 text-xs">{label}</span>
       </div>
-      <p className="text-white text-lg font-semibold">
+      <p className="text-primaryDeep text-lg font-semibold">
         {value.toLocaleString()}
-        {unit && <span className="text-slate-400 text-sm ml-1">{unit}</span>}
+        {unit && <span className="text-gray-600 text-sm ml-1">{unit}</span>}
       </p>
     </div>
   );
@@ -491,15 +491,15 @@ interface PredictionCardProps {
 function PredictionCard({ label, value, suffix }: PredictionCardProps) {
   const isPositive = value >= 0;
   return (
-    <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-      <p className="text-slate-400 text-xs mb-1">{label}</p>
+    <div className="bg-white rounded-lg p-3 text-center">
+      <p className="text-gray-600 text-xs mb-1">{label}</p>
       <div className="flex items-center justify-center gap-1">
         {isPositive ? (
-          <TrendingUp className="w-4 h-4 text-emerald-400" />
+          <TrendingUp className="w-4 h-4 text-primary" />
         ) : (
           <TrendingDown className="w-4 h-4 text-rose-400" />
         )}
-        <span className={`text-lg font-bold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+        <span className={`text-lg font-bold ${isPositive ? 'text-primary' : 'text-rose-400'}`}>
           {isPositive ? '+' : ''}{value}{suffix}
         </span>
       </div>

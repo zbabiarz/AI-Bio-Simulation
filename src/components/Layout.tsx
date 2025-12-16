@@ -48,7 +48,7 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-white">
       <div
         className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
           sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -57,20 +57,20 @@ export default function Layout({ children }: LayoutProps) {
       />
 
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 bg-slate-800 border-r border-slate-700 transform transition-transform lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-full w-64 bg-primaryDeep border-r border-primaryDark transform transition-transform lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-primaryDark">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center">
+            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
               <Activity className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold text-white">AIMD</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-slate-400 hover:text-white"
+            className="lg:hidden text-white/70 hover:text-white"
           >
             <X className="w-6 h-6" />
           </button>
@@ -86,8 +86,8 @@ export default function Layout({ children }: LayoutProps) {
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                   isActive
-                    ? 'bg-emerald-500/20 text-emerald-400'
-                    : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                    ? 'bg-primary text-white'
+                    : 'text-white/70 hover:bg-primaryDark hover:text-white'
                 }`}
               >
                 <item.icon className="w-5 h-5" />
@@ -102,8 +102,8 @@ export default function Layout({ children }: LayoutProps) {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                 location.pathname === '/admin'
-                  ? 'bg-emerald-500/20 text-emerald-400'
-                  : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                  ? 'bg-primary text-white'
+                  : 'text-white/70 hover:bg-primaryDark hover:text-white'
               }`}
             >
               <Shield className="w-5 h-5" />
@@ -112,10 +112,10 @@ export default function Layout({ children }: LayoutProps) {
           )}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-primaryDark">
           <Link
             to="/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-700/50 hover:text-white transition-all"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:bg-primaryDark hover:text-white transition-all"
           >
             <Settings className="w-5 h-5" />
             <span className="font-medium">Settings</span>
@@ -124,11 +124,11 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 h-16 bg-slate-800/80 backdrop-blur-xl border-b border-slate-700">
+        <header className="sticky top-0 z-30 h-16 bg-white border-b border-gray-200">
           <div className="flex items-center justify-between h-full px-4 lg:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-slate-400 hover:text-white"
+              className="lg:hidden text-gray-600 hover:text-primaryDeep"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -138,18 +138,18 @@ export default function Layout({ children }: LayoutProps) {
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-all"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-medium text-primaryDeep">
                     {profile?.full_name || 'User'}
                   </p>
-                  <p className="text-xs text-slate-400">{profile?.email}</p>
+                  <p className="text-xs text-gray-500">{profile?.email}</p>
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
+                <ChevronDown className="w-4 h-4 text-gray-500" />
               </button>
 
               {profileOpen && (
@@ -158,18 +158,18 @@ export default function Layout({ children }: LayoutProps) {
                     className="fixed inset-0 z-10"
                     onClick={() => setProfileOpen(false)}
                   />
-                  <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20 overflow-hidden">
                     <Link
                       to="/settings"
                       onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700/50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       Settings
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-slate-700/50 transition-colors w-full"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-gray-50 transition-colors w-full"
                     >
                       <LogOut className="w-4 h-4" />
                       Sign Out
@@ -181,7 +181,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        <main className="p-4 lg:p-6">{children}</main>
+        <main className="p-4 lg:p-6 bg-gray-50">{children}</main>
       </div>
     </div>
   );

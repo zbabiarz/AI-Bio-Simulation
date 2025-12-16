@@ -137,15 +137,15 @@ export default function ConnectCallbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="bg-slate-800 rounded-xl border border-slate-700 p-8 max-w-md w-full text-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md w-full text-center">
         {status === 'processing' && (
           <>
-            <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">
+            <Loader2 className="w-12 h-12 text-[#1A5BE9] animate-spin mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Connecting to {provider?.charAt(0).toUpperCase()}{provider?.slice(1)}
             </h2>
-            <p className="text-slate-400">
+            <p className="text-gray-600">
               Please wait while we complete the connection...
             </p>
           </>
@@ -153,13 +153,13 @@ export default function ConnectCallbackPage() {
 
         {status === 'success' && (
           <>
-            <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-6 h-6 text-emerald-500" />
+            <div className="w-12 h-12 bg-[#1A5BE9]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-6 h-6 text-[#1A5BE9]" />
             </div>
-            <h2 className="text-xl font-semibold text-white mb-2">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Connected Successfully
             </h2>
-            <p className="text-slate-400">
+            <p className="text-gray-600">
               Your {provider?.charAt(0).toUpperCase()}{provider?.slice(1)} account has been linked.
               Redirecting to dashboard...
             </p>
@@ -171,13 +171,13 @@ export default function ConnectCallbackPage() {
             <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <XCircle className="w-6 h-6 text-red-500" />
             </div>
-            <h2 className="text-xl font-semibold text-white mb-2">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Connection Failed
             </h2>
-            <p className="text-slate-400 mb-4">{errorMessage}</p>
+            <p className="text-gray-600 mb-4">{errorMessage}</p>
             <button
               onClick={() => navigate('/connect', { replace: true })}
-              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-medium rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-[#1A5BE9] hover:bg-[#1450C9] text-white font-medium rounded-lg transition-colors"
             >
               Try Again
             </button>
