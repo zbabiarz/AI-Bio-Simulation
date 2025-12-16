@@ -162,18 +162,18 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-orange-500 rounded-lg flex items-center justify-center">
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-primaryDeep">Admin Dashboard</h1>
-          <p className="text-gray-600 text-sm">Monitor platform usage and user activity</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white">Admin Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Monitor platform usage and user activity</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         <StatCard icon={Users} label="Total Users" value={stats?.totalUsers || 0} color="blue" />
         <StatCard icon={Activity} label="Active Users" value={stats?.activeUsers || 0} color="emerald" />
         <StatCard icon={Upload} label="Data Uploads" value={stats?.totalUploads || 0} color="teal" />
@@ -182,13 +182,13 @@ export default function AdminPage() {
         <StatCard icon={MessageSquare} label="Coach Chats" value={stats?.totalChats || 0} color="cyan" />
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-primary" />
             User Growth (30 Days)
           </h3>
-          <div className="h-64">
+          <div className="h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={userGrowth}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -213,12 +213,12 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
             <Activity className="w-5 h-5 text-blue-400" />
             Activity Distribution
           </h3>
-          <div className="h-64">
+          <div className="h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={actionCounts} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -247,64 +247,68 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-400" />
             User Management
           </h3>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+          <div className="relative w-full sm:w-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 dark:text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search users..."
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 pl-10 pr-4 text-primaryDeep placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary w-64"
+              className="bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-2 pl-10 pr-4 text-primaryDeep dark:text-white placeholder-gray-600 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-64"
             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="text-left text-gray-600 text-sm border-b border-gray-200">
-                <th className="pb-3 font-medium">User</th>
-                <th className="pb-3 font-medium">Email</th>
-                <th className="pb-3 font-medium">Joined</th>
-                <th className="pb-3 font-medium">Last Active</th>
-                <th className="pb-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="inline-block min-w-full align-middle">
+            <table className="min-w-full">
+              <thead>
+                <tr className="text-left text-gray-600 dark:text-gray-400 text-xs sm:text-sm border-b border-gray-200 dark:border-slate-700">
+                  <th className="pb-3 pl-4 sm:pl-0 font-medium">User</th>
+                  <th className="pb-3 font-medium hidden sm:table-cell">Email</th>
+                  <th className="pb-3 font-medium hidden md:table-cell">Joined</th>
+                  <th className="pb-3 font-medium hidden lg:table-cell">Last Active</th>
+                  <th className="pb-3 pr-4 sm:pr-0 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody className="text-xs sm:text-sm">
               {filteredUsers.slice(0, 10).map((user) => (
-                <tr key={user.id} className="border-b border-gray-200">
-                  <td className="py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                <tr key={user.id} className="border-b border-gray-200 dark:border-slate-700">
+                  <td className="py-3 pl-4 sm:pl-0">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
                         {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-primaryDeep">{user.full_name || 'No name'}</span>
+                      <div className="min-w-0">
+                        <span className="text-primaryDeep dark:text-white block truncate">{user.full_name || 'No name'}</span>
+                        <span className="text-gray-600 dark:text-gray-400 text-xs block truncate sm:hidden">{user.email}</span>
+                      </div>
                     </div>
                   </td>
-                  <td className="py-3 text-gray-600">{user.email}</td>
-                  <td className="py-3 text-gray-600">
+                  <td className="py-3 text-gray-600 dark:text-gray-400 hidden sm:table-cell">{user.email}</td>
+                  <td className="py-3 text-gray-600 dark:text-gray-400 hidden md:table-cell">
                     {format(parseISO(user.created_at), 'MMM d, yyyy')}
                   </td>
-                  <td className="py-3 text-gray-600">
+                  <td className="py-3 text-gray-600 dark:text-gray-400 hidden lg:table-cell">
                     {format(parseISO(user.updated_at), 'MMM d, yyyy')}
                   </td>
-                  <td className="py-3">
+                  <td className="py-3 pr-4 sm:pr-0">
                     {user.is_admin ? (
-                      <span className="px-2 py-1 bg-rose-500/20 text-rose-400 text-xs rounded-full">
+                      <span className="px-2 py-1 bg-rose-500/20 text-rose-400 text-xs rounded-full whitespace-nowrap">
                         Admin
                       </span>
                     ) : user.onboarding_completed ? (
-                      <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
+                      <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full whitespace-nowrap">
                         Active
                       </span>
                     ) : (
-                      <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full">
+                      <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full whitespace-nowrap">
                         New
                       </span>
                     )}
@@ -313,11 +317,12 @@ export default function AdminPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-amber-400" />
           Recent Activity
         </h3>
@@ -326,16 +331,16 @@ export default function AdminPage() {
           {recentActivity.map((activity) => (
             <div
               key={activity.id}
-              className="flex items-center gap-4 bg-gray-50 rounded-lg p-3"
+              className="flex items-center gap-3 sm:gap-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3"
             >
               {getActionIcon(activity.action)}
-              <div className="flex-1">
-                <p className="text-primaryDeep text-sm">{formatAction(activity.action)}</p>
-                <p className="text-gray-600 text-xs">
+              <div className="flex-1 min-w-0">
+                <p className="text-primaryDeep dark:text-white text-xs sm:text-sm truncate">{formatAction(activity.action)}</p>
+                <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
                   User: {activity.user_id.slice(0, 8)}...
                 </p>
               </div>
-              <span className="text-gray-600 text-xs">
+              <span className="text-gray-600 dark:text-gray-400 text-xs whitespace-nowrap">
                 {format(parseISO(activity.created_at), 'MMM d, h:mm a')}
               </span>
             </div>
@@ -364,10 +369,10 @@ function StatCard({ icon: Icon, label, value, color }: StatCardProps) {
   };
 
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-4 border border-gray-200`}>
-      <Icon className="w-5 h-5 mb-2" />
-      <p className="text-2xl font-bold text-primaryDeep">{value.toLocaleString()}</p>
-      <p className="text-gray-600 text-xs">{label}</p>
+    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-slate-700`}>
+      <Icon className="w-4 h-4 sm:w-5 sm:h-5 mb-2" />
+      <p className="text-lg sm:text-2xl font-bold text-primaryDeep dark:text-white">{value.toLocaleString()}</p>
+      <p className="text-gray-600 dark:text-gray-400 text-xs">{label}</p>
     </div>
   );
 }

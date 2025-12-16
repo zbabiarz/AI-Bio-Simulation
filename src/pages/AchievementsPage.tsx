@@ -103,11 +103,11 @@ export default function AchievementsPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Achievements</h1>
+        <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Achievements</h1>
         <p className="text-gray-400">Track your progress and earn badges for healthy habits</p>
       </div>
 
-      <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 border border-gray-200">
+      <div className="bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
           <div className="flex items-center gap-4">
             <div className={`w-20 h-20 rounded-2xl flex items-center justify-center bg-gradient-to-br ${
@@ -121,7 +121,7 @@ export default function AchievementsPage() {
             </div>
             <div>
               <p className="text-gray-400 text-sm">Current Level</p>
-              <h2 className="text-2xl font-bold text-primaryDeep">{currentLevel.name}</h2>
+              <h2 className="text-2xl font-bold text-primaryDeep dark:text-white">{currentLevel.name}</h2>
               <p className="text-primary font-semibold">{totalPoints} points</p>
             </div>
           </div>
@@ -129,11 +129,11 @@ export default function AchievementsPage() {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Progress to {nextLevel?.name || 'Max Level'}</span>
-              <span className="text-primaryDeep text-sm font-medium">
+              <span className="text-primaryDeep dark:text-white text-sm font-medium">
                 {nextLevel ? `${nextLevel.points - totalPoints} pts to go` : 'Max Level!'}
               </span>
             </div>
-            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div className="w-full h-3 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-primary to-primaryAccent rounded-full transition-all"
                 style={{ width: `${progressToNextLevel}%` }}
@@ -142,7 +142,7 @@ export default function AchievementsPage() {
           </div>
 
           <div className="text-center">
-            <p className="text-3xl font-bold text-primaryDeep">{earnedBadges.length}</p>
+            <p className="text-3xl font-bold text-primaryDeep dark:text-white">{earnedBadges.length}</p>
             <p className="text-gray-400 text-sm">Badges Earned</p>
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function AchievementsPage() {
 
       {earnedBadges.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-primary" />
             Recently Earned
           </h2>
@@ -165,7 +165,7 @@ export default function AchievementsPage() {
                   <div className="w-14 h-14 bg-primary/30 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Icon className="w-7 h-7 text-primary" />
                   </div>
-                  <h3 className="text-primaryDeep font-semibold text-sm mb-1">{ub.badge?.name}</h3>
+                  <h3 className="text-primaryDeep dark:text-white font-semibold text-sm mb-1">{ub.badge?.name}</h3>
                   <p className="text-primary text-xs mb-1">{ub.badge?.points} pts</p>
                   <p className="text-gray-400 text-xs">
                     {format(parseISO(ub.earned_at), 'MMM d, yyyy')}
@@ -179,7 +179,7 @@ export default function AchievementsPage() {
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-primaryDeep dark:text-white flex items-center gap-2">
             <Star className="w-5 h-5 text-amber-400" />
             All Badges
           </h2>
@@ -189,7 +189,7 @@ export default function AchievementsPage() {
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                 selectedCategory === null
                   ? 'bg-primary/20 text-primary'
-                  : 'bg-gray-100 text-gray-600 hover:text-primaryDeep'
+                  : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white'
               }`}
             >
               All
@@ -201,7 +201,7 @@ export default function AchievementsPage() {
                 className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ${
                   selectedCategory === cat
                     ? 'bg-primary/20 text-primary'
-                    : 'bg-gray-100 text-gray-600 hover:text-primaryDeep'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white'
                 }`}
               >
                 {cat}
@@ -220,8 +220,8 @@ export default function AchievementsPage() {
                 key={badge.id}
                 className={`relative rounded-xl p-4 border text-center transition-all ${
                   isEarned
-                    ? 'bg-white border-primary/30'
-                    : 'bg-gray-50 border-gray-200 opacity-60'
+                    ? 'bg-white dark:bg-slate-800 border-primary/30'
+                    : 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 opacity-60'
                 }`}
               >
                 {!isEarned && (
@@ -231,12 +231,12 @@ export default function AchievementsPage() {
                 )}
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
-                    isEarned ? 'bg-primary/20' : 'bg-gray-100'
+                    isEarned ? 'bg-primary/20' : 'bg-gray-100 dark:bg-slate-700'
                   }`}
                 >
                   <Icon className={`w-6 h-6 ${isEarned ? 'text-primary' : 'text-gray-400'}`} />
                 </div>
-                <h3 className={`font-semibold text-sm mb-1 ${isEarned ? 'text-primaryDeep' : 'text-gray-600'}`}>
+                <h3 className={`font-semibold text-sm mb-1 ${isEarned ? 'text-primaryDeep dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                   {badge.name}
                 </h3>
                 <p className="text-gray-400 text-xs mb-2 line-clamp-2">{badge.description}</p>
@@ -252,34 +252,34 @@ export default function AchievementsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <Flame className="w-5 h-5 text-orange-400" />
           How to Earn Badges
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-          <div className="bg-gray-100 rounded-lg p-4">
-            <h4 className="text-primaryDeep font-medium mb-2">Activity Badges</h4>
+          <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-4">
+            <h4 className="text-primaryDeep dark:text-white font-medium mb-2">Activity Badges</h4>
             <p className="text-gray-400">Hit daily step goals and maintain active minutes to unlock activity achievements.</p>
           </div>
-          <div className="bg-gray-100 rounded-lg p-4">
-            <h4 className="text-primaryDeep font-medium mb-2">Sleep Badges</h4>
+          <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-4">
+            <h4 className="text-primaryDeep dark:text-white font-medium mb-2">Sleep Badges</h4>
             <p className="text-gray-400">Achieve optimal sleep duration and efficiency consistently to earn sleep badges.</p>
           </div>
-          <div className="bg-gray-100 rounded-lg p-4">
-            <h4 className="text-primaryDeep font-medium mb-2">Consistency Badges</h4>
+          <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-4">
+            <h4 className="text-primaryDeep dark:text-white font-medium mb-2">Consistency Badges</h4>
             <p className="text-gray-400">Track your health data daily to build streaks and unlock consistency rewards.</p>
           </div>
-          <div className="bg-gray-100 rounded-lg p-4">
-            <h4 className="text-primaryDeep font-medium mb-2">Milestone Badges</h4>
+          <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-4">
+            <h4 className="text-primaryDeep dark:text-white font-medium mb-2">Milestone Badges</h4>
             <p className="text-gray-400">Complete significant achievements like improving HRV or reaching goal targets.</p>
           </div>
-          <div className="bg-gray-100 rounded-lg p-4">
-            <h4 className="text-primaryDeep font-medium mb-2">Simulation Badges</h4>
+          <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-4">
+            <h4 className="text-primaryDeep dark:text-white font-medium mb-2">Simulation Badges</h4>
             <p className="text-gray-400">Run bio-simulations and explore how changes can impact your health outcomes.</p>
           </div>
-          <div className="bg-gray-100 rounded-lg p-4">
-            <h4 className="text-primaryDeep font-medium mb-2">Level Up</h4>
+          <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-4">
+            <h4 className="text-primaryDeep dark:text-white font-medium mb-2">Level Up</h4>
             <p className="text-gray-400">Earn points from badges to increase your level from Beginner to Legend status.</p>
           </div>
         </div>

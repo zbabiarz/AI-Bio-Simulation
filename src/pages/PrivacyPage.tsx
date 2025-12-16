@@ -137,21 +137,21 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="flex items-center gap-4 mb-8">
-        <Link to={user ? '/settings' : '/'} className="text-gray-600 hover:text-primaryDeep transition-colors">
+        <Link to={user ? '/settings' : '/'} className="text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-primaryDeep">Privacy Policy & Data Rights</h1>
-          <p className="text-gray-600 text-sm">Version {POLICY_VERSION} - Last updated December 2024</p>
+          <h1 className="text-2xl font-bold text-primaryDeep dark:text-white">Privacy Policy & Data Rights</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Version {POLICY_VERSION} - Last updated December 2024</p>
         </div>
       </div>
 
       <div className="bg-gradient-to-br from-primary/10 to-primaryAccent/10 rounded-xl p-6 border border-primary/30">
         <div className="flex items-center gap-3 mb-4">
           <Shield className="w-6 h-6 text-primary" />
-          <h2 className="text-lg font-semibold text-primaryDeep">HIPAA Compliance</h2>
+          <h2 className="text-lg font-semibold text-primaryDeep dark:text-white">HIPAA Compliance</h2>
         </div>
-        <p className="text-gray-700 text-sm leading-relaxed">
+        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
           AIMD is designed with HIPAA compliance in mind. We implement administrative, physical, and technical safeguards to protect your Protected Health Information (PHI). Your health data is encrypted both in transit and at rest, and access is strictly controlled through role-based permissions.
         </p>
       </div>
@@ -163,7 +163,7 @@ export default function PrivacyPage() {
           expanded={expandedSections.collection}
           onToggle={() => toggleSection('collection')}
         >
-          <ul className="space-y-2 text-gray-700 text-sm">
+          <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
             <li className="flex items-start gap-2">
               <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
               <span><strong>Health Metrics:</strong> HRV, sleep data, steps, activity levels, recovery scores, and other wearable data you upload</span>
@@ -189,7 +189,7 @@ export default function PrivacyPage() {
           expanded={expandedSections.usage}
           onToggle={() => toggleSection('usage')}
         >
-          <ul className="space-y-2 text-gray-700 text-sm">
+          <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
             <li className="flex items-start gap-2">
               <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
               <span>Provide personalized health insights and recommendations</span>
@@ -219,7 +219,7 @@ export default function PrivacyPage() {
           expanded={expandedSections.storage}
           onToggle={() => toggleSection('storage')}
         >
-          <ul className="space-y-2 text-gray-700 text-sm">
+          <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
             <li className="flex items-start gap-2">
               <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
               <span><strong>Encryption:</strong> All data is encrypted using AES-256 at rest and TLS 1.3 in transit</span>
@@ -249,7 +249,7 @@ export default function PrivacyPage() {
           expanded={expandedSections.rights}
           onToggle={() => toggleSection('rights')}
         >
-          <ul className="space-y-2 text-gray-700 text-sm">
+          <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
             <li className="flex items-start gap-2">
               <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
               <span><strong>Right to Access:</strong> You can view and export all your health data at any time</span>
@@ -276,21 +276,21 @@ export default function PrivacyPage() {
 
       {user && (
         <>
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
               <Clock className="w-5 h-5 text-amber-400" />
               Data Retention Settings
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Keep my data for
                 </label>
                 <select
                   value={retentionSettings?.retention_days || 365}
                   onChange={(e) => updateRetentionDays(parseInt(e.target.value))}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value={90}>90 days</option>
                   <option value={180}>6 months</option>
@@ -299,16 +299,16 @@ export default function PrivacyPage() {
                   <option value={1825}>5 years</option>
                   <option value={2555}>7 years (HIPAA recommended)</option>
                 </select>
-                <p className="text-gray-600 text-xs mt-2">
+                <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
                   HIPAA requires covered entities to retain health records for 6 years. We recommend keeping data for at least 7 years.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-primaryDeep dark:text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-400" />
                 Your Consents
               </h2>
@@ -343,9 +343,9 @@ export default function PrivacyPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-primaryDeep dark:text-white flex items-center gap-2">
                 <Shield className="w-5 h-5 text-primary" />
                 Data Access Requests
               </h2>
@@ -358,18 +358,18 @@ export default function PrivacyPage() {
             </div>
 
             {requests.length === 0 ? (
-              <p className="text-gray-600 text-sm">No data access requests submitted yet.</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">No data access requests submitted yet.</p>
             ) : (
               <div className="space-y-3">
                 {requests.map((request) => (
-                  <div key={request.id} className="bg-gray-50 rounded-lg p-4">
+                  <div key={request.id} className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         {request.request_type === 'export' && <Download className="w-4 h-4 text-blue-400" />}
                         {request.request_type === 'deletion' && <Trash2 className="w-4 h-4 text-red-400" />}
                         {request.request_type === 'amendment' && <Edit className="w-4 h-4 text-amber-400" />}
                         {request.request_type === 'access' && <Eye className="w-4 h-4 text-primary" />}
-                        <span className="text-primaryDeep font-medium capitalize">{request.request_type} Request</span>
+                        <span className="text-primaryDeep dark:text-white font-medium capitalize">{request.request_type} Request</span>
                       </div>
                       <span className={`px-2 py-1 text-xs rounded-full ${
                         request.status === 'completed' ? 'bg-primary/20 text-primary' :
@@ -381,9 +381,9 @@ export default function PrivacyPage() {
                       </span>
                     </div>
                     {request.description && (
-                      <p className="text-gray-600 text-sm mb-2">{request.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{request.description}</p>
                     )}
-                    <div className="flex items-center gap-2 text-gray-600 text-xs">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-xs">
                       <Calendar className="w-3 h-3" />
                       Submitted {format(parseISO(request.requested_at), 'MMM d, yyyy h:mm a')}
                     </div>
@@ -397,16 +397,16 @@ export default function PrivacyPage() {
 
       {showRequestModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md border border-gray-200">
-            <h3 className="text-xl font-bold text-primaryDeep mb-4">Submit Data Request</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <h3 className="text-xl font-bold text-primaryDeep dark:text-white mb-4">Submit Data Request</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Request Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Request Type</label>
                 <select
                   value={requestType}
                   onChange={(e) => setRequestType(e.target.value as typeof requestType)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="export">Export My Data</option>
                   <option value="access">Access Log Request</option>
@@ -416,13 +416,13 @@ export default function PrivacyPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description (optional)</label>
                 <textarea
                   value={requestDescription}
                   onChange={(e) => setRequestDescription(e.target.value)}
                   placeholder="Provide any additional details..."
                   rows={3}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-4 text-primaryDeep dark:text-white placeholder-gray-600 dark:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
 
@@ -438,7 +438,7 @@ export default function PrivacyPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowRequestModal(false)}
-                className="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-primaryDeep rounded-lg transition-colors"
+                className="flex-1 py-2.5 px-4 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-primaryDeep dark:text-white rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -471,19 +471,19 @@ interface PolicySectionProps {
 
 function PolicySection({ title, icon: Icon, expanded, onToggle, children }: PolicySectionProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
       >
         <div className="flex items-center gap-3">
           <Icon className="w-5 h-5 text-primary" />
-          <span className="text-primaryDeep font-semibold">{title}</span>
+          <span className="text-primaryDeep dark:text-white font-semibold">{title}</span>
         </div>
         {expanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-600" />
+          <ChevronUp className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-600" />
+          <ChevronDown className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         )}
       </button>
       {expanded && <div className="px-4 pb-4">{children}</div>}
@@ -501,13 +501,13 @@ interface ConsentRowProps {
 
 function ConsentRow({ label, description, consented, onConsent, optional }: ConsentRowProps) {
   return (
-    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
       <div>
-        <p className="text-primaryDeep font-medium text-sm">
+        <p className="text-primaryDeep dark:text-white font-medium text-sm">
           {label}
-          {optional && <span className="text-gray-600 ml-2">(Optional)</span>}
+          {optional && <span className="text-gray-600 dark:text-gray-400 ml-2">(Optional)</span>}
         </p>
-        <p className="text-gray-600 text-xs">{description}</p>
+        <p className="text-gray-600 dark:text-gray-400 text-xs">{description}</p>
       </div>
       <button
         onClick={() => onConsent(!consented)}

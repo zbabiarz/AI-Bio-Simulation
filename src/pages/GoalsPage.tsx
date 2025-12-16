@@ -122,15 +122,15 @@ export default function GoalsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-primaryDeep mb-2">Health Goals</h1>
-          <p className="text-gray-500">Track your progress and achieve your health objectives</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white mb-2">Health Goals</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Track your progress and achieve your health objectives</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 px-4 rounded-lg transition-all"
+          className="flex items-center gap-2 bg-primary hover:bg-primaryDark text-white font-semibold py-2.5 px-4 rounded-lg transition-all min-h-[44px] w-full sm:w-auto justify-center"
         >
           <Plus className="w-5 h-5" />
           New Goal
@@ -138,10 +138,10 @@ export default function GoalsPage() {
       </div>
 
       {goals.length === 0 ? (
-        <div className="bg-white rounded-xl p-8 border border-gray-200 text-center">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-8 border border-gray-200 dark:border-slate-700 text-center">
           <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-primaryDeep mb-2">No Goals Yet</h3>
-          <p className="text-gray-600 text-sm mb-6">
+          <h3 className="text-lg font-semibold text-primaryDeep dark:text-white mb-2">No Goals Yet</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
             Set your first health goal to start tracking your progress
           </p>
           <button
@@ -156,11 +156,11 @@ export default function GoalsPage() {
         <>
           {activeGoals.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
                 <Play className="w-5 h-5 text-primary" />
                 Active Goals ({activeGoals.length})
               </h2>
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:gap-4">
                 {activeGoals.map((goal) => (
                   <GoalCard
                     key={goal.id}
@@ -177,11 +177,11 @@ export default function GoalsPage() {
 
           {pausedGoals.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
                 <Pause className="w-5 h-5 text-amber-400" />
                 Paused Goals ({pausedGoals.length})
               </h2>
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:gap-4">
                 {pausedGoals.map((goal) => (
                   <GoalCard
                     key={goal.id}
@@ -198,11 +198,11 @@ export default function GoalsPage() {
 
           {completedGoals.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
                 <Check className="w-5 h-5 text-primary" />
                 Completed Goals ({completedGoals.length})
               </h2>
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:gap-4">
                 {completedGoals.map((goal) => (
                   <GoalCard
                     key={goal.id}
@@ -254,32 +254,32 @@ function GoalCard({ goal, onToggle, onComplete, onEdit, onDelete, completed }: G
     : null;
 
   return (
-    <div className={`bg-white rounded-xl p-5 border ${completed ? 'border-primary/30' : 'border-gray-200'}`}>
+    <div className={`bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-5 border ${completed ? 'border-primary/30' : 'border-gray-200 dark:border-slate-700'}`}>
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${completed ? 'bg-primary/20' : 'bg-gray-50'}`}>
-            <Icon className={`w-5 h-5 ${completed ? 'text-primary' : 'text-gray-600'}`} />
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${completed ? 'bg-primary/20' : 'bg-gray-50 dark:bg-slate-800/50'}`}>
+            <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${completed ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`} />
           </div>
-          <div>
-            <h3 className="text-primaryDeep font-semibold">{goal.title}</h3>
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base text-primaryDeep dark:text-white font-semibold truncate">{goal.title}</h3>
             {goal.description && (
-              <p className="text-gray-600 text-sm">{goal.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm truncate">{goal.description}</p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           {!completed && (
             <>
               <button
                 onClick={onToggle}
-                className="p-2 text-gray-600 hover:text-primaryDeep transition-colors"
+                className="p-2 text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                 title={goal.status === 'active' ? 'Pause' : 'Resume'}
               >
                 {goal.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               </button>
               <button
                 onClick={onEdit}
-                className="p-2 text-gray-600 hover:text-primaryDeep transition-colors"
+                className="p-2 text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
@@ -287,7 +287,7 @@ function GoalCard({ goal, onToggle, onComplete, onEdit, onDelete, completed }: G
           )}
           <button
             onClick={onDelete}
-            className="p-2 text-gray-600 hover:text-red-400 transition-colors"
+            className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-400 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -296,10 +296,10 @@ function GoalCard({ goal, onToggle, onComplete, onEdit, onDelete, completed }: G
 
       <div className="mb-3">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-gray-600 text-sm">
+          <span className="text-gray-600 dark:text-gray-400 text-sm">
             {goal.current_value.toLocaleString()} / {goal.target_value.toLocaleString()} {goal.unit}
           </span>
-          <span className={`text-sm font-medium ${completed ? 'text-primary' : 'text-primaryDeep'}`}>
+          <span className={`text-sm font-medium ${completed ? 'text-primary' : 'text-primaryDeep dark:text-white'}`}>
             {Math.round(progress)}%
           </span>
         </div>
@@ -311,8 +311,8 @@ function GoalCard({ goal, onToggle, onComplete, onEdit, onDelete, completed }: G
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 text-xs text-gray-400">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-xs text-gray-400">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
             Started {format(parseISO(goal.start_date), 'MMM d')}
@@ -324,7 +324,7 @@ function GoalCard({ goal, onToggle, onComplete, onEdit, onDelete, completed }: G
         {!completed && progress < 100 && onComplete && (
           <button
             onClick={onComplete}
-            className="text-xs text-primary hover:text-primaryDark flex items-center gap-1"
+            className="text-xs text-primary hover:text-primaryDark flex items-center gap-1 min-h-[44px]"
           >
             <Check className="w-3 h-3" />
             Mark Complete
@@ -367,18 +367,18 @@ function CreateGoalModal({ onClose, onCreate }: CreateGoalModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg border border-gray-200">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 w-full max-w-lg border border-gray-200 dark:border-slate-700 my-4">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-primaryDeep">Create New Goal</h2>
-          <button onClick={onClose} className="text-gray-600 hover:text-primaryDeep">
-            <X className="w-6 h-6" />
+          <h2 className="text-lg sm:text-xl font-bold text-primaryDeep dark:text-white">Create New Goal</h2>
+          <button onClick={onClose} className="text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Goal Type</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Goal Type</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {goalTemplates.map((template) => (
                 <button
@@ -388,14 +388,14 @@ function CreateGoalModal({ onClose, onCreate }: CreateGoalModalProps) {
                     setTitle(template.title);
                     setTargetValue(template.default_target.toString());
                   }}
-                  className={`p-3 rounded-lg border text-left transition-all ${
+                  className={`p-2 sm:p-3 rounded-lg border text-left transition-all min-h-[44px] ${
                     selectedTemplate?.metric_type === template.metric_type
                       ? 'bg-primary/20 border-primary/50'
-                      : 'bg-gray-50 border-gray-200 hover:border-gray-400'
+                      : 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:border-gray-400'
                   }`}
                 >
-                  <template.icon className={`w-5 h-5 mb-1 ${selectedTemplate?.metric_type === template.metric_type ? 'text-primary' : 'text-gray-600'}`} />
-                  <p className="text-primaryDeep text-sm">{template.title.split(' ')[0]}</p>
+                  <template.icon className={`w-4 h-4 sm:w-5 sm:h-5 mb-1 ${selectedTemplate?.metric_type === template.metric_type ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`} />
+                  <p className="text-primaryDeep dark:text-white text-xs sm:text-sm">{template.title.split(' ')[0]}</p>
                 </button>
               ))}
             </div>
@@ -404,45 +404,45 @@ function CreateGoalModal({ onClose, onCreate }: CreateGoalModalProps) {
           {selectedTemplate && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Goal Title</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Goal Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description (optional)</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description (optional)</label>
                 <input
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g., Improve cardiovascular health"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Target ({selectedTemplate.unit})
                   </label>
                   <input
                     type="number"
                     value={targetValue}
                     onChange={(e) => setTargetValue(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date (optional)</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">End Date (optional)</label>
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                   />
                 </div>
               </div>
@@ -453,14 +453,14 @@ function CreateGoalModal({ onClose, onCreate }: CreateGoalModalProps) {
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
+            className="flex-1 py-3 px-4 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors min-h-[44px]"
           >
             Cancel
           </button>
           <button
             onClick={handleCreate}
             disabled={!selectedTemplate || !title || !targetValue}
-            className="flex-1 py-2.5 px-4 bg-primary hover:bg-primaryDark text-white font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-3 px-4 bg-primary hover:bg-primaryDark text-white font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           >
             Create Goal
           </button>
@@ -492,53 +492,53 @@ function EditGoalModal({ goal, onClose, onSave }: EditGoalModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg border border-gray-200">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 w-full max-w-lg border border-gray-200 dark:border-slate-700 my-4">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-primaryDeep">Edit Goal</h2>
-          <button onClick={onClose} className="text-gray-600 hover:text-primaryDeep">
-            <X className="w-6 h-6" />
+          <h2 className="text-lg sm:text-xl font-bold text-primaryDeep dark:text-white">Edit Goal</h2>
+          <button onClick={onClose} className="text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Goal Title</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Goal Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Current Progress</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Progress</label>
               <input
                 type="number"
                 value={currentValue}
                 onChange={(e) => setCurrentValue(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Target ({goal.unit})</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target ({goal.unit})</label>
               <input
                 type="number"
                 value={targetValue}
                 onChange={(e) => setTargetValue(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
               />
             </div>
           </div>
@@ -547,13 +547,13 @@ function EditGoalModal({ goal, onClose, onSave }: EditGoalModalProps) {
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
+            className="flex-1 py-3 px-4 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors min-h-[44px]"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-2.5 px-4 bg-primary hover:bg-primaryDark text-white font-semibold rounded-lg transition-all"
+            className="flex-1 py-3 px-4 bg-primary hover:bg-primaryDark text-white font-semibold rounded-lg transition-all min-h-[44px]"
           >
             Save Changes
           </button>

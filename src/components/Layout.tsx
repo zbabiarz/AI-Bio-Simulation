@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   Activity,
   LayoutDashboard,
@@ -18,6 +19,8 @@ import {
   Shield,
   ChevronDown,
   User,
+  Moon,
+  Sun,
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -38,6 +41,7 @@ const navigation = [
 export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const { profile, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,7 +52,7 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       <div
         className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
           sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -124,32 +128,43 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 h-16 bg-white border-b border-gray-200">
+        <header className="sticky top-0 z-30 h-16 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
           <div className="flex items-center justify-between h-full px-4 lg:px-6">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-gray-600 hover:text-primaryDeep"
+              className="lg:hidden text-gray-600 dark:text-gray-400 hover:text-primaryDeep dark:hover:text-white"
             >
               <Menu className="w-6 h-6" />
             </button>
 
             <div className="flex-1" />
 
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-gray-600 dark:text-gray-300"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
               >
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-primaryDeep">
+                  <p className="text-sm font-medium text-primaryDeep dark:text-white">
                     {profile?.full_name || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500">{profile?.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{profile?.email}</p>
                 </div>
-                <ChevronDown className="w-4 h-4 text-gray-500" />
+                <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </button>
 
               {profileOpen && (
@@ -158,18 +173,18 @@ export default function Layout({ children }: LayoutProps) {
                     className="fixed inset-0 z-10"
                     onClick={() => setProfileOpen(false)}
                   />
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-xl z-20 overflow-hidden">
                     <Link
                       to="/settings"
                       onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       Settings
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-gray-50 transition-colors w-full"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors w-full"
                     >
                       <LogOut className="w-4 h-4" />
                       Sign Out
@@ -181,7 +196,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        <main className="p-4 lg:p-6 bg-gray-50">{children}</main>
+        <main className="p-4 lg:p-6 bg-gray-50 dark:bg-slate-900">{children}</main>
       </div>
     </div>
   );

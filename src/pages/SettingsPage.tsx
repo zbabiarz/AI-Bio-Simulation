@@ -129,7 +129,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Settings</h1>
+        <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Settings</h1>
         <p className="text-gray-400">Manage your account and preferences</p>
       </div>
 
@@ -150,27 +150,27 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <User className="w-5 h-5 text-primary" />
           Profile Information
         </h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Full Name
             </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email Address
             </label>
             <div className="flex items-center gap-2">
@@ -194,8 +194,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <Bell className="w-5 h-5 text-amber-400" />
           Notifications
         </h2>
@@ -203,7 +203,7 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-primaryDeep font-medium">Weekly Summary</p>
+              <p className="text-primaryDeep dark:text-white font-medium">Weekly Summary</p>
               <p className="text-gray-400 text-sm">Receive a weekly email with your health insights</p>
             </div>
             <div className="w-12 h-7 bg-primary rounded-full p-1 cursor-pointer">
@@ -213,7 +213,7 @@ export default function SettingsPage() {
 
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-primaryDeep font-medium">Goal Reminders</p>
+              <p className="text-primaryDeep dark:text-white font-medium">Goal Reminders</p>
               <p className="text-gray-400 text-sm">Get notified about goal progress</p>
             </div>
             <div className="w-12 h-7 bg-gray-200 rounded-full p-1 cursor-pointer">
@@ -223,7 +223,7 @@ export default function SettingsPage() {
 
           <label className="flex items-center justify-between cursor-pointer">
             <div>
-              <p className="text-primaryDeep font-medium">New Badge Alerts</p>
+              <p className="text-primaryDeep dark:text-white font-medium">New Badge Alerts</p>
               <p className="text-gray-400 text-sm">Celebrate when you earn new badges</p>
             </div>
             <div className="w-12 h-7 bg-primary rounded-full p-1 cursor-pointer">
@@ -233,8 +233,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <Shield className="w-5 h-5 text-blue-400" />
           Data & Privacy
         </h2>
@@ -242,13 +242,13 @@ export default function SettingsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-primaryDeep font-medium">Export Your Data</p>
+              <p className="text-primaryDeep dark:text-white font-medium">Export Your Data</p>
               <p className="text-gray-400 text-sm">Download all your health data in JSON format</p>
             </div>
             <button
               onClick={handleExportData}
               disabled={exporting}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors disabled:opacity-50"
             >
               {exporting ? (
                 <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -261,12 +261,12 @@ export default function SettingsPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-primaryDeep font-medium">Privacy Policy & Data Rights</p>
+              <p className="text-primaryDeep dark:text-white font-medium">Privacy Policy & Data Rights</p>
               <p className="text-gray-400 text-sm">View policy, manage consents, and submit data requests</p>
             </div>
             <Link
               to="/privacy"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors"
             >
               <FileText className="w-4 h-4" />
               View
@@ -278,7 +278,7 @@ export default function SettingsPage() {
             <div className="flex items-start gap-3 bg-primary/10 border border-primary/30 rounded-lg p-4">
               <Lock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-primaryDeep font-medium text-sm">HIPAA Compliant</p>
+                <p className="text-primaryDeep dark:text-white font-medium text-sm">HIPAA Compliant</p>
                 <p className="text-gray-400 text-xs mt-1">
                   Your data is encrypted at rest (AES-256) and in transit (TLS 1.3). All access to your health information is logged and audited.
                 </p>
@@ -294,7 +294,7 @@ export default function SettingsPage() {
           Danger Zone
         </h2>
 
-        <p className="text-gray-700 text-sm mb-4">
+        <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
           Once you delete your account, there is no going back. All your health data, goals, badges, and history will be permanently removed. This action is logged for compliance purposes.
         </p>
 
@@ -315,7 +315,7 @@ export default function SettingsPage() {
             </button>
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
+              className="px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors"
             >
               Cancel
             </button>

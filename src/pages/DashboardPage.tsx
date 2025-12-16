@@ -146,13 +146,13 @@ export default function DashboardPage() {
   if (metrics.length === 0) {
     return (
       <div className="max-w-3xl mx-auto text-center py-16">
-        <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-gray-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <Upload className="w-10 h-10 text-gray-400" />
         </div>
-        <h2 className="text-2xl font-bold text-primaryDeep mb-3">
+        <h2 className="text-2xl font-bold text-primaryDeep dark:text-white mb-3">
           Welcome to AIMD, {profile?.full_name?.split(' ')[0] || 'there'}!
         </h2>
-        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
           Start your health journey by uploading your wearable data. We support data from Oura Ring, Apple Watch, Garmin, Whoop, and more.
         </p>
         <Link
@@ -167,26 +167,26 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-primaryDeep mb-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white mb-1">
           Welcome back, {profile?.full_name?.split(' ')[0] || 'there'}
         </h1>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           Here's an overview of your health metrics from the past 30 days
         </p>
       </div>
 
       {latestWearable && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
                 <Watch className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-primaryDeep">Latest Wearable Data</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white">Latest Wearable Data</h3>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   From {latestWearable.source} - {format(parseISO(latestWearable.created_at), 'MMM d, yyyy h:mm a')}
                 </p>
               </div>
@@ -198,7 +198,7 @@ export default function DashboardPage() {
               Upload new
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             <WearableMetricCard
               icon={Heart}
               label="HRV"
@@ -233,7 +233,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <MetricCard
           icon={Heart}
           label="Avg HRV"
@@ -268,13 +268,13 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
             <Heart className="w-5 h-5 text-red-500" />
             HRV Trend
           </h3>
-          <div className="h-64">
+          <div className="h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
@@ -306,12 +306,12 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
             <Moon className="w-5 h-5 text-blue-600" />
             Sleep Duration
           </h3>
-          <div className="h-64">
+          <div className="h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
@@ -345,10 +345,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white flex items-center gap-2">
               <Target className="w-5 h-5 text-primary" />
               Active Goals
             </h3>
@@ -360,13 +360,13 @@ export default function DashboardPage() {
             </Link>
           </div>
           {goals.length === 0 ? (
-            <p className="text-gray-500 text-sm">No active goals. Set your first goal!</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">No active goals. Set your first goal!</p>
           ) : (
             <div className="space-y-3">
               {goals.map((goal) => (
-                <div key={goal.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div key={goal.id} className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3 border border-gray-200 dark:border-slate-700">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-primaryDeep text-sm font-medium">{goal.title}</span>
+                    <span className="text-primaryDeep dark:text-white text-sm font-medium">{goal.title}</span>
                     <span className="text-primary text-xs">
                       {Math.round((goal.current_value / goal.target_value) * 100)}%
                     </span>
@@ -383,9 +383,9 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-primaryDeep flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white flex items-center gap-2">
               <Award className="w-5 h-5 text-amber-500" />
               Recent Badges
             </h3>
@@ -397,17 +397,17 @@ export default function DashboardPage() {
             </Link>
           </div>
           {badges.length === 0 ? (
-            <p className="text-gray-500 text-sm">No badges yet. Keep tracking to earn badges!</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">No badges yet. Keep tracking to earn badges!</p>
           ) : (
             <div className="space-y-3">
               {badges.map((ub) => (
                 <div key={ub.id} className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-200">
+                  <div className="w-10 h-10 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center border border-amber-200 dark:border-amber-800">
                     <Award className="w-5 h-5 text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-primaryDeep text-sm font-medium">{ub.badge?.name}</p>
-                    <p className="text-gray-500 text-xs">{ub.badge?.points} pts</p>
+                    <p className="text-primaryDeep dark:text-white text-sm font-medium">{ub.badge?.name}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs">{ub.badge?.points} pts</p>
                   </div>
                 </div>
               ))}
@@ -415,12 +415,12 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
+        <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-4 sm:p-6 border border-primary/20">
           <div className="flex items-center gap-2 mb-4">
             <Brain className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-primaryDeep">AI Insight</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white">AI Insight</h3>
           </div>
-          <p className="text-gray-700 text-sm mb-4">
+          <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
             Based on your recent data, your HRV has been improving. Consider maintaining your current sleep schedule for continued recovery gains.
           </p>
           <Link
@@ -433,12 +433,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <Activity className="w-5 h-5 text-primary" />
           Daily Steps
         </h3>
-        <div className="h-64">
+        <div className="h-48 sm:h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -485,17 +485,17 @@ function MetricCard({ icon: Icon, label, value, unit, color, trend }: MetricCard
   };
 
   return (
-    <div className={`${colorClasses[color]} rounded-xl p-4 border`}>
-      <div className="flex items-center gap-2 mb-3">
-        <Icon className="w-5 h-5" />
-        <span className="text-gray-700 text-sm">{label}</span>
+    <div className={`${colorClasses[color]} rounded-xl p-3 sm:p-4 border`}>
+      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{label}</span>
       </div>
       <div className="flex items-end justify-between">
         <div>
-          <span className="text-2xl font-bold text-primaryDeep">
+          <span className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white">
             {value !== null ? value.toLocaleString() : '--'}
           </span>
-          {unit && <span className="text-gray-600 text-sm ml-1">{unit}</span>}
+          {unit && <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm ml-1">{unit}</span>}
         </div>
         {trend !== undefined && (
           <div className={`flex items-center gap-1 text-xs ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -517,16 +517,16 @@ interface WearableMetricCardProps {
 
 function WearableMetricCard({ icon: Icon, label, value, unit }: WearableMetricCardProps) {
   return (
-    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className="w-4 h-4 text-primary" />
-        <span className="text-gray-600 text-xs">{label}</span>
+    <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-2 sm:p-3 border border-gray-200 dark:border-slate-700">
+      <div className="flex items-center gap-1 sm:gap-2 mb-1">
+        <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+        <span className="text-gray-600 dark:text-gray-400 text-xs">{label}</span>
       </div>
       <div>
-        <span className="text-xl font-bold text-primaryDeep">
+        <span className="text-base sm:text-xl font-bold text-primaryDeep dark:text-white">
           {value !== undefined ? value.toLocaleString() : '--'}
         </span>
-        {unit && <span className="text-gray-600 text-sm ml-1">{unit}</span>}
+        {unit && <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm ml-1">{unit}</span>}
       </div>
     </div>
   );

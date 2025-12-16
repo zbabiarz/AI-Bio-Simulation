@@ -139,26 +139,26 @@ export default function ConnectPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Connect Your Devices</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Connect Your Devices</h1>
+        <p className="text-gray-600 dark:text-gray-400">
           Link your wearable devices to automatically sync your health data.
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-primaryDeep mb-4">OAuth Connections</h2>
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4">OAuth Connections</h2>
         <div className="space-y-3">
           {providers.map((provider) => {
             const connected = isConnected(provider.id);
             return (
               <div
                 key={provider.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{provider.icon}</span>
                   <div>
-                    <p className="font-medium text-primaryDeep">{provider.name}</p>
+                    <p className="font-medium text-primaryDeep dark:text-white">{provider.name}</p>
                     {connected && (
                       <p className="text-sm text-primary flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
@@ -170,7 +170,7 @@ export default function ConnectPage() {
                 {connected ? (
                   <button
                     onClick={() => handleDisconnect(provider.id)}
-                    className="px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                    className="px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 dark:hover:bg-red-500/20 rounded-lg transition-colors"
                   >
                     Disconnect
                   </button>
@@ -194,9 +194,9 @@ export default function ConnectPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-primaryDeep mb-2">Manual Upload</h2>
-        <p className="text-gray-600 text-sm mb-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-2">Manual Upload</h2>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
           Don't see your device? You can manually upload exported data files.
         </p>
         <Link
@@ -208,9 +208,9 @@ export default function ConnectPage() {
         </Link>
       </div>
 
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <p className="text-sm text-gray-600">
-          <strong className="text-gray-700">Note:</strong> OAuth connections require API credentials
+      <div className="mt-6 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          <strong className="text-gray-700 dark:text-gray-300">Note:</strong> OAuth connections require API credentials
           to be configured. Contact your administrator if connections are not working.
         </p>
       </div>

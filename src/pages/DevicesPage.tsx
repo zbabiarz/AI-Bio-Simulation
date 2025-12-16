@@ -263,7 +263,7 @@ export default function DevicesPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-primaryDeep mb-2">Connect Your Devices</h1>
+        <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Connect Your Devices</h1>
         <p className="text-gray-500">
           Connect your wearable devices to automatically sync health data or upload files manually.
         </p>
@@ -271,7 +271,7 @@ export default function DevicesPage() {
 
       {connectedDevices.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
             <Wifi className="w-5 h-5 text-primary" />
             Connected Devices ({connectedDevices.length})
           </h2>
@@ -284,7 +284,7 @@ export default function DevicesPage() {
               return (
                 <div
                   key={connection.id}
-                  className="bg-white rounded-xl p-5 border border-gray-200"
+                  className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-slate-700"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -292,7 +292,7 @@ export default function DevicesPage() {
                         <Watch className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-primaryDeep font-semibold">{provider.name}</h3>
+                        <h3 className="text-primaryDeep dark:text-white font-semibold">{provider.name}</h3>
                         <div className="flex items-center gap-3 mt-1">
                           <span className={`flex items-center gap-1 text-xs ${
                             connection.sync_status === 'active'
@@ -333,7 +333,7 @@ export default function DevicesPage() {
                       {connection.connection_type === 'manual' && (
                         <Link
                           to={`/upload?device=${connection.provider}`}
-                          className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-50 text-primaryDeep text-sm rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white text-sm rounded-lg transition-colors"
                         >
                           <Upload className="w-4 h-4" />
                           Upload
@@ -366,7 +366,7 @@ export default function DevicesPage() {
       )}
 
       <div>
-        <h2 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
           <Smartphone className="w-5 h-5 text-blue-400" />
           Available Devices
         </h2>
@@ -376,7 +376,7 @@ export default function DevicesPage() {
             <button
               key={provider.id}
               onClick={() => setSelectedDevice(provider)}
-              className="bg-white rounded-xl p-5 border border-gray-200 hover:border-primary/50 transition-all text-left group"
+              className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-slate-700 hover:border-primary/50 transition-all text-left group"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className={`w-12 h-12 ${provider.color} rounded-xl flex items-center justify-center`}>
@@ -384,13 +384,13 @@ export default function DevicesPage() {
                 </div>
                 <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
               </div>
-              <h3 className="text-primaryDeep font-semibold mb-1">{provider.name}</h3>
-              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{provider.description}</p>
+              <h3 className="text-primaryDeep dark:text-white font-semibold mb-1">{provider.name}</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{provider.description}</p>
               <div className="flex flex-wrap gap-1">
                 {provider.fileTypes.map((type) => (
                   <span
                     key={type}
-                    className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded"
+                    className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400 text-xs rounded"
                   >
                     {type}
                   </span>
@@ -404,8 +404,8 @@ export default function DevicesPage() {
       {connectedDevices.length === 0 && (
         <div className="bg-primary/10 rounded-xl p-6 border border-primary/30 text-center">
           <WifiOff className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-primaryDeep mb-2">No Devices Connected</h3>
-          <p className="text-gray-600 text-sm mb-4">
+          <h3 className="text-lg font-semibold text-primaryDeep dark:text-white mb-2">No Devices Connected</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
             Connect your wearable device to start tracking your health data automatically, or upload your data files manually.
           </p>
           <Link
@@ -448,14 +448,14 @@ function DeviceConnectionModal({
 }: DeviceConnectionModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg border border-gray-200">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-lg border border-gray-200 dark:border-slate-700">
         <div className="flex items-center gap-4 mb-6">
           <div className={`w-14 h-14 ${provider.color} rounded-xl flex items-center justify-center`}>
             <Watch className="w-7 h-7 text-primaryDeep" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-primaryDeep">Connect {provider.name}</h2>
-            <p className="text-gray-600 text-sm">{provider.description}</p>
+            <h2 className="text-xl font-bold text-primaryDeep dark:text-white">Connect {provider.name}</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">{provider.description}</p>
           </div>
         </div>
 
@@ -484,33 +484,33 @@ function DeviceConnectionModal({
           <Link
             to={`/upload?device=${provider.id}`}
             onClick={onManualConnect}
-            className="w-full bg-gray-100 hover:bg-gray-50 text-primaryDeep py-4 px-4 rounded-xl flex items-center justify-between transition-colors"
+            className="w-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white py-4 px-4 rounded-xl flex items-center justify-between transition-colors"
           >
             <div className="flex items-center gap-3">
               <Upload className="w-5 h-5" />
               <div className="text-left">
                 <p className="font-semibold">Upload Files Manually</p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   Supports {provider.fileTypes.join(', ')}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-600" />
+            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </Link>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-4 mb-6">
-          <h4 className="text-primaryDeep font-medium text-sm mb-2 flex items-center gap-2">
-            <Settings className="w-4 h-4 text-gray-600" />
+        <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-4 mb-6">
+          <h4 className="text-primaryDeep dark:text-white font-medium text-sm mb-2 flex items-center gap-2">
+            <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             How to Export Data
           </h4>
-          <p className="text-gray-600 text-sm">{provider.exportInstructions}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">{provider.exportInstructions}</p>
         </div>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
+            className="flex-1 py-2.5 px-4 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors"
           >
             Cancel
           </button>

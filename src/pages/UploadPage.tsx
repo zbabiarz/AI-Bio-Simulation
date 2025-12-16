@@ -620,14 +620,14 @@ export default function UploadPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-primaryDeep mb-2">Upload Wearable Data</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Upload Wearable Data</h1>
+          <p className="text-gray-600 dark:text-gray-400">
             Import your health data from various wearable devices
           </p>
         </div>
         <Link
           to="/devices"
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors border border-gray-200"
+          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors border border-gray-200 dark:border-slate-700"
         >
           <Link2 className="w-4 h-4" />
           Connect Device
@@ -645,34 +645,34 @@ export default function UploadPage() {
             className={`p-3 rounded-xl border text-center transition-all ${
               selectedSource === device.id
                 ? 'bg-primary/10 border-primary'
-                : 'bg-white border-gray-200 hover:border-gray-300'
+                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-300'
             }`}
           >
             <div className={`w-8 h-8 ${device.color} rounded-lg flex items-center justify-center mx-auto mb-2`}>
               <Watch className="w-4 h-4 text-white" />
             </div>
-            <p className="text-gray-900 text-xs font-medium truncate">{device.name.split(' ')[0]}</p>
+            <p className="text-gray-900 dark:text-white text-xs font-medium truncate">{device.name.split(' ')[0]}</p>
           </button>
         ))}
       </div>
 
       {showInstructions && deviceInfo[showInstructions] && (
-        <div className="bg-white rounded-xl p-5 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-primaryDeep font-semibold flex items-center gap-2">
+            <h3 className="text-primaryDeep dark:text-white font-semibold flex items-center gap-2">
               <Info className="w-5 h-5 text-primary" />
               How to Export from {deviceInfo[showInstructions].name}
             </h3>
             <button
               onClick={() => setShowInstructions(null)}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
           <ol className="space-y-2 mb-4">
             {deviceInfo[showInstructions].exportInstructions.map((step, i) => (
-              <li key={i} className="flex items-start gap-3 text-gray-700 text-sm">
+              <li key={i} className="flex items-start gap-3 text-gray-700 dark:text-gray-300 text-sm">
                 <span className="w-5 h-5 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs flex-shrink-0">
                   {i + 1}
                 </span>
@@ -681,9 +681,9 @@ export default function UploadPage() {
             ))}
           </ol>
           <div className="flex flex-wrap gap-2">
-            <span className="text-gray-600 text-xs">Supported formats:</span>
+            <span className="text-gray-600 dark:text-gray-400 text-xs">Supported formats:</span>
             {deviceInfo[showInstructions].fileTypes.map((type) => (
-              <span key={type} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+              <span key={type} className="px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400 text-xs rounded">
                 {type}
               </span>
             ))}
@@ -691,15 +691,15 @@ export default function UploadPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700">
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Data Source
           </label>
           <select
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
-            className="w-full bg-white border border-gray-200 rounded-lg py-2.5 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-4 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="auto">Auto-detect from file</option>
             <optgroup label="Wearables">
@@ -719,7 +719,7 @@ export default function UploadPage() {
           className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all ${
             dragActive
               ? 'border-primary bg-primary/10'
-              : 'border-gray-200 hover:border-gray-300'
+              : 'border-gray-200 dark:border-slate-700 hover:border-gray-300'
           }`}
         >
           <input
@@ -729,18 +729,18 @@ export default function UploadPage() {
             onChange={handleFileSelect}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Upload className="w-8 h-8 text-gray-600" />
+          <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Upload className="w-8 h-8 text-gray-600 dark:text-gray-400" />
           </div>
-          <p className="text-gray-900 font-medium mb-2">
+          <p className="text-gray-900 dark:text-white font-medium mb-2">
             Drag and drop your files here
           </p>
-          <p className="text-gray-600 text-sm mb-3">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
             or click to browse
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {['.csv', '.json', '.xml', '.fit', '.tcx', '.gpx'].map((ext) => (
-              <span key={ext} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+              <span key={ext} className="px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400 text-xs rounded">
                 {ext}
               </span>
             ))}
@@ -749,26 +749,26 @@ export default function UploadPage() {
 
         {files.length > 0 && (
           <div className="mt-6 space-y-3">
-            <p className="text-gray-700 text-sm font-medium">
+            <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">
               {files.length} file{files.length > 1 ? 's' : ''} selected
             </p>
             {files.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between bg-gray-50 rounded-lg p-3"
+                className="flex items-center justify-between bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3"
               >
                 <div className="flex items-center gap-3">
                   {getFileIcon(file.name)}
                   <div>
-                    <p className="text-gray-900 text-sm">{file.name}</p>
-                    <p className="text-gray-600 text-xs">
+                    <p className="text-gray-900 dark:text-white text-sm">{file.name}</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">
                       {(file.size / 1024).toFixed(1)} KB
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => removeFile(index)}
-                  className="text-gray-600 hover:text-gray-900 transition-colors"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -780,7 +780,7 @@ export default function UploadPage() {
         {uploading && (
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-700 text-sm">Processing files...</span>
+              <span className="text-gray-700 dark:text-gray-300 text-sm">Processing files...</span>
               <span className="text-primary text-sm">{progress}%</span>
             </div>
             <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">

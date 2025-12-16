@@ -251,39 +251,39 @@ export default function SimulationsPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-primaryDeep mb-2">Bio-Simulations</h1>
-          <p className="text-gray-500">
+          <h1 className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white mb-2">Bio-Simulations</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
             Explore how changes in your habits could impact your health outcomes
           </p>
         </div>
         <button
           onClick={() => setShowHistory(!showHistory)}
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-primaryDeep rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors min-h-[44px]"
         >
           <History className="w-5 h-5" />
-          History
+          <span className="text-sm sm:text-base">History</span>
         </button>
       </div>
 
       {Object.keys(currentMetrics).length === 0 ? (
-        <div className="bg-white rounded-xl p-8 border border-gray-200 text-center">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-8 border border-gray-200 dark:border-slate-700 text-center">
           <Brain className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-primaryDeep mb-2">No Data Available</h3>
-          <p className="text-gray-600 text-sm">
+          <h3 className="text-lg font-semibold text-primaryDeep dark:text-white mb-2">No Data Available</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
             Upload your wearable data first to run bio-simulations
           </p>
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-400" />
               Your Current Averages (30 days)
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               {currentMetrics.hrv && (
                 <MetricDisplay icon={Heart} label="HRV" value={currentMetrics.hrv} unit="ms" color="rose" />
               )}
@@ -300,57 +300,57 @@ export default function SimulationsPage() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-primaryDeep mb-4">Quick Scenarios</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4">Quick Scenarios</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {simulationScenarios.map((scenario) => (
                 <button
                   key={scenario.id}
                   onClick={() => handleScenarioClick(scenario)}
-                  className={`p-4 rounded-xl border text-left transition-all ${
+                  className={`p-3 sm:p-4 rounded-xl border text-left transition-all min-h-[44px] ${
                     activeScenario === scenario.id
                       ? 'bg-primary/20 border-primary/50'
-                      : 'bg-white border-gray-200 hover:border-gray-700'
+                      : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-700'
                   }`}
                 >
-                  <scenario.icon className={`w-6 h-6 mb-3 ${activeScenario === scenario.id ? 'text-primary' : 'text-gray-600'}`} />
-                  <p className="text-primaryDeep font-medium text-sm mb-1">{scenario.title}</p>
-                  <p className="text-gray-600 text-xs">{scenario.description}</p>
+                  <scenario.icon className={`w-5 h-5 sm:w-6 sm:h-6 mb-2 sm:mb-3 ${activeScenario === scenario.id ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`} />
+                  <p className="text-primaryDeep dark:text-white font-medium text-sm mb-1">{scenario.title}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">{scenario.description}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-primaryDeep mb-4">Custom Simulation</h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4">Custom Simulation</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <div>
-                <label className="block text-sm text-gray-600 mb-2">Sleep Change (minutes)</label>
+                <label className="block text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">Sleep Change (minutes)</label>
                 <input
                   type="number"
                   value={customChanges.sleep_duration_minutes || ''}
                   onChange={(e) => setCustomChanges({ ...customChanges, sleep_duration_minutes: parseInt(e.target.value) || 0 })}
                   placeholder="+60"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-2">Activity Change (minutes)</label>
+                <label className="block text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">Activity Change (minutes)</label>
                 <input
                   type="number"
                   value={customChanges.activity_minutes || ''}
                   onChange={(e) => setCustomChanges({ ...customChanges, activity_minutes: parseInt(e.target.value) || 0 })}
                   placeholder="+30"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-2">HRV Change (ms)</label>
+                <label className="block text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">HRV Change (ms)</label>
                 <input
                   type="number"
                   value={customChanges.hrv || ''}
                   onChange={(e) => setCustomChanges({ ...customChanges, hrv: parseInt(e.target.value) || 0 })}
                   placeholder="+5"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 px-4 text-primaryDeep focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
                 />
               </div>
             </div>
@@ -358,7 +358,7 @@ export default function SimulationsPage() {
             <button
               onClick={() => runSimulation(customChanges)}
               disabled={simulating || Object.values(customChanges).every((v) => !v)}
-              className="bg-primary hover:bg-primaryDark text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto bg-primary hover:bg-primaryDark text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             >
               {simulating ? (
                 <>
@@ -375,13 +375,13 @@ export default function SimulationsPage() {
           </div>
 
           {result && (
-            <div className="bg-primary/10 rounded-xl p-6 border border-primary/30">
+            <div className="bg-primary/10 rounded-xl p-4 sm:p-6 border border-primary/30">
               <div className="flex items-center gap-2 mb-6">
-                <Brain className="w-6 h-6 text-primary" />
-                <h3 className="text-lg font-semibold text-primaryDeep">Simulation Results</h3>
+                <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white">Simulation Results</h3>
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
                 <PredictionCard label="Fitness Impact" value={result.fitness_impact} suffix="%" />
                 <PredictionCard label="Stress Reduction" value={result.stress_reduction} suffix="%" />
                 <PredictionCard label="Recovery Boost" value={result.recovery_improvement} suffix="%" />
@@ -389,23 +389,23 @@ export default function SimulationsPage() {
                 <PredictionCard label="Energy Level" value={result.energy_level_change} suffix="%" />
               </div>
 
-              <div className="flex items-center gap-4 mb-6 text-sm">
-                <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 text-xs sm:text-sm">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span>Expected in {result.timeframe_days} days</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                   <Info className="w-4 h-4" />
                   <span>{result.confidence}% confidence</span>
                 </div>
               </div>
 
               {recommendations.length > 0 && (
-                <div className="bg-white rounded-lg p-4">
-                  <h4 className="text-primaryDeep font-medium mb-3">Recommendations</h4>
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-4">
+                  <h4 className="text-primaryDeep dark:text-white font-medium mb-3">Recommendations</h4>
                   <ul className="space-y-2">
                     {recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2 text-gray-700 text-sm">
+                      <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300 text-sm">
                         <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                         {rec}
                       </li>
@@ -419,16 +419,16 @@ export default function SimulationsPage() {
       )}
 
       {showHistory && pastSimulations.length > 0 && (
-        <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-primaryDeep mb-4 flex items-center gap-2">
-            <History className="w-5 h-5 text-gray-600" />
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
+            <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             Past Simulations
           </h3>
           <div className="space-y-3">
             {pastSimulations.map((sim) => (
-              <div key={sim.id} className="bg-gray-50 rounded-lg p-4">
+              <div key={sim.id} className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-primaryDeep text-sm font-medium">
+                  <span className="text-primaryDeep dark:text-white text-sm font-medium">
                     {Object.entries(sim.changes)
                       .filter(([, v]) => v)
                       .map(([k, v]) => `${k.replace('_', ' ')}: ${v > 0 ? '+' : ''}${v}`)
@@ -438,7 +438,7 @@ export default function SimulationsPage() {
                     {format(parseISO(sim.created_at), 'MMM d, yyyy')}
                   </span>
                 </div>
-                <div className="flex gap-4 text-xs text-gray-600">
+                <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
                   <span>Fitness: {sim.predictions.fitness_impact > 0 ? '+' : ''}{sim.predictions.fitness_impact}%</span>
                   <span>Recovery: {sim.predictions.recovery_improvement > 0 ? '+' : ''}{sim.predictions.recovery_improvement}%</span>
                   <span>Confidence: {sim.predictions.confidence}%</span>
@@ -469,14 +469,14 @@ function MetricDisplay({ icon: Icon, label, value, unit, color }: MetricDisplayP
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-3">
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className={`w-4 h-4 ${colorClasses[color]}`} />
-        <span className="text-gray-600 text-xs">{label}</span>
+    <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-2 sm:p-3">
+      <div className="flex items-center gap-1 sm:gap-2 mb-1">
+        <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${colorClasses[color]}`} />
+        <span className="text-gray-600 dark:text-gray-400 text-xs">{label}</span>
       </div>
-      <p className="text-primaryDeep text-lg font-semibold">
+      <p className="text-primaryDeep dark:text-white text-base sm:text-lg font-semibold">
         {value.toLocaleString()}
-        {unit && <span className="text-gray-600 text-sm ml-1">{unit}</span>}
+        {unit && <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm ml-1">{unit}</span>}
       </p>
     </div>
   );
@@ -491,15 +491,15 @@ interface PredictionCardProps {
 function PredictionCard({ label, value, suffix }: PredictionCardProps) {
   const isPositive = value >= 0;
   return (
-    <div className="bg-white rounded-lg p-3 text-center">
-      <p className="text-gray-600 text-xs mb-1">{label}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-lg p-2 sm:p-3 text-center">
+      <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">{label}</p>
       <div className="flex items-center justify-center gap-1">
         {isPositive ? (
-          <TrendingUp className="w-4 h-4 text-primary" />
+          <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
         ) : (
-          <TrendingDown className="w-4 h-4 text-rose-400" />
+          <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-rose-400" />
         )}
-        <span className={`text-lg font-bold ${isPositive ? 'text-primary' : 'text-rose-400'}`}>
+        <span className={`text-base sm:text-lg font-bold ${isPositive ? 'text-primary' : 'text-rose-400'}`}>
           {isPositive ? '+' : ''}{value}{suffix}
         </span>
       </div>

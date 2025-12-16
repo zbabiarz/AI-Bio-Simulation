@@ -289,26 +289,26 @@ What aspect of your health would you like to focus on?`;
 
   return (
     <div className="max-w-4xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-primaryDeep mb-1">AI Bio-Coach</h1>
-          <p className="text-gray-400 text-sm">
+          <h1 className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white mb-1">AI Bio-Coach</h1>
+          <p className="text-gray-400 text-xs sm:text-sm">
             Your personal health assistant powered by AI
           </p>
         </div>
         {messages.length > 0 && (
           <button
             onClick={clearHistory}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-red-400 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-red-400 transition-colors min-h-[44px]"
           >
             <Trash2 className="w-4 h-4" />
-            Clear History
+            <span className="text-sm">Clear History</span>
           </button>
         )}
       </div>
 
       {metrics.length > 0 && (
-        <div className="grid grid-cols-4 gap-3 mb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4">
           <QuickStat icon={Heart} label="HRV" value={metrics[0]?.hrv ? `${Math.round(metrics[0].hrv)}ms` : '--'} />
           <QuickStat icon={Moon} label="Sleep" value={metrics[0]?.sleep_duration_minutes ? `${Math.round(metrics[0].sleep_duration_minutes / 60 * 10) / 10}h` : '--'} />
           <QuickStat icon={Footprints} label="Steps" value={metrics[0]?.steps ? metrics[0].steps.toLocaleString() : '--'} />
@@ -316,17 +316,17 @@ What aspect of your health would you like to focus on?`;
         </div>
       )}
 
-      <div className="flex-1 bg-white rounded-xl border border-gray-200 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
           {messages.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primaryAccent rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Bot className="w-8 h-8 text-white" />
+            <div className="text-center py-8 sm:py-12 px-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-primaryAccent rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Bot className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-primaryDeep mb-2">
+              <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-2">
                 Welcome to your AI Bio-Coach
               </h3>
-              <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+              <p className="text-gray-400 text-xs sm:text-sm mb-6 max-w-md mx-auto">
                 I can help you understand your health data, interpret trends, and provide personalized recommendations.
               </p>
               <div className="flex flex-wrap gap-2 justify-center max-w-lg mx-auto">
@@ -334,7 +334,7 @@ What aspect of your health would you like to focus on?`;
                   <button
                     key={question}
                     onClick={() => sendMessage(question)}
-                    className="px-3 py-2 bg-gray-100 hover:bg-gray-50 text-gray-700 text-sm rounded-lg transition-colors"
+                    className="px-3 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs sm:text-sm rounded-lg transition-colors min-h-[44px]"
                   >
                     {question}
                   </button>
@@ -346,32 +346,32 @@ What aspect of your health would you like to focus on?`;
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}
+              className={`flex gap-2 sm:gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}
             >
               {message.role === 'assistant' && (
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-4 h-4 text-white" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 </div>
               )}
               <div
-                className={`max-w-[80%] rounded-xl p-4 ${
+                className={`max-w-[85%] sm:max-w-[80%] rounded-xl p-3 sm:p-4 ${
                   message.role === 'user'
-                    ? 'bg-primary/20 text-primaryDeep'
-                    : 'bg-gray-50 text-gray-700'
+                    ? 'bg-primary/20 text-primaryDeep dark:text-white'
+                    : 'bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-gray-300'
                 }`}
               >
-                <div className="prose prose-sm prose-invert max-w-none">
+                <div className="prose prose-sm prose-invert max-w-none text-sm">
                   {message.content.split('\n').map((line, i) => {
                     if (line.startsWith('**') && line.endsWith('**')) {
-                      return <p key={i} className="font-semibold text-primaryDeep my-2">{line.replace(/\*\*/g, '')}</p>;
+                      return <p key={i} className="font-semibold text-primaryDeep dark:text-white my-2 text-xs sm:text-sm">{line.replace(/\*\*/g, '')}</p>;
                     }
                     if (line.startsWith('- ') || line.startsWith('1. ') || line.match(/^\d+\./)) {
-                      return <p key={i} className="ml-4 my-1">{line}</p>;
+                      return <p key={i} className="ml-4 my-1 text-xs sm:text-sm">{line}</p>;
                     }
                     if (line.startsWith('📊') || line.startsWith('📈') || line.startsWith('💡')) {
-                      return <p key={i} className="font-semibold my-2">{line}</p>;
+                      return <p key={i} className="font-semibold my-2 text-xs sm:text-sm">{line}</p>;
                     }
-                    return line ? <p key={i} className="my-1">{line}</p> : <br key={i} />;
+                    return line ? <p key={i} className="my-1 text-xs sm:text-sm">{line}</p> : <br key={i} />;
                   })}
                 </div>
                 <p className="text-xs text-gray-400 mt-2">
@@ -379,21 +379,21 @@ What aspect of your health would you like to focus on?`;
                 </p>
               </div>
               {message.role === 'user' && (
-                <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-gray-700" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <User className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 dark:text-gray-300" />
                 </div>
               )}
             </div>
           ))}
 
           {loading && (
-            <div className="flex gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-lg flex items-center justify-center flex-shrink-0">
-                <Bot className="w-4 h-4 text-white" />
+            <div className="flex gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-primaryAccent rounded-lg flex items-center justify-center flex-shrink-0">
+                <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-2">
+              <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-3 sm:p-4 flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-primary animate-spin" />
-                <span className="text-gray-400 text-sm">Analyzing your data...</span>
+                <span className="text-gray-400 text-xs sm:text-sm">Analyzing your data...</span>
               </div>
             </div>
           )}
@@ -401,22 +401,22 @@ What aspect of your health would you like to focus on?`;
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
-          <div className="flex gap-3">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 border-t border-gray-200 dark:border-slate-700">
+          <div className="flex gap-2 sm:gap-3">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your health data..."
-              className="flex-1 bg-white border border-gray-200 rounded-lg py-3 px-4 text-primaryDeep placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-3 sm:px-4 text-sm sm:text-base text-primaryDeep dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="bg-gradient-to-r from-primary to-primaryAccent hover:from-primaryDark hover:to-primaryAccent text-white font-semibold py-3 px-6 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-gradient-to-r from-primary to-primaryAccent hover:from-primaryDark hover:to-primaryAccent text-white font-semibold py-3 px-4 sm:px-6 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] min-w-[44px]"
             >
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
           <div className="flex gap-2 mt-3 flex-wrap">
@@ -425,10 +425,11 @@ What aspect of your health would you like to focus on?`;
                 key={question}
                 type="button"
                 onClick={() => setInput(question)}
-                className="px-2 py-1 bg-gray-100 hover:bg-gray-50 text-gray-600 text-xs rounded transition-colors flex items-center gap-1"
+                className="px-2 py-1 bg-gray-100 dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400 text-xs rounded transition-colors flex items-center gap-1 min-h-[44px]"
               >
                 <Sparkles className="w-3 h-3" />
-                {question}
+                <span className="hidden sm:inline">{question}</span>
+                <span className="sm:hidden">{question.split(' ').slice(0, 3).join(' ')}...</span>
               </button>
             ))}
           </div>
@@ -446,12 +447,12 @@ interface QuickStatProps {
 
 function QuickStat({ icon: Icon, label, value }: QuickStatProps) {
   return (
-    <div className="bg-white rounded-lg p-3 border border-gray-200">
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className="w-4 h-4 text-primary" />
+    <div className="bg-white dark:bg-slate-800 rounded-lg p-2 sm:p-3 border border-gray-200 dark:border-slate-700">
+      <div className="flex items-center gap-1 sm:gap-2 mb-1">
+        <Icon className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
         <span className="text-gray-400 text-xs">{label}</span>
       </div>
-      <p className="text-primaryDeep font-semibold">{value}</p>
+      <p className="text-sm sm:text-base text-primaryDeep dark:text-white font-semibold truncate">{value}</p>
     </div>
   );
 }
