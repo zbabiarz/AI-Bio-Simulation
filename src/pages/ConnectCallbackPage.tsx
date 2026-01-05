@@ -62,10 +62,24 @@ export default function ConnectCallbackPage() {
 
       if (dbError) throw dbError;
 
+      await supabase.from('device_connections').upsert({
+        user_id: user?.id,
+        provider: provider,
+        connection_type: 'oauth',
+        sync_status: 'active',
+        last_sync_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,provider' });
+
+      await supabase.from('activity_logs').insert({
+        user_id: user?.id,
+        action: 'connect_device',
+        details: { provider: provider, connection_type: 'oauth' },
+      });
+
       setStatus('success');
 
       setTimeout(() => {
-        navigate('/dashboard', { replace: true });
+        navigate('/devices?tab=connected', { replace: true });
       }, 2000);
     } catch (err) {
       console.error('OAuth callback error:', err);
@@ -176,7 +190,7 @@ export default function ConnectCallbackPage() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">{errorMessage}</p>
             <button
-              onClick={() => navigate('/connect', { replace: true })}
+              onClick={() => navigate('/devices?tab=add', { replace: true })}
               className="px-5 py-2.5 bg-[#1A5BE9] hover:bg-[#1450C9] text-white font-medium rounded-lg transition-colors"
             >
               Try Again

@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { logPHIAccess } from '../lib/audit';
+import { initiateOAuthFlow } from '../lib/oauth';
 import {
   Watch,
   Smartphone,
@@ -190,31 +191,15 @@ export default function DevicesPage() {
     return connections.find((c) => c.provider === providerId);
   }
 
-  async function handleOAuthConnect(provider: DeviceProvider) {
-    setConnecting(provider.id);
-
-    await new Promise((r) => setTimeout(r, 1500));
-
-    const { error } = await supabase.from('device_connections').upsert({
-      user_id: user!.id,
-      provider: provider.id,
-      connection_type: 'oauth',
-      sync_status: 'active',
-      last_sync_at: new Date().toISOString(),
-    }, { onConflict: 'user_id,provider' });
-
-    if (!error) {
-      await supabase.from('activity_logs').insert({
-        user_id: user!.id,
-        action: 'connect_device',
-        details: { provider: provider.id, connection_type: 'oauth' },
-      });
-      fetchConnections();
+  function handleOAuthConnect(provider: DeviceProvider) {
+    try {
+      setConnecting(provider.id);
+      initiateOAuthFlow(provider.id);
+    } catch (error) {
+      console.error('Failed to initiate OAuth flow:', error);
+      setConnecting(null);
+      alert('Failed to connect. Please ensure OAuth credentials are configured.');
     }
-
-    setConnecting(null);
-    setSelectedDevice(null);
-    setActiveTab('connected');
   }
 
   async function handleDisconnect(providerId: string) {

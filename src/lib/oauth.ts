@@ -1,0 +1,72 @@
+interface OAuthConfig {
+  authUrl: string;
+  clientId: string;
+  scope: string;
+  redirectUri: string;
+}
+
+export function getOAuthConfig(provider: string): OAuthConfig | null {
+  const redirectUri = `${window.location.origin}/connect/callback/${provider}`;
+  const clientId = import.meta.env[`VITE_${provider.toUpperCase()}_CLIENT_ID`];
+
+  if (!clientId) {
+    console.warn(`OAuth client ID not configured for ${provider}`);
+    return null;
+  }
+
+  const configs: Record<string, { authUrl: string; scope: string }> = {
+    oura: {
+      authUrl: 'https://cloud.ouraring.com/oauth/authorize',
+      scope: 'email personal daily heartrate workout tag session spo2 rest_mode_period sleep_time vascular_age vo2_max',
+    },
+    whoop: {
+      authUrl: 'https://api.whoop.com/oauth/authorize',
+      scope: 'read:recovery read:cycles read:sleep read:workout read:profile',
+    },
+    apple: {
+      authUrl: 'https://appleid.apple.com/auth/authorize',
+      scope: 'name email',
+    },
+  };
+
+  const config = configs[provider];
+  if (!config) {
+    return null;
+  }
+
+  return {
+    authUrl: config.authUrl,
+    clientId,
+    scope: config.scope,
+    redirectUri,
+  };
+}
+
+export function generateState(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+export function initiateOAuthFlow(provider: string): void {
+  const config = getOAuthConfig(provider);
+  if (!config) {
+    throw new Error(`OAuth not configured for ${provider}`);
+  }
+
+  const state = generateState();
+
+  sessionStorage.setItem('oauth_state', state);
+  sessionStorage.setItem('oauth_provider', provider);
+
+  const params = new URLSearchParams({
+    client_id: config.clientId,
+    redirect_uri: config.redirectUri,
+    response_type: 'code',
+    scope: config.scope,
+    state: state,
+  });
+
+  const authUrl = `${config.authUrl}?${params.toString()}`;
+  window.location.href = authUrl;
+}
