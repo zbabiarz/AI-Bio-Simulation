@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Activity, Mail, Lock, User, ArrowRight, Heart, Brain, Zap } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Heart, Brain, Zap } from 'lucide-react';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,8 +39,12 @@ export default function AuthPage() {
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
         <div className="max-w-lg">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-[#1A5BE9] rounded-xl flex items-center justify-center">
-              <Activity className="w-7 h-7 text-white" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+              <img 
+                src="https://storage.googleapis.com/msgsndr/P05lQuLS7jk68eAZY4L8/media/695c4422f37f20a60051794d.png" 
+                alt="AIMD Logo" 
+                className="w-12 h-12 object-contain"
+              />
             </div>
             <span className="text-3xl font-bold text-[#0D2B6B]">AIMD</span>
           </div>
@@ -90,8 +94,12 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="w-10 h-10 bg-[#1A5BE9] rounded-xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+              <img 
+                src="https://storage.googleapis.com/msgsndr/P05lQuLS7jk68eAZY4L8/media/695c4422f37f20a60051794d.png" 
+                alt="AIMD Logo" 
+                className="w-10 h-10 object-contain"
+              />
             </div>
             <span className="text-2xl font-bold text-[#0D2B6B]">AIMD</span>
           </div>

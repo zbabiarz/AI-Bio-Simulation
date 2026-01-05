@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import {
-  Activity,
   LayoutDashboard,
   Watch,
   Brain,
@@ -63,8 +62,13 @@ export default function Layout({ children }: LayoutProps) {
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-primaryDark">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
-              <Activity className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center">
+              <img 
+                src="https://storage.googleapis.com/msgsndr/P05lQuLS7jk68eAZY4L8/media/695c4422f37f20a60051794d.png" 
+                alt="AIMD Logo" 
+                className="w-9 h-9 object-contain"
+                style={{ filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))' }}
+              />
             </div>
             <span className="text-xl font-bold text-white">AIMD</span>
           </Link>
