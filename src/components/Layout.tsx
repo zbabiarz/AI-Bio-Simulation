@@ -5,9 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import {
   Activity,
   LayoutDashboard,
-  Upload,
   Watch,
-  Link2,
   Brain,
   Target,
   MessageSquare,
@@ -30,8 +28,6 @@ interface LayoutProps {
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Devices', href: '/devices', icon: Watch },
-  { name: 'Connect', href: '/connect', icon: Link2 },
-  { name: 'Upload Data', href: '/upload', icon: Upload },
   { name: 'Simulations', href: '/simulations', icon: Brain },
   { name: 'Goals', href: '/goals', icon: Target },
   { name: 'Bio-Coach', href: '/coach', icon: MessageSquare },

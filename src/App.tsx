@@ -4,9 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/Layout';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
-import UploadPage from './pages/UploadPage';
 import DevicesPage from './pages/DevicesPage';
-import ConnectPage from './pages/ConnectPage';
 import ConnectCallbackPage from './pages/ConnectCallbackPage';
 import SimulationsPage from './pages/SimulationsPage';
 import GoalsPage from './pages/GoalsPage';
@@ -72,14 +70,6 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/upload"
-        element={
-          <ProtectedRoute>
-            <UploadPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/devices"
         element={
           <ProtectedRoute>
@@ -88,12 +78,12 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/upload"
+        element={<Navigate to="/devices?tab=upload" replace />}
+      />
+      <Route
         path="/connect"
-        element={
-          <ProtectedRoute>
-            <ConnectPage />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/devices?tab=add" replace />}
       />
       <Route
         path="/connect/callback/:provider"
