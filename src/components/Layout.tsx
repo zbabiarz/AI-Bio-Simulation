@@ -61,16 +61,12 @@ export default function Layout({ children }: LayoutProps) {
         }`}
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-primaryDark">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center">
-              <img 
-                src="https://storage.googleapis.com/msgsndr/P05lQuLS7jk68eAZY4L8/media/695c4422f37f20a60051794d.png" 
-                alt="AIMD Logo" 
-                className="w-9 h-9 object-contain"
-                style={{ filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))' }}
-              />
-            </div>
-            <span className="text-xl font-bold text-white">AIMD</span>
+          <Link to="/dashboard" className="flex items-center">
+            <img
+              src="https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695c45adca807cc717540ee9.png"
+              alt="AIMD"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}

@@ -38,15 +38,12 @@ export default function AuthPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex">
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
         <div className="max-w-lg">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
-              <img 
-                src="https://storage.googleapis.com/msgsndr/P05lQuLS7jk68eAZY4L8/media/695c4422f37f20a60051794d.png" 
-                alt="AIMD Logo" 
-                className="w-12 h-12 object-contain"
-              />
-            </div>
-            <span className="text-3xl font-bold text-[#0D2B6B]">AIMD</span>
+          <div className="mb-8">
+            <img
+              src="https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695c45adca807cc717540ee9.png"
+              alt="AIMD"
+              className="h-12 w-auto object-contain"
+            />
           </div>
 
           <h1 className="text-4xl font-bold text-[#0D2B6B] mb-6 leading-tight">
@@ -93,15 +90,12 @@ export default function AuthPage() {
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center">
-              <img 
-                src="https://storage.googleapis.com/msgsndr/P05lQuLS7jk68eAZY4L8/media/695c4422f37f20a60051794d.png" 
-                alt="AIMD Logo" 
-                className="w-10 h-10 object-contain"
-              />
-            </div>
-            <span className="text-2xl font-bold text-[#0D2B6B]">AIMD</span>
+          <div className="lg:hidden mb-8 flex justify-center">
+            <img
+              src="https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695c45adca807cc717540ee9.png"
+              alt="AIMD"
+              className="h-10 w-auto object-contain"
+            />
           </div>
 
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 shadow-sm">
