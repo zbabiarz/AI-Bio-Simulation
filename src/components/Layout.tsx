@@ -60,17 +60,17 @@ export default function Layout({ children }: LayoutProps) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-primaryDark">
+        <div className="flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200">
           <Link to="/dashboard" className="flex items-center">
             <img
               src="https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695c45adca807cc717540ee9.png"
               alt="AIMD"
-              className="h-8 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-white/70 hover:text-white"
+            className="lg:hidden text-gray-600 hover:text-gray-900"
           >
             <X className="w-6 h-6" />
           </button>
