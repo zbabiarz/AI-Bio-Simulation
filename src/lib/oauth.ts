@@ -17,7 +17,7 @@ export function getOAuthConfig(provider: string): OAuthConfig | null {
   const configs: Record<string, { authUrl: string; scope: string }> = {
     oura: {
       authUrl: 'https://cloud.ouraring.com/oauth/authorize',
-      scope: 'email personal daily heartrate workout tag session spo2 rest_mode_period sleep_time vascular_age vo2_max',
+      scope: 'email personal daily heartrate tag workout session spo2 ring_configuration stress heart_health',
     },
     whoop: {
       authUrl: 'https://api.whoop.com/oauth/authorize',
