@@ -45,94 +45,37 @@ interface DeviceProvider {
 
 const deviceProviders: DeviceProvider[] = [
   {
-    id: 'apple',
-    name: 'Apple Watch / Health',
-    logo: '',
-    color: 'bg-gray-100',
-    oauthSupported: true,
-    fileTypes: ['.xml', '.json'],
-    description: 'Sync heart rate, activity, sleep, and workout data from Apple Health.',
-    exportInstructions: 'Health app > Profile icon > Export All Health Data',
-  },
-  {
     id: 'oura',
     name: 'Oura Ring',
-    logo: '',
-    color: 'bg-white',
+    logo: 'O',
+    color: 'bg-slate-800',
     oauthSupported: true,
     fileTypes: ['.csv', '.json'],
     description: 'Sync sleep, readiness, activity, and HRV data from your Oura Ring.',
     exportInstructions: 'Oura app > Settings > Account > Data Export',
-  },
-  {
-    id: 'garmin',
-    name: 'Garmin',
-    logo: '',
-    color: 'bg-blue-600',
-    oauthSupported: true,
-    fileTypes: ['.fit', '.tcx', '.gpx', '.csv'],
-    description: 'Sync activities, sleep, stress, and body battery from Garmin Connect.',
-    exportInstructions: 'Garmin Connect > Settings > Export Data',
+    oauthUrl: 'https://cloud.ouraring.com/oauth/authorize',
   },
   {
     id: 'whoop',
     name: 'WHOOP',
-    logo: '',
-    color: 'bg-primaryAccent',
+    logo: 'W',
+    color: 'bg-amber-500',
     oauthSupported: true,
     fileTypes: ['.csv', '.json'],
     description: 'Sync strain, recovery, sleep, and HRV data from your WHOOP band.',
     exportInstructions: 'WHOOP app > More > Settings > Export Data',
+    oauthUrl: 'https://api.whoop.com/oauth/authorize',
   },
   {
-    id: 'fitbit',
-    name: 'Fitbit',
-    logo: '',
-    color: 'bg-primaryAccent',
+    id: 'apple',
+    name: 'Apple Watch',
+    logo: 'A',
+    color: 'bg-gray-900',
     oauthSupported: true,
-    fileTypes: ['.csv', '.xml'],
-    description: 'Sync steps, heart rate, sleep, and activity data from Fitbit.',
-    exportInstructions: 'Fitbit dashboard > Settings > Data Export',
-  },
-  {
-    id: 'samsung',
-    name: 'Samsung Health',
-    logo: '',
-    color: 'bg-blue-500',
-    oauthSupported: true,
-    fileTypes: ['.xml', '.csv'],
-    description: 'Sync health data from Samsung Galaxy Watch and Samsung Health app.',
-    exportInstructions: 'Samsung Health > Settings > Download personal data',
-  },
-  {
-    id: 'polar',
-    name: 'Polar',
-    logo: '',
-    color: 'bg-red-500',
-    oauthSupported: true,
-    fileTypes: ['.csv', '.tcx', '.fit'],
-    description: 'Sync training, recovery, and sleep data from Polar devices.',
-    exportInstructions: 'Polar Flow > Settings > Export Data',
-  },
-  {
-    id: 'amazfit',
-    name: 'Amazfit / Zepp',
-    logo: '',
-    color: 'bg-orange-500',
-    oauthSupported: true,
-    fileTypes: ['.csv', '.json'],
-    description: 'Sync health and fitness data from Amazfit watches via Zepp app.',
-    exportInstructions: 'Zepp app > Profile > Settings > Export Data',
-  },
-  {
-    id: 'xiaomi',
-    name: 'Xiaomi Mi Band',
-    logo: '',
-    color: 'bg-orange-600',
-    oauthSupported: true,
-    fileTypes: ['.csv', '.xml'],
-    description: 'Sync steps, sleep, and heart rate from Mi Band via Mi Fit app.',
-    exportInstructions: 'Mi Fit app > Profile > Settings > Export Data',
+    fileTypes: ['.xml', '.json'],
+    description: 'Sync heart rate, activity, sleep, and workout data from Apple Health.',
+    exportInstructions: 'Health app > Profile icon > Export All Health Data',
+    oauthUrl: 'https://appleid.apple.com/auth/authorize',
   },
 ];
 
@@ -289,7 +232,7 @@ export default function DevicesPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 ${provider.color} rounded-xl flex items-center justify-center`}>
-                        <Watch className="w-6 h-6 text-white" />
+                        <span className="text-xl font-bold text-white">{provider.logo}</span>
                       </div>
                       <div>
                         <h3 className="text-primaryDeep dark:text-white font-semibold">{provider.name}</h3>
@@ -380,7 +323,7 @@ export default function DevicesPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div className={`w-12 h-12 ${provider.color} rounded-xl flex items-center justify-center`}>
-                  <Watch className="w-6 h-6 text-primaryDeep" />
+                  <span className="text-xl font-bold text-white">{provider.logo}</span>
                 </div>
                 <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
               </div>
@@ -451,7 +394,7 @@ function DeviceConnectionModal({
       <div className="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-lg border border-gray-200 dark:border-slate-700">
         <div className="flex items-center gap-4 mb-6">
           <div className={`w-14 h-14 ${provider.color} rounded-xl flex items-center justify-center`}>
-            <Watch className="w-7 h-7 text-primaryDeep" />
+            <span className="text-2xl font-bold text-white">{provider.logo}</span>
           </div>
           <div>
             <h2 className="text-xl font-bold text-primaryDeep dark:text-white">Connect {provider.name}</h2>

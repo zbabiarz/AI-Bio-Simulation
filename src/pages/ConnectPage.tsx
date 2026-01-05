@@ -15,31 +15,24 @@ interface Provider {
 const providers: Provider[] = [
   {
     id: 'oura',
-    name: 'Oura',
-    color: 'bg-primary hover:bg-primaryDeep',
-    icon: '⭕',
+    name: 'Oura Ring',
+    color: 'bg-slate-800 hover:bg-slate-700',
+    icon: 'O',
     authUrl: 'https://cloud.ouraring.com/oauth/authorize',
   },
   {
-    id: 'fitbit',
-    name: 'Fitbit',
-    color: 'bg-primary hover:bg-primaryDeep',
-    icon: '💚',
-    authUrl: 'https://www.fitbit.com/oauth2/authorize',
-  },
-  {
     id: 'whoop',
-    name: 'Whoop',
-    color: 'bg-amber-600 hover:bg-amber-500',
-    icon: '🟡',
+    name: 'WHOOP',
+    color: 'bg-amber-500 hover:bg-amber-600',
+    icon: 'W',
     authUrl: 'https://api.whoop.com/oauth/authorize',
   },
   {
-    id: 'garmin',
-    name: 'Garmin',
-    color: 'bg-primary hover:bg-primaryDeep',
-    icon: '🔵',
-    authUrl: 'https://connect.garmin.com/oauthConfirm',
+    id: 'apple',
+    name: 'Apple Watch',
+    color: 'bg-gray-900 hover:bg-gray-800',
+    icon: 'A',
+    authUrl: 'https://appleid.apple.com/auth/authorize',
   },
 ];
 
@@ -106,9 +99,8 @@ export default function ConnectPage() {
   function getProviderScope(providerId: string): string {
     const scopes: Record<string, string> = {
       oura: 'personal daily heartrate workout tag session spo2',
-      fitbit: 'activity heartrate sleep profile',
       whoop: 'read:profile read:cycles read:recovery read:sleep read:workout',
-      garmin: 'activity_read sleep_read',
+      apple: 'health.heartrate health.sleep health.activity health.workout',
     };
     return scopes[providerId] || '';
   }
@@ -156,7 +148,9 @@ export default function ConnectPage() {
                 className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{provider.icon}</span>
+                  <div className={`w-10 h-10 ${provider.color.split(' ')[0]} rounded-lg flex items-center justify-center`}>
+                    <span className="text-white font-bold">{provider.icon}</span>
+                  </div>
                   <div>
                     <p className="font-medium text-primaryDeep dark:text-white">{provider.name}</p>
                     {connected && (

@@ -48,26 +48,13 @@ interface DeviceInfo {
 }
 
 const deviceInfo: Record<string, DeviceInfo> = {
-  apple: {
-    id: 'apple',
-    name: 'Apple Watch / Health',
-    color: 'bg-gray-100',
-    fileTypes: ['.xml', '.json', '.csv'],
-    exportInstructions: [
-      'Open the Health app on your iPhone',
-      'Tap your profile picture in the top right',
-      'Scroll down and tap "Export All Health Data"',
-      'Wait for the export to complete and share the file',
-    ],
-    sampleFields: ['HRV', 'Heart Rate', 'Steps', 'Sleep Analysis', 'Active Energy'],
-  },
   oura: {
     id: 'oura',
     name: 'Oura Ring',
-    color: 'bg-white',
+    color: 'bg-slate-800',
     fileTypes: ['.csv', '.json'],
     exportInstructions: [
-      'Open the Oura app',
+      'Open the Oura app on your phone',
       'Go to the menu (three lines)',
       'Tap Settings > Account',
       'Select "Download My Data"',
@@ -75,23 +62,10 @@ const deviceInfo: Record<string, DeviceInfo> = {
     ],
     sampleFields: ['HRV', 'Sleep Score', 'Readiness', 'Deep Sleep', 'REM Sleep'],
   },
-  garmin: {
-    id: 'garmin',
-    name: 'Garmin',
-    color: 'bg-blue-600',
-    fileTypes: ['.fit', '.tcx', '.gpx', '.csv'],
-    exportInstructions: [
-      'Log in to Garmin Connect (web)',
-      'Go to Activities or Health Stats',
-      'Click the gear icon > Export',
-      'Select Original format or CSV',
-    ],
-    sampleFields: ['Body Battery', 'Stress', 'Steps', 'Sleep', 'Heart Rate'],
-  },
   whoop: {
     id: 'whoop',
     name: 'WHOOP',
-    color: 'bg-primary',
+    color: 'bg-amber-500',
     fileTypes: ['.csv', '.json'],
     exportInstructions: [
       'Open the WHOOP app',
@@ -101,70 +75,18 @@ const deviceInfo: Record<string, DeviceInfo> = {
     ],
     sampleFields: ['Strain', 'Recovery', 'HRV', 'RHR', 'Sleep Performance'],
   },
-  fitbit: {
-    id: 'fitbit',
-    name: 'Fitbit',
-    color: 'bg-primary',
-    fileTypes: ['.csv', '.xml', '.json'],
+  apple: {
+    id: 'apple',
+    name: 'Apple Watch',
+    color: 'bg-gray-900',
+    fileTypes: ['.xml', '.json', '.csv'],
     exportInstructions: [
-      'Log in to fitbit.com',
-      'Go to Settings > Data Export',
-      'Click "Request Data"',
-      'Download when ready (may take time)',
+      'Open the Health app on your iPhone',
+      'Tap your profile picture in the top right',
+      'Scroll down and tap "Export All Health Data"',
+      'Wait for the export to complete and share the file',
     ],
-    sampleFields: ['Steps', 'Heart Rate', 'Sleep Stages', 'Active Minutes', 'Calories'],
-  },
-  samsung: {
-    id: 'samsung',
-    name: 'Samsung Health',
-    color: 'bg-blue-500',
-    fileTypes: ['.xml', '.csv'],
-    exportInstructions: [
-      'Open Samsung Health app',
-      'Tap Menu > Settings',
-      'Select "Download personal data"',
-      'Wait for download to complete',
-    ],
-    sampleFields: ['Steps', 'Heart Rate', 'Sleep', 'Stress', 'Blood Oxygen'],
-  },
-  polar: {
-    id: 'polar',
-    name: 'Polar',
-    color: 'bg-red-500',
-    fileTypes: ['.csv', '.tcx', '.fit'],
-    exportInstructions: [
-      'Log in to Polar Flow (web)',
-      'Go to your training diary',
-      'Select sessions to export',
-      'Choose export format and download',
-    ],
-    sampleFields: ['Training Load', 'Recovery', 'Sleep', 'Heart Rate', 'Calories'],
-  },
-  amazfit: {
-    id: 'amazfit',
-    name: 'Amazfit / Zepp',
-    color: 'bg-orange-500',
-    fileTypes: ['.csv', '.json'],
-    exportInstructions: [
-      'Open the Zepp app',
-      'Go to Profile > Settings',
-      'Tap "Export Data"',
-      'Select data types and export',
-    ],
-    sampleFields: ['PAI', 'Sleep', 'Steps', 'Heart Rate', 'SpO2'],
-  },
-  xiaomi: {
-    id: 'xiaomi',
-    name: 'Xiaomi Mi Band',
-    color: 'bg-orange-600',
-    fileTypes: ['.csv', '.xml'],
-    exportInstructions: [
-      'Open Mi Fitness app',
-      'Go to Profile > Settings',
-      'Select "Export health data"',
-      'Choose format and download',
-    ],
-    sampleFields: ['Steps', 'Sleep', 'Heart Rate', 'Stress', 'SpO2'],
+    sampleFields: ['HRV', 'Heart Rate', 'Steps', 'Sleep Analysis', 'Active Energy'],
   },
 };
 
@@ -536,14 +458,8 @@ export default function UploadPage() {
   function detectSource(filename: string, content: string): string {
     const lower = (filename + content).toLowerCase();
     if (lower.includes('oura')) return 'oura';
-    if (lower.includes('apple') || lower.includes('healthkit')) return 'apple';
-    if (lower.includes('garmin')) return 'garmin';
     if (lower.includes('whoop')) return 'whoop';
-    if (lower.includes('fitbit')) return 'fitbit';
-    if (lower.includes('samsung')) return 'samsung';
-    if (lower.includes('polar')) return 'polar';
-    if (lower.includes('zepp') || lower.includes('amazfit')) return 'amazfit';
-    if (lower.includes('xiaomi') || lower.includes('mi fit') || lower.includes('mifit')) return 'xiaomi';
+    if (lower.includes('apple') || lower.includes('healthkit') || lower.includes('health')) return 'apple';
     return 'manual';
   }
 
@@ -634,7 +550,7 @@ export default function UploadPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
+      <div className="grid grid-cols-3 gap-3">
         {allDevices.map((device) => (
           <button
             key={device.id}
@@ -642,16 +558,17 @@ export default function UploadPage() {
               setSelectedSource(device.id);
               setShowInstructions(device.id);
             }}
-            className={`p-3 rounded-xl border text-center transition-all ${
+            className={`p-4 rounded-xl border text-center transition-all ${
               selectedSource === device.id
                 ? 'bg-primary/10 border-primary'
-                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-300'
+                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-primary/50'
             }`}
           >
-            <div className={`w-8 h-8 ${device.color} rounded-lg flex items-center justify-center mx-auto mb-2`}>
-              <Watch className="w-4 h-4 text-white" />
+            <div className={`w-12 h-12 ${device.color} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+              <span className="text-lg font-bold text-white">{device.name.charAt(0)}</span>
             </div>
-            <p className="text-gray-900 dark:text-white text-xs font-medium truncate">{device.name.split(' ')[0]}</p>
+            <p className="text-gray-900 dark:text-white text-sm font-medium">{device.name}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">{device.fileTypes.join(', ')}</p>
           </button>
         ))}
       </div>
