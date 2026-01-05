@@ -47,7 +47,7 @@ interface DeviceInfo {
   sampleFields: string[];
 }
 
-const deviceInfo: Record<string, DeviceInfo> = {
+const primaryDevices: Record<string, DeviceInfo> = {
   oura: {
     id: 'oura',
     name: 'Oura Ring',
@@ -90,7 +90,26 @@ const deviceInfo: Record<string, DeviceInfo> = {
   },
 };
 
-const allDevices = Object.values(deviceInfo);
+const otherDevice: DeviceInfo = {
+  id: 'other',
+  name: 'Other Device',
+  color: 'bg-gray-500',
+  fileTypes: ['.csv', '.json', '.xml'],
+  exportInstructions: [
+    'Export your health data from your device app',
+    'Most apps have an export option in Settings',
+    'Look for "Export Data" or "Download My Data"',
+    'Save the file in CSV or JSON format if possible',
+  ],
+  sampleFields: ['HRV', 'Heart Rate', 'Steps', 'Sleep', 'Activity'],
+};
+
+const deviceInfo: Record<string, DeviceInfo> = {
+  ...primaryDevices,
+  other: otherDevice,
+};
+
+const primaryDeviceList = Object.values(primaryDevices);
 
 export default function UploadPage() {
   const { user } = useAuth();
@@ -550,27 +569,55 @@ export default function UploadPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        {allDevices.map((device) => (
-          <button
-            key={device.id}
-            onClick={() => {
-              setSelectedSource(device.id);
-              setShowInstructions(device.id);
-            }}
-            className={`p-4 rounded-xl border text-center transition-all ${
-              selectedSource === device.id
-                ? 'bg-primary/10 border-primary'
-                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-primary/50'
-            }`}
-          >
-            <div className={`w-12 h-12 ${device.color} rounded-xl flex items-center justify-center mx-auto mb-3`}>
-              <span className="text-lg font-bold text-white">{device.name.charAt(0)}</span>
-            </div>
-            <p className="text-gray-900 dark:text-white text-sm font-medium">{device.name}</p>
-            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">{device.fileTypes.join(', ')}</p>
-          </button>
-        ))}
+      <div className="space-y-4">
+        <div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Primary devices with OAuth support:</p>
+          <div className="grid grid-cols-3 gap-3">
+            {primaryDeviceList.map((device) => (
+              <button
+                key={device.id}
+                onClick={() => {
+                  setSelectedSource(device.id);
+                  setShowInstructions(device.id);
+                }}
+                className={`p-4 rounded-xl border text-center transition-all ${
+                  selectedSource === device.id
+                    ? 'bg-primary/10 border-primary'
+                    : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-primary/50'
+                }`}
+              >
+                <div className={`w-12 h-12 ${device.color} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+                  <span className="text-lg font-bold text-white">{device.name.charAt(0)}</span>
+                </div>
+                <p className="text-gray-900 dark:text-white text-sm font-medium">{device.name}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">{device.fileTypes.join(', ')}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            setSelectedSource('other');
+            setShowInstructions('other');
+          }}
+          className={`w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4 ${
+            selectedSource === 'other'
+              ? 'bg-primary/10 border-primary'
+              : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-primary/50'
+          }`}
+        >
+          <div className="w-12 h-12 bg-gray-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Watch className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="text-gray-900 dark:text-white text-sm font-medium">Other Device</p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
+              Garmin, Fitbit, Samsung, Polar, and more - upload via CSV/JSON
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-400" />
+        </button>
       </div>
 
       {showInstructions && deviceInfo[showInstructions] && (
@@ -619,12 +666,12 @@ export default function UploadPage() {
             className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg py-2.5 px-4 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="auto">Auto-detect from file</option>
-            <optgroup label="Wearables">
-              {allDevices.map((device) => (
+            <optgroup label="Primary Devices">
+              {primaryDeviceList.map((device) => (
                 <option key={device.id} value={device.id}>{device.name}</option>
               ))}
             </optgroup>
-            <option value="manual">Other / Manual Entry</option>
+            <option value="other">Other Device (Garmin, Fitbit, etc.)</option>
           </select>
         </div>
 
