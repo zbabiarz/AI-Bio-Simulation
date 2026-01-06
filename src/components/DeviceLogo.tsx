@@ -33,7 +33,7 @@ export default function DeviceLogo({ deviceId, deviceName, size = 'md', classNam
     <img
       src={logoPath}
       alt={`${deviceName} logo`}
-      className={`${sizeClasses[size]} object-contain ${className}`}
+      className={`${sizeClasses[size]} object-contain text-gray-700 dark:invert ${className}`}
     />
   );
 }
