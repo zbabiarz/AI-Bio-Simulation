@@ -96,18 +96,6 @@ export default function ConnectCallbackPage() {
     refresh_token?: string;
     expires_at?: string;
   }> {
-    const tokenEndpoints: Record<string, string> = {
-      oura: 'https://api.ouraring.com/oauth/token',
-      fitbit: 'https://api.fitbit.com/oauth2/token',
-      whoop: 'https://api.whoop.com/oauth/token',
-      garmin: 'https://connectapi.garmin.com/oauth-service/oauth/access_token',
-    };
-
-    const endpoint = tokenEndpoints[providerName];
-    if (!endpoint) {
-      throw new Error(`Unknown provider: ${providerName}`);
-    }
-
     const clientId = import.meta.env[`VITE_${providerName.toUpperCase()}_CLIENT_ID`];
     const clientSecret = import.meta.env[`VITE_${providerName.toUpperCase()}_CLIENT_SECRET`];
     const redirectUri = `${window.location.origin}/connect/callback/${providerName}`;
@@ -121,22 +109,26 @@ export default function ConnectCallbackPage() {
       };
     }
 
-    const response = await fetch(endpoint, {
+    const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/oauth-exchange`;
+
+    const response = await fetch(edgeFunctionUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
       },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: redirectUri,
+      body: JSON.stringify({
+        provider: providerName,
+        code,
+        redirectUri,
+        clientId,
+        clientSecret,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error_description || 'Failed to exchange code for tokens');
+      throw new Error(errorData.error || 'Failed to exchange code for tokens');
     }
 
     const data = await response.json();
@@ -144,9 +136,7 @@ export default function ConnectCallbackPage() {
     return {
       access_token: data.access_token,
       refresh_token: data.refresh_token,
-      expires_at: data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000).toISOString()
-        : undefined,
+      expires_at: data.expires_at,
     };
   }
 
