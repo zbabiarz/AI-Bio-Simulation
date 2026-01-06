@@ -38,21 +38,24 @@ function projectTrajectory(
 }
 
 export function calculateDementiaRisk(input: RiskProjectionInput): RiskTrajectory {
-  const { deepSleepClassification, avgDeepSleep, intake } = input;
+  const { deepSleepClassification, avgDeepSleep, intake, avgHrv } = input;
 
   let baseRisk = 8;
   const drivers: string[] = [];
 
+  const deepSleepTarget = intake.age < 30 ? 90 : intake.age < 45 ? 75 : intake.age < 60 ? 60 : 50;
+  const deepSleepDeficit = Math.max(0, deepSleepTarget - avgDeepSleep);
+  const deepSleepRiskContribution = (deepSleepDeficit / deepSleepTarget) * 30;
+  baseRisk += deepSleepRiskContribution;
+
   if (deepSleepClassification === 'inadequate') {
-    baseRisk += 25;
     drivers.push('Severely inadequate deep sleep');
   } else if (deepSleepClassification === 'borderline') {
-    baseRisk += 12;
     drivers.push('Suboptimal deep sleep duration');
   }
 
   if (avgDeepSleep < 45) {
-    baseRisk += 15;
+    baseRisk += 8;
     drivers.push('Critical deep sleep deficit');
   }
 
@@ -78,8 +81,9 @@ export function calculateDementiaRisk(input: RiskProjectionInput): RiskTrajector
 
   baseRisk = Math.min(85, baseRisk);
 
-  const annualProgression = deepSleepClassification === 'inadequate' ? 4.5 :
-                            deepSleepClassification === 'borderline' ? 2.8 : 1.2;
+  const sleepFactor = Math.max(0.5, avgDeepSleep / deepSleepTarget);
+  const baseProgression = 3.5;
+  const annualProgression = baseProgression * (1 / sleepFactor);
 
   const trajectory = projectTrajectory(baseRisk, annualProgression, intake);
 
@@ -99,16 +103,19 @@ export function calculateCardiovascularRisk(input: RiskProjectionInput): RiskTra
   let baseRisk = 6;
   const drivers: string[] = [];
 
+  const hrvTarget = intake.age < 30 ? 60 : intake.age < 40 ? 48 : intake.age < 50 ? 38 : intake.age < 60 ? 30 : 24;
+  const hrvDeficit = Math.max(0, hrvTarget - avgHrv);
+  const hrvRiskContribution = (hrvDeficit / hrvTarget) * 28;
+  baseRisk += hrvRiskContribution;
+
   if (hrvClassification === 'low') {
-    baseRisk += 22;
     drivers.push('Low HRV - reduced cardiac autonomic control');
   } else if (hrvClassification === 'moderate') {
-    baseRisk += 10;
     drivers.push('Suboptimal HRV levels');
   }
 
   if (avgHrv < 25) {
-    baseRisk += 18;
+    baseRisk += 10;
     drivers.push('Critically depressed HRV');
   }
 
@@ -140,8 +147,9 @@ export function calculateCardiovascularRisk(input: RiskProjectionInput): RiskTra
 
   baseRisk = Math.min(90, baseRisk);
 
-  const annualProgression = hrvClassification === 'low' ? 5.2 :
-                            hrvClassification === 'moderate' ? 3.0 : 1.5;
+  const hrvFactor = Math.max(0.4, avgHrv / hrvTarget);
+  const baseProgression = 4.0;
+  const annualProgression = baseProgression * (1 / hrvFactor);
 
   const trajectory = projectTrajectory(baseRisk, annualProgression, intake);
 
@@ -161,26 +169,33 @@ export function calculateHeartFailureRisk(input: RiskProjectionInput): RiskTraje
   let baseRisk = intake.hasHeartFailure ? 45 : 4;
   const drivers: string[] = [];
 
+  const hrvTarget = intake.age < 30 ? 60 : intake.age < 40 ? 48 : intake.age < 50 ? 38 : intake.age < 60 ? 30 : 24;
+
   if (intake.hasHeartFailure) {
     drivers.push('Existing heart failure diagnosis');
 
+    const hrvDeficit = Math.max(0, hrvTarget - avgHrv);
+    const hrvRiskContribution = (hrvDeficit / hrvTarget) * 22;
+    baseRisk += hrvRiskContribution;
+
     if (hrvClassification === 'low') {
-      baseRisk += 20;
       drivers.push('Low HRV indicating poor prognosis');
     } else if (hrvClassification === 'moderate') {
-      baseRisk += 8;
+      drivers.push('Suboptimal HRV levels');
     }
 
     if (avgHrv < 20) {
-      baseRisk += 15;
+      baseRisk += 12;
       drivers.push('Severely depressed autonomic function');
     }
   } else {
+    const hrvDeficit = Math.max(0, hrvTarget - avgHrv);
+    const hrvRiskContribution = (hrvDeficit / hrvTarget) * 14;
+    baseRisk += hrvRiskContribution;
+
     if (hrvClassification === 'low') {
-      baseRisk += 12;
       drivers.push('Low HRV - precursor to cardiac dysfunction');
     } else if (hrvClassification === 'moderate') {
-      baseRisk += 5;
       drivers.push('Suboptimal cardiac autonomic reserve');
     }
   }
@@ -204,9 +219,9 @@ export function calculateHeartFailureRisk(input: RiskProjectionInput): RiskTraje
 
   baseRisk = Math.min(92, baseRisk);
 
+  const hrvFactor = Math.max(0.4, avgHrv / hrvTarget);
   const baseProgression = intake.hasHeartFailure ? 6.5 : 2.8;
-  const annualProgression = hrvClassification === 'low' ? baseProgression * 1.4 :
-                            hrvClassification === 'moderate' ? baseProgression : baseProgression * 0.6;
+  const annualProgression = baseProgression * (1 / hrvFactor);
 
   const trajectory = projectTrajectory(baseRisk, annualProgression, intake);
 
@@ -222,26 +237,33 @@ export function calculateHeartFailureRisk(input: RiskProjectionInput): RiskTraje
 }
 
 export function calculateCognitiveDeclineRisk(input: RiskProjectionInput): RiskTrajectory {
-  const { deepSleepClassification, avgDeepSleep, hrvClassification, intake } = input;
+  const { deepSleepClassification, avgDeepSleep, hrvClassification, intake, avgHrv } = input;
 
   let baseRisk = 5;
   const drivers: string[] = [];
 
+  const deepSleepTarget = intake.age < 30 ? 90 : intake.age < 45 ? 75 : intake.age < 60 ? 60 : 50;
+  const deepSleepDeficit = Math.max(0, deepSleepTarget - avgDeepSleep);
+  const deepSleepRiskContribution = (deepSleepDeficit / deepSleepTarget) * 25;
+  baseRisk += deepSleepRiskContribution;
+
   if (deepSleepClassification === 'inadequate') {
-    baseRisk += 20;
     drivers.push('Inadequate deep sleep - impaired glymphatic clearance');
   } else if (deepSleepClassification === 'borderline') {
-    baseRisk += 10;
     drivers.push('Borderline deep sleep affecting brain restoration');
   }
 
   if (avgDeepSleep < 40) {
-    baseRisk += 12;
+    baseRisk += 8;
     drivers.push('Severely reduced slow-wave sleep');
   }
 
+  const hrvTarget = intake.age < 30 ? 60 : intake.age < 40 ? 48 : intake.age < 50 ? 38 : intake.age < 60 ? 30 : 24;
+  const hrvDeficit = Math.max(0, hrvTarget - avgHrv);
+  const hrvRiskContribution = (hrvDeficit / hrvTarget) * 10;
+  baseRisk += hrvRiskContribution;
+
   if (hrvClassification === 'low') {
-    baseRisk += 8;
     drivers.push('Autonomic dysfunction affecting cerebral perfusion');
   }
 
@@ -262,8 +284,9 @@ export function calculateCognitiveDeclineRisk(input: RiskProjectionInput): RiskT
 
   baseRisk = Math.min(88, baseRisk);
 
-  const annualProgression = deepSleepClassification === 'inadequate' ? 4.0 :
-                            deepSleepClassification === 'borderline' ? 2.5 : 1.0;
+  const sleepFactor = Math.max(0.5, avgDeepSleep / deepSleepTarget);
+  const baseProgression = 3.0;
+  const annualProgression = baseProgression * (1 / sleepFactor);
 
   const trajectory = projectTrajectory(baseRisk, annualProgression, intake);
 
@@ -278,7 +301,7 @@ export function calculateCognitiveDeclineRisk(input: RiskProjectionInput): RiskT
 }
 
 export function calculateMetabolicRisk(input: RiskProjectionInput): RiskTrajectory {
-  const { hrvClassification, deepSleepClassification, intake } = input;
+  const { hrvClassification, deepSleepClassification, intake, avgHrv, avgDeepSleep } = input;
 
   let baseRisk = intake.hasDiabetes ? 40 : 6;
   const drivers: string[] = [];
@@ -287,19 +310,25 @@ export function calculateMetabolicRisk(input: RiskProjectionInput): RiskTrajecto
     drivers.push('Existing metabolic dysfunction');
   }
 
+  const hrvTarget = intake.age < 30 ? 60 : intake.age < 40 ? 48 : intake.age < 50 ? 38 : intake.age < 60 ? 30 : 24;
+  const hrvDeficit = Math.max(0, hrvTarget - avgHrv);
+  const hrvRiskContribution = (hrvDeficit / hrvTarget) * 18;
+  baseRisk += hrvRiskContribution;
+
   if (hrvClassification === 'low') {
-    baseRisk += 15;
     drivers.push('Autonomic imbalance affecting glucose regulation');
   } else if (hrvClassification === 'moderate') {
-    baseRisk += 7;
     drivers.push('Suboptimal autonomic metabolic control');
   }
 
+  const deepSleepTarget = intake.age < 30 ? 90 : intake.age < 45 ? 75 : intake.age < 60 ? 60 : 50;
+  const deepSleepDeficit = Math.max(0, deepSleepTarget - avgDeepSleep);
+  const deepSleepRiskContribution = (deepSleepDeficit / deepSleepTarget) * 20;
+  baseRisk += deepSleepRiskContribution;
+
   if (deepSleepClassification === 'inadequate') {
-    baseRisk += 18;
     drivers.push('Poor sleep disrupting metabolic hormones');
   } else if (deepSleepClassification === 'borderline') {
-    baseRisk += 9;
     drivers.push('Suboptimal sleep affecting insulin sensitivity');
   }
 
@@ -313,10 +342,11 @@ export function calculateMetabolicRisk(input: RiskProjectionInput): RiskTrajecto
 
   baseRisk = Math.min(85, baseRisk);
 
+  const sleepFactor = Math.max(0.5, avgDeepSleep / deepSleepTarget);
+  const hrvFactor = Math.max(0.4, avgHrv / hrvTarget);
+  const combinedFactor = (sleepFactor + hrvFactor) / 2;
   const baseProgression = intake.hasDiabetes ? 4.5 : 2.5;
-  const sleepMultiplier = deepSleepClassification === 'inadequate' ? 1.5 :
-                          deepSleepClassification === 'borderline' ? 1.2 : 1.0;
-  const annualProgression = baseProgression * sleepMultiplier;
+  const annualProgression = baseProgression * (1 / combinedFactor);
 
   const trajectory = projectTrajectory(baseRisk, annualProgression, intake);
 
