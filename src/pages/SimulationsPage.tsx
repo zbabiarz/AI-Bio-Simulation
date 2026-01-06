@@ -6,6 +6,7 @@ import { generatePhysiologicalClassification } from '../lib/classification';
 import { generateAllRiskProjections, getWorstTrajectories } from '../lib/riskProjection';
 import { generateClinicalNarrative, generateRecommendations } from '../lib/narrativeGenerator';
 import RiskTrajectoryChart from '../components/RiskTrajectoryChart';
+import ComparativeTrajectoryChart from '../components/ComparativeTrajectoryChart';
 import ClassificationBadge from '../components/ClassificationBadge';
 import type { HealthMetric, RiskTrajectory, HealthIntakeData, PhysiologicalClassification } from '../types';
 import {
@@ -18,6 +19,11 @@ import {
   RefreshCw,
   FileText,
   ExternalLink,
+  Sliders,
+  TrendingUp,
+  Clock,
+  History,
+  ChevronDown,
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 
@@ -45,12 +51,35 @@ export default function SimulationsPage() {
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [avgHrv, setAvgHrv] = useState<number>(0);
   const [avgDeepSleep, setAvgDeepSleep] = useState<number>(0);
+  const [adjustedHrv, setAdjustedHrv] = useState<number>(0);
+  const [adjustedDeepSleep, setAdjustedDeepSleep] = useState<number>(0);
+  const [optimizedProjections, setOptimizedProjections] = useState<SimulationResult['projections'] | null>(null);
+  const [showWhatIf, setShowWhatIf] = useState(false);
+  const [selectedTimeHorizon, setSelectedTimeHorizon] = useState<'sixMonths' | 'oneYear' | 'fiveYears' | 'tenYears'>('fiveYears');
+  const [pastSessions, setPastSessions] = useState<any[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
       checkReadiness();
+      fetchPastSessions();
     }
   }, [user, profile]);
+
+  async function fetchPastSessions() {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('biosimulation_sessions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (data) {
+      setPastSessions(data);
+    }
+  }
 
   async function checkReadiness() {
     if (!profile?.intake_completed) {
@@ -162,8 +191,43 @@ export default function SimulationsPage() {
       dataDays: metrics.length,
     });
 
+    setAdjustedHrv(avgHrv);
+    setAdjustedDeepSleep(avgDeepSleep);
+
+    await fetchPastSessions();
+
     setState('complete');
   }
+
+  function calculateOptimizedProjections() {
+    if (!profile) return;
+
+    const intake: HealthIntakeData = {
+      age: profile.age!,
+      sex: profile.sex as 'male' | 'female' | 'other',
+      hasHeartFailure: profile.has_heart_failure,
+      hasDiabetes: profile.has_diabetes,
+      hasChronicKidneyDisease: profile.has_chronic_kidney_disease,
+    };
+
+    const optimizedClassification = generatePhysiologicalClassification(adjustedHrv, adjustedDeepSleep, intake);
+
+    const projections = generateAllRiskProjections({
+      hrvClassification: optimizedClassification.hrv.classification,
+      deepSleepClassification: optimizedClassification.deepSleep.classification,
+      avgHrv: adjustedHrv,
+      avgDeepSleep: adjustedDeepSleep,
+      intake,
+    });
+
+    setOptimizedProjections(projections);
+  }
+
+  useEffect(() => {
+    if (showWhatIf && result) {
+      calculateOptimizedProjections();
+    }
+  }, [adjustedHrv, adjustedDeepSleep, showWhatIf]);
 
   if (state === 'checking') {
     return (
@@ -317,6 +381,124 @@ export default function SimulationsPage() {
           </p>
         </div>
 
+        {pastSessions.length > 1 && (
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700">
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors rounded-xl"
+            >
+              <div className="flex items-center gap-3">
+                <History className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                <div className="text-left">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    Session History
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {pastSessions.length} previous simulation{pastSessions.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              </div>
+              <ChevronDown className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${showHistory ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showHistory && (
+              <div className="border-t border-gray-200 dark:border-slate-700 p-4">
+                <div className="space-y-3">
+                  {pastSessions.map((session, index) => {
+                    const sessionDate = new Date(session.created_at);
+                    const isCurrentSession = index === 0;
+
+                    return (
+                      <div
+                        key={session.id}
+                        className={`p-4 rounded-lg border ${
+                          isCurrentSession
+                            ? 'bg-primary/5 border-primary/20'
+                            : 'bg-gray-50 dark:bg-slate-700/50 border-gray-200 dark:border-slate-600'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                {format(sessionDate, 'MMM d, yyyy')}
+                              </span>
+                              {isCurrentSession && (
+                                <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {format(sessionDate, 'h:mm a')}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                              {session.data_days_analyzed} days analyzed
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div className="bg-white dark:bg-slate-800 p-2 rounded border border-gray-200 dark:border-slate-600">
+                            <div className="text-gray-500 dark:text-gray-400 mb-1">HRV</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">
+                              {session.avg_hrv.toFixed(0)}ms
+                            </div>
+                            <div className={`text-xs mt-1 ${
+                              session.hrv_classification === 'low' ? 'text-red-600' :
+                              session.hrv_classification === 'moderate' ? 'text-amber-600' :
+                              'text-green-600'
+                            }`}>
+                              {session.hrv_classification}
+                            </div>
+                          </div>
+
+                          <div className="bg-white dark:bg-slate-800 p-2 rounded border border-gray-200 dark:border-slate-600">
+                            <div className="text-gray-500 dark:text-gray-400 mb-1">Deep Sleep</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">
+                              {session.avg_deep_sleep_minutes}min
+                            </div>
+                            <div className={`text-xs mt-1 ${
+                              session.deep_sleep_classification === 'inadequate' ? 'text-red-600' :
+                              session.deep_sleep_classification === 'borderline' ? 'text-amber-600' :
+                              'text-green-600'
+                            }`}>
+                              {session.deep_sleep_classification}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-slate-600">
+                          <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                            Key Risk Areas (5-year):
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(session).filter(([key]) => key.endsWith('_risk')).map(([key, value]: [string, any]) => {
+                              const riskName = key.replace('_risk', '').replace('_', ' ');
+                              const capitalizedName = riskName.charAt(0).toUpperCase() + riskName.slice(1);
+
+                              return (
+                                <div key={key} className="text-xs px-2 py-1 bg-white dark:bg-slate-800 rounded border border-gray-200 dark:border-slate-600">
+                                  <span className="text-gray-600 dark:text-gray-400">{capitalizedName}:</span>{' '}
+                                  <span className="font-semibold text-gray-900 dark:text-white">
+                                    {value?.fiveYears?.toFixed(0) || 'N/A'}%
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ClassificationBadge
             type="hrv"
@@ -349,36 +531,274 @@ export default function SimulationsPage() {
           </div>
         )}
 
+        <div className="bg-gradient-to-br from-primary/5 to-blue-50 dark:from-primary/10 dark:to-slate-800 rounded-xl border border-primary/20 dark:border-primary/30 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
+                <Sliders className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  What If Engine
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Explore how improvements could change your trajectory
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowWhatIf(!showWhatIf)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                showWhatIf
+                  ? 'bg-primary text-white'
+                  : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-600'
+              }`}
+            >
+              {showWhatIf ? 'Hide' : 'Explore'}
+            </button>
+          </div>
+
+          {showWhatIf && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-5 border border-gray-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Adjust HRV
+                    </label>
+                    <span className="text-lg font-bold text-primary">
+                      {adjustedHrv.toFixed(0)}ms
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={Math.max(10, avgHrv * 0.5)}
+                    max={Math.min(120, avgHrv * 2)}
+                    step="1"
+                    value={adjustedHrv}
+                    onChange={(e) => setAdjustedHrv(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    <span>{Math.max(10, Math.round(avgHrv * 0.5))}ms</span>
+                    <span className="text-gray-700 dark:text-gray-300">Current: {avgHrv.toFixed(0)}ms</span>
+                    <span>{Math.min(120, Math.round(avgHrv * 2))}ms</span>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    {adjustedHrv > avgHrv ? (
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    ) : adjustedHrv < avgHrv ? (
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    ) : null}
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {adjustedHrv > avgHrv
+                        ? `+${((adjustedHrv - avgHrv) / avgHrv * 100).toFixed(0)}% improvement`
+                        : adjustedHrv < avgHrv
+                        ? `${((adjustedHrv - avgHrv) / avgHrv * 100).toFixed(0)}% decrease`
+                        : 'No change'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-5 border border-gray-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Adjust Deep Sleep
+                    </label>
+                    <span className="text-lg font-bold text-primary">
+                      {adjustedDeepSleep.toFixed(0)} min
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={Math.max(20, avgDeepSleep * 0.5)}
+                    max={Math.min(150, avgDeepSleep * 2.5)}
+                    step="5"
+                    value={adjustedDeepSleep}
+                    onChange={(e) => setAdjustedDeepSleep(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    <span>{Math.max(20, Math.round(avgDeepSleep * 0.5))}m</span>
+                    <span className="text-gray-700 dark:text-gray-300">Current: {avgDeepSleep.toFixed(0)}m</span>
+                    <span>{Math.min(150, Math.round(avgDeepSleep * 2.5))}m</span>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    {adjustedDeepSleep > avgDeepSleep ? (
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    ) : adjustedDeepSleep < avgDeepSleep ? (
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    ) : null}
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {adjustedDeepSleep > avgDeepSleep
+                        ? `+${(adjustedDeepSleep - avgDeepSleep).toFixed(0)} min more`
+                        : adjustedDeepSleep < avgDeepSleep
+                        ? `${(adjustedDeepSleep - avgDeepSleep).toFixed(0)} min less`
+                        : 'No change'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {optimizedProjections && (adjustedHrv !== avgHrv || adjustedDeepSleep !== avgDeepSleep) && (
+                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 p-5">
+                  <div className="flex items-start gap-3 mb-4">
+                    <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-green-900 dark:text-green-200 mb-1">
+                        Potential Impact
+                      </h4>
+                      <p className="text-sm text-green-800 dark:text-green-300">
+                        Based on your adjusted values, here's how your 5-year risk trajectories could change:
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {Object.entries(optimizedProjections).map(([key, trajectory]) => {
+                      const baseline = result.projections[key as keyof typeof result.projections];
+                      const difference = baseline.fiveYears - trajectory.fiveYears;
+                      const names: Record<string, string> = {
+                        dementia: 'Dementia',
+                        cardiovascular: 'Cardiovascular',
+                        heartFailure: 'Heart Failure',
+                        cognitiveDecline: 'Cognitive Decline',
+                        metabolic: 'Metabolic',
+                      };
+
+                      return (
+                        <div key={key} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-green-200 dark:border-green-800/50">
+                          <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            {names[key]}
+                          </div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-500 line-through">
+                              {baseline.fiveYears.toFixed(0)}%
+                            </span>
+                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                              {trajectory.fiveYears.toFixed(0)}%
+                            </span>
+                          </div>
+                          {difference > 0 && (
+                            <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                              ↓ {difference.toFixed(1)}% reduction
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4">
+          <div className="flex items-center gap-3">
+            <Clock className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Time Horizon</span>
+          </div>
+          <div className="flex gap-2">
+            {[
+              { key: 'sixMonths', label: '6 Months' },
+              { key: 'oneYear', label: '1 Year' },
+              { key: 'fiveYears', label: '5 Years' },
+              { key: 'tenYears', label: '10 Years' }
+            ].map((horizon) => (
+              <button
+                key={horizon.key}
+                onClick={() => setSelectedTimeHorizon(horizon.key as typeof selectedTimeHorizon)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                  selectedTimeHorizon === horizon.key
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                }`}
+              >
+                {horizon.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Risk Trajectories
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Risk Trajectories
+            </h2>
+            {showWhatIf && optimizedProjections && (adjustedHrv !== avgHrv || adjustedDeepSleep !== avgDeepSleep) && (
+              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                Showing comparison view
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RiskTrajectoryChart
-              trajectory={result.projections.dementia}
-              title="Dementia Risk"
-              color="#ef4444"
-            />
-            <RiskTrajectoryChart
-              trajectory={result.projections.cardiovascular}
-              title="Cardiovascular Disease"
-              color="#f97316"
-            />
-            <RiskTrajectoryChart
-              trajectory={result.projections.heartFailure}
-              title="Heart Failure Progression"
-              color="#dc2626"
-            />
-            <RiskTrajectoryChart
-              trajectory={result.projections.cognitiveDecline}
-              title="Cognitive Decline"
-              color="#8b5cf6"
-            />
-            <RiskTrajectoryChart
-              trajectory={result.projections.metabolic}
-              title="Metabolic Dysfunction"
-              color="#eab308"
-            />
+            {showWhatIf && optimizedProjections && (adjustedHrv !== avgHrv || adjustedDeepSleep !== avgDeepSleep) ? (
+              <>
+                <ComparativeTrajectoryChart
+                  baseline={result.projections.dementia}
+                  optimized={optimizedProjections.dementia}
+                  title="Dementia Risk"
+                  color="#ef4444"
+                  timeHorizon={selectedTimeHorizon}
+                />
+                <ComparativeTrajectoryChart
+                  baseline={result.projections.cardiovascular}
+                  optimized={optimizedProjections.cardiovascular}
+                  title="Cardiovascular Disease"
+                  color="#f97316"
+                  timeHorizon={selectedTimeHorizon}
+                />
+                <ComparativeTrajectoryChart
+                  baseline={result.projections.heartFailure}
+                  optimized={optimizedProjections.heartFailure}
+                  title="Heart Failure Progression"
+                  color="#dc2626"
+                  timeHorizon={selectedTimeHorizon}
+                />
+                <ComparativeTrajectoryChart
+                  baseline={result.projections.cognitiveDecline}
+                  optimized={optimizedProjections.cognitiveDecline}
+                  title="Cognitive Decline"
+                  color="#8b5cf6"
+                  timeHorizon={selectedTimeHorizon}
+                />
+                <ComparativeTrajectoryChart
+                  baseline={result.projections.metabolic}
+                  optimized={optimizedProjections.metabolic}
+                  title="Metabolic Dysfunction"
+                  color="#eab308"
+                  timeHorizon={selectedTimeHorizon}
+                />
+              </>
+            ) : (
+              <>
+                <RiskTrajectoryChart
+                  trajectory={result.projections.dementia}
+                  title="Dementia Risk"
+                  color="#ef4444"
+                />
+                <RiskTrajectoryChart
+                  trajectory={result.projections.cardiovascular}
+                  title="Cardiovascular Disease"
+                  color="#f97316"
+                />
+                <RiskTrajectoryChart
+                  trajectory={result.projections.heartFailure}
+                  title="Heart Failure Progression"
+                  color="#dc2626"
+                />
+                <RiskTrajectoryChart
+                  trajectory={result.projections.cognitiveDecline}
+                  title="Cognitive Decline"
+                  color="#8b5cf6"
+                />
+                <RiskTrajectoryChart
+                  trajectory={result.projections.metabolic}
+                  title="Metabolic Dysfunction"
+                  color="#eab308"
+                />
+              </>
+            )}
           </div>
         </div>
 
