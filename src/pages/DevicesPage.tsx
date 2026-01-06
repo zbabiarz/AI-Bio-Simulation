@@ -221,20 +221,53 @@ export default function DevicesPage() {
   async function handleSync(connection: DeviceConnection) {
     setSyncing(connection.provider);
 
-    await new Promise((r) => setTimeout(r, 2000));
+    try {
+      const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-oura-data`;
 
-    await supabase
-      .from('device_connections')
-      .update({
-        last_sync_at: new Date().toISOString(),
-        sync_status: 'active',
-        sync_error: null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', connection.id);
+      const response = await fetch(edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          user_id: user!.id,
+          connection_id: connection.id,
+        }),
+      });
 
-    fetchConnections();
-    setSyncing(null);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to sync data');
+      }
+
+      const result = await response.json();
+
+      await logPHIAccess({
+        userId: user!.id,
+        accessType: 'read',
+        resourceType: 'wearable_data',
+        metadata: { provider: connection.provider, records: result.records },
+      });
+
+      fetchConnections();
+    } catch (error) {
+      console.error('Sync error:', error);
+
+      await supabase
+        .from('device_connections')
+        .update({
+          sync_status: 'error',
+          sync_error: error instanceof Error ? error.message : 'Sync failed',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', connection.id);
+
+      fetchConnections();
+      alert(`Sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setSyncing(null);
+    }
   }
 
   function changeTab(tab: TabType) {
