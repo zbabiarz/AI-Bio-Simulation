@@ -58,12 +58,12 @@ export default function SimulationsPage() {
       return;
     }
 
-    const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
+    const sixMonthsAgo = format(subDays(new Date(), 180), 'yyyy-MM-dd');
     const { data } = await supabase
       .from('health_metrics')
       .select('*')
       .eq('user_id', user!.id)
-      .gte('date', thirtyDaysAgo)
+      .gte('date', sixMonthsAgo)
       .order('date', { ascending: false });
 
     if (!data || data.length === 0) {
