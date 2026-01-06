@@ -34,16 +34,16 @@
   }
 
   .prose-invert p {
-    @apply text-gray-700;
+    @apply text-gray-300;
   }
 
   .prose-invert strong {
-    @apply text-primaryDeep font-semibold;
+    @apply text-gray-100 font-semibold;
   }
 
   .prose-invert ul,
   .prose-invert ol {
-    @apply text-gray-700;
+    @apply text-gray-300;
   }
 }
 
