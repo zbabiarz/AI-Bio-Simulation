@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <circle cx="60" cy="60" r="50" stroke="currentColor" stroke-width="8" fill="none"/>
+  <circle cx="60" cy="60" r="30" fill="currentColor"/>
+  <text x="60" y="95" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="currentColor" text-anchor="middle">OURA</text>
+</svg>

@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { logPHIAccess } from '../lib/audit';
 import { initiateOAuthFlow } from '../lib/oauth';
+import DeviceLogo from '../components/DeviceLogo';
 import {
   Watch,
   Smartphone,
@@ -76,7 +77,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'oura',
     name: 'Oura Ring',
     logo: 'O',
-    color: 'bg-slate-800',
+    color: 'bg-gray-100 dark:bg-slate-700',
     oauthSupported: true,
     fileTypes: ['.csv', '.json'],
     description: 'Sync sleep, readiness, activity, and HRV data from your Oura Ring.',
@@ -92,7 +93,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'whoop',
     name: 'WHOOP',
     logo: 'W',
-    color: 'bg-amber-500',
+    color: 'bg-gray-100 dark:bg-slate-700',
     oauthSupported: true,
     fileTypes: ['.csv', '.json'],
     description: 'Sync strain, recovery, sleep, and HRV data from your WHOOP band.',
@@ -107,7 +108,7 @@ const deviceProviders: DeviceProvider[] = [
     id: 'apple',
     name: 'Apple Watch',
     logo: 'A',
-    color: 'bg-gray-900',
+    color: 'bg-gray-100 dark:bg-slate-700',
     oauthSupported: true,
     fileTypes: ['.xml', '.json'],
     description: 'Sync heart rate, activity, sleep, and workout data from Apple Health.',
@@ -787,8 +788,8 @@ export default function DevicesPage() {
                       className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl"
                     >
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 ${provider.color} rounded-xl flex items-center justify-center`}>
-                          <span className="text-xl font-bold text-white">{provider.logo}</span>
+                        <div className={`w-12 h-12 ${provider.color} rounded-xl flex items-center justify-center text-gray-700 dark:text-gray-300`}>
+                          <DeviceLogo deviceId={provider.id} deviceName={provider.name} size="lg" />
                         </div>
                         <div>
                           <h3 className="text-primaryDeep dark:text-white font-semibold">{provider.name}</h3>
@@ -908,8 +909,8 @@ export default function DevicesPage() {
                         }`}
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <div className={`w-10 h-10 ${provider.color} rounded-xl flex items-center justify-center`}>
-                            <span className="text-lg font-bold text-white">{provider.logo}</span>
+                          <div className={`w-10 h-10 ${provider.color} rounded-xl flex items-center justify-center text-gray-700 dark:text-gray-300`}>
+                            <DeviceLogo deviceId={provider.id} deviceName={provider.name} size="md" />
                           </div>
                           {isConnected ? (
                             <span className="flex items-center gap-1 text-xs text-primary">
@@ -968,8 +969,8 @@ export default function DevicesPage() {
                         : 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:border-primary/50'
                     }`}
                   >
-                    <div className={`w-10 h-10 ${device.color} rounded-xl flex items-center justify-center mx-auto mb-2`}>
-                      <span className="font-bold text-white">{device.logo}</span>
+                    <div className={`w-10 h-10 ${device.color} rounded-xl flex items-center justify-center mx-auto mb-2 text-gray-700 dark:text-gray-300`}>
+                      <DeviceLogo deviceId={device.id} deviceName={device.name} size="md" />
                     </div>
                     <p className="text-gray-900 dark:text-white text-xs font-medium">{device.name}</p>
                   </button>
@@ -1148,8 +1149,8 @@ export default function DevicesPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-lg border border-gray-200 dark:border-slate-700">
             <div className="flex items-center gap-4 mb-6">
-              <div className={`w-14 h-14 ${selectedDevice.color} rounded-xl flex items-center justify-center`}>
-                <span className="text-2xl font-bold text-white">{selectedDevice.logo}</span>
+              <div className={`w-14 h-14 ${selectedDevice.color} rounded-xl flex items-center justify-center text-gray-700 dark:text-gray-300`}>
+                <DeviceLogo deviceId={selectedDevice.id} deviceName={selectedDevice.name} size="lg" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-primaryDeep dark:text-white">Connect {selectedDevice.name}</h2>

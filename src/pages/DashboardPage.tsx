@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { HealthMetric, MetricsSummary, HealthGoal, UserBadge } from '../types';
+import DeviceLogo from '../components/DeviceLogo';
 import {
   LineChart,
   Line,
@@ -181,13 +182,21 @@ export default function DashboardPage() {
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
-                <Watch className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center text-gray-700 dark:text-gray-300">
+                {['oura', 'whoop', 'apple'].includes(latestWearable.source) ? (
+                  <DeviceLogo
+                    deviceId={latestWearable.source}
+                    deviceName={latestWearable.source === 'oura' ? 'Oura Ring' : latestWearable.source === 'whoop' ? 'WHOOP' : 'Apple Watch'}
+                    size="md"
+                  />
+                ) : (
+                  <Watch className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                )}
               </div>
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white">Latest Wearable Data</h3>
                 <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  From {latestWearable.source} - {format(parseISO(latestWearable.created_at), 'MMM d, yyyy h:mm a')}
+                  From {latestWearable.source === 'oura' ? 'Oura Ring' : latestWearable.source === 'whoop' ? 'WHOOP' : latestWearable.source === 'apple' ? 'Apple Watch' : latestWearable.source} - {format(parseISO(latestWearable.created_at), 'MMM d, yyyy h:mm a')}
                 </p>
               </div>
             </div>
