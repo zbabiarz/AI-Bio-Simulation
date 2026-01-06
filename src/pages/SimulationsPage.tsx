@@ -1,75 +1,63 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { HealthMetric, Simulation, SimulationPrediction } from '../types';
+import { generatePhysiologicalClassification } from '../lib/classification';
+import { generateAllRiskProjections, getWorstTrajectories } from '../lib/riskProjection';
+import { generateClinicalNarrative, generateRecommendations } from '../lib/narrativeGenerator';
+import RiskTrajectoryChart from '../components/RiskTrajectoryChart';
+import ClassificationBadge from '../components/ClassificationBadge';
+import type { HealthMetric, RiskTrajectory, HealthIntakeData, PhysiologicalClassification } from '../types';
 import {
   Brain,
-  Play,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  Heart,
-  Moon,
-  Footprints,
-  Battery,
-  Zap,
-  History,
-  Sparkles,
-  ArrowRight,
-  Info,
+  AlertTriangle,
+  Upload,
+  User,
+  ChevronRight,
+  Activity,
+  RefreshCw,
+  FileText,
+  ExternalLink,
 } from 'lucide-react';
-import { format, parseISO, subDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 
-const simulationScenarios = [
-  {
-    id: 'improve_sleep',
-    title: 'Improve Sleep Duration',
-    description: 'What if you slept 1 hour more per night?',
-    icon: Moon,
-    changes: { sleep_duration_minutes: 60 },
-  },
-  {
-    id: 'increase_activity',
-    title: 'Increase Activity',
-    description: 'What if you added 30 minutes of daily activity?',
-    icon: Footprints,
-    changes: { activity_minutes: 30 },
-  },
-  {
-    id: 'boost_hrv',
-    title: 'Boost HRV',
-    description: 'What if your HRV improved by 10ms?',
-    icon: Heart,
-    changes: { hrv: 10 },
-  },
-  {
-    id: 'reduce_stress',
-    title: 'Reduce Stress',
-    description: 'What if your stress levels dropped by 20%?',
-    icon: Zap,
-    changes: { stress_level: -20 },
-  },
-];
+type SimulationState = 'checking' | 'needs-intake' | 'needs-data' | 'ready' | 'running' | 'complete';
+
+interface SimulationResult {
+  classification: PhysiologicalClassification;
+  projections: {
+    dementia: RiskTrajectory;
+    cardiovascular: RiskTrajectory;
+    heartFailure: RiskTrajectory;
+    cognitiveDecline: RiskTrajectory;
+    metabolic: RiskTrajectory;
+  };
+  narrative: string;
+  recommendations: string[];
+  dataDays: number;
+}
 
 export default function SimulationsPage() {
-  const { user } = useAuth();
-  const [currentMetrics, setCurrentMetrics] = useState<Record<string, number>>({});
-  const [customChanges, setCustomChanges] = useState<Record<string, number>>({});
-  const [activeScenario, setActiveScenario] = useState<string | null>(null);
-  const [simulating, setSimulating] = useState(false);
-  const [result, setResult] = useState<SimulationPrediction | null>(null);
-  const [recommendations, setRecommendations] = useState<string[]>([]);
-  const [pastSimulations, setPastSimulations] = useState<Simulation[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+  const [state, setState] = useState<SimulationState>('checking');
+  const [metrics, setMetrics] = useState<HealthMetric[]>([]);
+  const [result, setResult] = useState<SimulationResult | null>(null);
+  const [avgHrv, setAvgHrv] = useState<number>(0);
+  const [avgDeepSleep, setAvgDeepSleep] = useState<number>(0);
 
   useEffect(() => {
-    if (user) {
-      fetchCurrentMetrics();
-      fetchPastSimulations();
+    if (user && profile) {
+      checkReadiness();
     }
-  }, [user]);
+  }, [user, profile]);
 
-  async function fetchCurrentMetrics() {
+  async function checkReadiness() {
+    if (!profile?.intake_completed) {
+      setState('needs-intake');
+      return;
+    }
+
     const thirtyDaysAgo = format(subDays(new Date(), 30), 'yyyy-MM-dd');
     const { data } = await supabase
       .from('health_metrics')
@@ -78,431 +66,389 @@ export default function SimulationsPage() {
       .gte('date', thirtyDaysAgo)
       .order('date', { ascending: false });
 
-    if (data && data.length > 0) {
-      const avgMetrics = calculateAverages(data);
-      setCurrentMetrics(avgMetrics);
+    if (!data || data.length === 0) {
+      setState('needs-data');
+      return;
     }
+
+    const withHrv = data.filter(d => d.hrv !== null);
+    const withDeepSleep = data.filter(d => d.deep_sleep_minutes !== null);
+
+    if (withHrv.length < 3 || withDeepSleep.length < 3) {
+      setState('needs-data');
+      return;
+    }
+
+    setMetrics(data);
+    const hrvAvg = withHrv.reduce((sum, d) => sum + (d.hrv || 0), 0) / withHrv.length;
+    const deepSleepAvg = withDeepSleep.reduce((sum, d) => sum + (d.deep_sleep_minutes || 0), 0) / withDeepSleep.length;
+    setAvgHrv(hrvAvg);
+    setAvgDeepSleep(deepSleepAvg);
+    setState('ready');
   }
 
-  async function fetchPastSimulations() {
-    const { data } = await supabase
-      .from('simulations')
-      .select('*')
-      .eq('user_id', user!.id)
-      .order('created_at', { ascending: false })
-      .limit(10);
+  async function runBiosimulation() {
+    if (!profile || !user) return;
 
-    if (data) {
-      setPastSimulations(data);
-    }
-  }
+    setState('running');
 
-  function calculateAverages(data: HealthMetric[]): Record<string, number> {
-    const metrics: Record<string, number[]> = {};
+    await new Promise(r => setTimeout(r, 2000));
 
-    data.forEach((d) => {
-      if (d.hrv) (metrics.hrv = metrics.hrv || []).push(d.hrv);
-      if (d.sleep_duration_minutes) (metrics.sleep_duration_minutes = metrics.sleep_duration_minutes || []).push(d.sleep_duration_minutes);
-      if (d.steps) (metrics.steps = metrics.steps || []).push(d.steps);
-      if (d.activity_minutes) (metrics.activity_minutes = metrics.activity_minutes || []).push(d.activity_minutes);
-      if (d.recovery_score) (metrics.recovery_score = metrics.recovery_score || []).push(d.recovery_score);
-      if (d.stress_level) (metrics.stress_level = metrics.stress_level || []).push(d.stress_level);
-      if (d.resting_heart_rate) (metrics.resting_heart_rate = metrics.resting_heart_rate || []).push(d.resting_heart_rate);
-    });
-
-    const averages: Record<string, number> = {};
-    Object.keys(metrics).forEach((key) => {
-      averages[key] = Math.round(metrics[key].reduce((a, b) => a + b, 0) / metrics[key].length * 10) / 10;
-    });
-
-    return averages;
-  }
-
-  async function runSimulation(changes: Record<string, number>) {
-    if (!user) return;
-
-    setSimulating(true);
-    setResult(null);
-    setRecommendations([]);
-
-    await new Promise((r) => setTimeout(r, 1500));
-
-    const prediction = generatePrediction(currentMetrics, changes);
-    const recs = generateRecommendations(changes, prediction);
-
-    const { error } = await supabase.from('simulations').insert({
-      user_id: user.id,
-      input_metrics: currentMetrics,
-      changes,
-      predictions: prediction,
-      recommendations: recs,
-    });
-
-    if (!error) {
-      await supabase.from('activity_logs').insert({
-        user_id: user.id,
-        action: 'run_simulation',
-        details: { changes, prediction },
-      });
-    }
-
-    setResult(prediction);
-    setRecommendations(recs);
-    setSimulating(false);
-    fetchPastSimulations();
-  }
-
-  function generatePrediction(current: Record<string, number>, changes: Record<string, number>): SimulationPrediction {
-    let fitnessImpact = 0;
-    let stressReduction = 0;
-    let recoveryImprovement = 0;
-    let sleepQualityChange = 0;
-    let energyLevelChange = 0;
-
-    if (changes.sleep_duration_minutes) {
-      const sleepChange = changes.sleep_duration_minutes / 60;
-      sleepQualityChange += sleepChange * 8;
-      recoveryImprovement += sleepChange * 5;
-      energyLevelChange += sleepChange * 10;
-      stressReduction += sleepChange * 3;
-    }
-
-    if (changes.activity_minutes) {
-      const activityChange = changes.activity_minutes / 30;
-      fitnessImpact += activityChange * 12;
-      stressReduction += activityChange * 8;
-      energyLevelChange += activityChange * 5;
-      recoveryImprovement += activityChange * 3;
-    }
-
-    if (changes.hrv) {
-      const hrvChange = changes.hrv / 5;
-      recoveryImprovement += hrvChange * 10;
-      stressReduction += hrvChange * 7;
-      fitnessImpact += hrvChange * 5;
-      energyLevelChange += hrvChange * 8;
-    }
-
-    if (changes.stress_level) {
-      const stressChange = Math.abs(changes.stress_level) / 10;
-      stressReduction += stressChange * 15;
-      sleepQualityChange += stressChange * 5;
-      recoveryImprovement += stressChange * 7;
-    }
-
-    if (changes.steps) {
-      const stepsChange = changes.steps / 2000;
-      fitnessImpact += stepsChange * 8;
-      energyLevelChange += stepsChange * 4;
-    }
-
-    const totalChange = Math.abs(fitnessImpact) + Math.abs(stressReduction) + Math.abs(recoveryImprovement);
-    const timeframe = Math.max(14, Math.min(90, Math.round(totalChange * 1.5)));
-    const confidence = Math.min(95, 60 + Object.keys(current).length * 5);
-
-    return {
-      fitness_impact: Math.round(Math.min(50, Math.max(-50, fitnessImpact))),
-      stress_reduction: Math.round(Math.min(50, Math.max(-20, stressReduction))),
-      recovery_improvement: Math.round(Math.min(50, Math.max(-30, recoveryImprovement))),
-      sleep_quality_change: Math.round(Math.min(40, Math.max(-20, sleepQualityChange))),
-      energy_level_change: Math.round(Math.min(40, Math.max(-30, energyLevelChange))),
-      timeframe_days: timeframe,
-      confidence,
+    const intake: HealthIntakeData = {
+      age: profile.age!,
+      sex: profile.sex as 'male' | 'female' | 'other',
+      hasHeartFailure: profile.has_heart_failure,
+      hasDiabetes: profile.has_diabetes,
+      hasChronicKidneyDisease: profile.has_chronic_kidney_disease,
     };
+
+    const classification = generatePhysiologicalClassification(avgHrv, avgDeepSleep, intake);
+
+    const projections = generateAllRiskProjections({
+      hrvClassification: classification.hrv.classification,
+      deepSleepClassification: classification.deepSleep.classification,
+      avgHrv,
+      avgDeepSleep,
+      intake,
+    });
+
+    const narrative = generateClinicalNarrative({
+      hrvClassification: classification.hrv.classification,
+      deepSleepClassification: classification.deepSleep.classification,
+      avgHrv,
+      avgDeepSleep,
+      intake,
+      dementia: projections.dementia,
+      cardiovascular: projections.cardiovascular,
+      heartFailure: projections.heartFailure,
+      cognitiveDecline: projections.cognitiveDecline,
+      metabolic: projections.metabolic,
+    });
+
+    const recommendations = generateRecommendations({
+      hrvClassification: classification.hrv.classification,
+      deepSleepClassification: classification.deepSleep.classification,
+      avgHrv,
+      avgDeepSleep,
+      intake,
+      dementia: projections.dementia,
+      cardiovascular: projections.cardiovascular,
+      heartFailure: projections.heartFailure,
+      cognitiveDecline: projections.cognitiveDecline,
+      metabolic: projections.metabolic,
+    });
+
+    await supabase.from('biosimulation_sessions').insert({
+      user_id: user.id,
+      hrv_classification: classification.hrv.classification,
+      deep_sleep_classification: classification.deepSleep.classification,
+      avg_hrv: avgHrv,
+      avg_deep_sleep_minutes: Math.round(avgDeepSleep),
+      data_days_analyzed: metrics.length,
+      dementia_risk: projections.dementia,
+      cardiovascular_risk: projections.cardiovascular,
+      heart_failure_risk: projections.heartFailure,
+      cognitive_decline_risk: projections.cognitiveDecline,
+      metabolic_risk: projections.metabolic,
+      clinical_narrative: narrative,
+      recommendations,
+    });
+
+    setResult({
+      classification,
+      projections,
+      narrative,
+      recommendations,
+      dataDays: metrics.length,
+    });
+
+    setState('complete');
   }
 
-  function generateRecommendations(changes: Record<string, number>, prediction: SimulationPrediction): string[] {
-    const recs: string[] = [];
-
-    if (changes.sleep_duration_minutes && changes.sleep_duration_minutes > 0) {
-      recs.push('Establish a consistent bedtime routine to achieve the extra sleep.');
-      recs.push('Avoid screens 1 hour before bed to improve sleep onset.');
-    }
-
-    if (changes.activity_minutes && changes.activity_minutes > 0) {
-      recs.push('Start with 10-minute walks after meals to build the habit.');
-      recs.push('Consider activities you enjoy to make the increase sustainable.');
-    }
-
-    if (changes.hrv && changes.hrv > 0) {
-      recs.push('Practice deep breathing exercises for 5 minutes daily.');
-      recs.push('Reduce alcohol consumption to support HRV improvement.');
-    }
-
-    if (changes.stress_level && changes.stress_level < 0) {
-      recs.push('Incorporate 10 minutes of meditation into your morning routine.');
-      recs.push('Take short breaks during work to prevent stress buildup.');
-    }
-
-    if (prediction.fitness_impact > 20) {
-      recs.push('Track your progress weekly to stay motivated.');
-    }
-
-    if (prediction.recovery_improvement > 15) {
-      recs.push('Prioritize rest days to maximize recovery gains.');
-    }
-
-    return recs.slice(0, 4);
+  if (state === 'checking') {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Preparing biosimulation...</p>
+        </div>
+      </div>
+    );
   }
 
-  function handleScenarioClick(scenario: typeof simulationScenarios[0]) {
-    setActiveScenario(scenario.id);
-    setCustomChanges(scenario.changes);
+  if (state === 'needs-intake') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-8 text-center">
+          <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <User className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+            Health Profile Required
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            To generate accurate risk projections, we need your age, sex, and relevant medical history. This information calibrates the biosimulation to your specific physiology.
+          </p>
+          <button
+            onClick={() => navigate('/intake')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primaryDark text-white font-semibold rounded-xl transition-colors"
+          >
+            Complete Health Profile
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    );
   }
 
-  return (
-    <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-primaryDeep dark:text-white mb-2">Bio-Simulations</h1>
-          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
-            Explore how changes in your habits could impact your health outcomes
+  if (state === 'needs-data') {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-8 text-center">
+          <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+            Wearable Data Required
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            The biosimulation requires at least 3 days of HRV and deep sleep data from your wearable device. This data forms the foundation of your risk trajectory analysis.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
+            We specifically need: Heart Rate Variability (HRV) and Deep Sleep duration from devices like Oura Ring, WHOOP, Apple Watch, or Garmin.
+          </p>
+          <button
+            onClick={() => navigate('/devices')}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primaryDark text-white font-semibold rounded-xl transition-colors"
+          >
+            Upload Data
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (state === 'ready') {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Biosimulation Ready
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Your data has been analyzed. Run the simulation to see your health trajectories.
           </p>
         </div>
+
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
+            Data Summary
+          </h3>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Days of Data</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{avgHrv.toFixed(0)}ms</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Avg HRV</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{avgDeepSleep.toFixed(0)}min</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Avg Deep Sleep</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 p-6 mb-6">
+          <div className="flex gap-4">
+            <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            <div>
+              <h4 className="font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                What to Expect
+              </h4>
+              <p className="text-sm text-amber-800 dark:text-amber-300">
+                This simulation generates projections based on established clinical relationships between your physiological markers and disease outcomes. The results may be confronting. They are designed to show you the trajectory your data indicates - not to diagnose, but to inform and motivate intervention.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <button
-          onClick={() => setShowHistory(!showHistory)}
-          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-primaryDeep dark:text-white rounded-lg transition-colors min-h-[44px]"
+          onClick={runBiosimulation}
+          className="w-full py-4 px-6 bg-primary hover:bg-primaryDark text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-3"
         >
-          <History className="w-5 h-5" />
-          <span className="text-sm sm:text-base">History</span>
+          <Brain className="w-6 h-6" />
+          Run Biosimulation
         </button>
       </div>
+    );
+  }
 
-      {Object.keys(currentMetrics).length === 0 ? (
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-8 border border-gray-200 dark:border-slate-700 text-center">
-          <Brain className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-primaryDeep dark:text-white mb-2">No Data Available</h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Upload your wearable data first to run bio-simulations
+  if (state === 'running') {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-6" />
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Running Biosimulation
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Analyzing your physiological data and generating risk trajectories across five disease outcomes...
           </p>
         </div>
-      ) : (
-        <>
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
-            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              Your Current Averages (30 days)
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              {currentMetrics.hrv && (
-                <MetricDisplay icon={Heart} label="HRV" value={currentMetrics.hrv} unit="ms" color="rose" />
-              )}
-              {currentMetrics.sleep_duration_minutes && (
-                <MetricDisplay icon={Moon} label="Sleep" value={Math.round(currentMetrics.sleep_duration_minutes / 60 * 10) / 10} unit="hrs" color="blue" />
-              )}
-              {currentMetrics.steps && (
-                <MetricDisplay icon={Footprints} label="Steps" value={Math.round(currentMetrics.steps)} unit="" color="amber" />
-              )}
-              {currentMetrics.recovery_score && (
-                <MetricDisplay icon={Battery} label="Recovery" value={currentMetrics.recovery_score} unit="%" color="emerald" />
-              )}
+      </div>
+    );
+  }
+
+  if (state === 'complete' && result) {
+    const worstOutcomes = getWorstTrajectories(result.projections);
+
+    return (
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Your Biosimulation Results
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Based on {result.dataDays} days of physiological data
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ClassificationBadge
+            type="hrv"
+            classification={result.classification.hrv.classification}
+            value={result.classification.hrv.value}
+            percentile={result.classification.hrv.percentile}
+          />
+          <ClassificationBadge
+            type="deepSleep"
+            classification={result.classification.deepSleep.classification}
+            value={result.classification.deepSleep.value}
+            percentile={result.classification.deepSleep.percentile}
+          />
+        </div>
+
+        {(result.classification.hrv.classification === 'low' ||
+          result.classification.deepSleep.classification === 'inadequate') && (
+          <div className="bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 p-6">
+            <div className="flex gap-4">
+              <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-red-900 dark:text-red-200 mb-1">
+                  Elevated Risk Trajectories Detected
+                </h3>
+                <p className="text-sm text-red-800 dark:text-red-300">
+                  Your highest risk projections are in {worstOutcomes.join(' and ')}. The charts below show how these risks are projected to evolve over time if current patterns continue unchanged.
+                </p>
+              </div>
             </div>
           </div>
+        )}
 
-          <div>
-            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4">Quick Scenarios</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {simulationScenarios.map((scenario) => (
-                <button
-                  key={scenario.id}
-                  onClick={() => handleScenarioClick(scenario)}
-                  className={`p-3 sm:p-4 rounded-xl border text-left transition-all min-h-[44px] ${
-                    activeScenario === scenario.id
-                      ? 'bg-primary/20 border-primary/50'
-                      : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-gray-700'
-                  }`}
-                >
-                  <scenario.icon className={`w-5 h-5 sm:w-6 sm:h-6 mb-2 sm:mb-3 ${activeScenario === scenario.id ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`} />
-                  <p className="text-primaryDeep dark:text-white font-medium text-sm mb-1">{scenario.title}</p>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs">{scenario.description}</p>
-                </button>
-              ))}
-            </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Risk Trajectories
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RiskTrajectoryChart
+              trajectory={result.projections.dementia}
+              title="Dementia Risk"
+              color="#ef4444"
+            />
+            <RiskTrajectoryChart
+              trajectory={result.projections.cardiovascular}
+              title="Cardiovascular Disease"
+              color="#f97316"
+            />
+            <RiskTrajectoryChart
+              trajectory={result.projections.heartFailure}
+              title="Heart Failure Progression"
+              color="#dc2626"
+            />
+            <RiskTrajectoryChart
+              trajectory={result.projections.cognitiveDecline}
+              title="Cognitive Decline"
+              color="#8b5cf6"
+            />
+            <RiskTrajectoryChart
+              trajectory={result.projections.metabolic}
+              title="Metabolic Dysfunction"
+              color="#eab308"
+            />
           </div>
+        </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
-            <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4">Custom Simulation</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              <div>
-                <label className="block text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">Sleep Change (minutes)</label>
-                <input
-                  type="number"
-                  value={customChanges.sleep_duration_minutes || ''}
-                  onChange={(e) => setCustomChanges({ ...customChanges, sleep_duration_minutes: parseInt(e.target.value) || 0 })}
-                  placeholder="+60"
-                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">Activity Change (minutes)</label>
-                <input
-                  type="number"
-                  value={customChanges.activity_minutes || ''}
-                  onChange={(e) => setCustomChanges({ ...customChanges, activity_minutes: parseInt(e.target.value) || 0 })}
-                  placeholder="+30"
-                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">HRV Change (ms)</label>
-                <input
-                  type="number"
-                  value={customChanges.hrv || ''}
-                  onChange={(e) => setCustomChanges({ ...customChanges, hrv: parseInt(e.target.value) || 0 })}
-                  placeholder="+5"
-                  className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg py-3 px-4 text-primaryDeep dark:text-white focus:outline-none focus:ring-2 focus:ring-primary min-h-[44px]"
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={() => runSimulation(customChanges)}
-              disabled={simulating || Object.values(customChanges).every((v) => !v)}
-              className="w-full sm:w-auto bg-primary hover:bg-primaryDark text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
-            >
-              {simulating ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Running Simulation...
-                </>
-              ) : (
-                <>
-                  <Play className="w-5 h-5" />
-                  Run Simulation
-                </>
-              )}
-            </button>
+        <div className="bg-slate-900 dark:bg-slate-950 rounded-xl p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <FileText className="w-6 h-6 text-white" />
+            <h2 className="text-xl font-bold text-white">Clinical Interpretation</h2>
           </div>
-
-          {result && (
-            <div className="bg-primary/10 rounded-xl p-4 sm:p-6 border border-primary/30">
-              <div className="flex items-center gap-2 mb-6">
-                <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-                <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white">Simulation Results</h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-                <PredictionCard label="Fitness Impact" value={result.fitness_impact} suffix="%" />
-                <PredictionCard label="Stress Reduction" value={result.stress_reduction} suffix="%" />
-                <PredictionCard label="Recovery Boost" value={result.recovery_improvement} suffix="%" />
-                <PredictionCard label="Sleep Quality" value={result.sleep_quality_change} suffix="%" />
-                <PredictionCard label="Energy Level" value={result.energy_level_change} suffix="%" />
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 text-xs sm:text-sm">
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <Clock className="w-4 h-4" />
-                  <span>Expected in {result.timeframe_days} days</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <Info className="w-4 h-4" />
-                  <span>{result.confidence}% confidence</span>
-                </div>
-              </div>
-
-              {recommendations.length > 0 && (
-                <div className="bg-white dark:bg-slate-800 rounded-lg p-4">
-                  <h4 className="text-primaryDeep dark:text-white font-medium mb-3">Recommendations</h4>
-                  <ul className="space-y-2">
-                    {recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300 text-sm">
-                        <ArrowRight className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                        {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
-        </>
-      )}
-
-      {showHistory && pastSimulations.length > 0 && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
-          <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
-            <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            Past Simulations
-          </h3>
-          <div className="space-y-3">
-            {pastSimulations.map((sim) => (
-              <div key={sim.id} className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-primaryDeep dark:text-white text-sm font-medium">
-                    {Object.entries(sim.changes)
-                      .filter(([, v]) => v)
-                      .map(([k, v]) => `${k.replace('_', ' ')}: ${v > 0 ? '+' : ''}${v}`)
-                      .join(', ')}
-                  </span>
-                  <span className="text-gray-400 text-xs">
-                    {format(parseISO(sim.created_at), 'MMM d, yyyy')}
-                  </span>
-                </div>
-                <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
-                  <span>Fitness: {sim.predictions.fitness_impact > 0 ? '+' : ''}{sim.predictions.fitness_impact}%</span>
-                  <span>Recovery: {sim.predictions.recovery_improvement > 0 ? '+' : ''}{sim.predictions.recovery_improvement}%</span>
-                  <span>Confidence: {sim.predictions.confidence}%</span>
-                </div>
-              </div>
+          <div className="prose prose-invert max-w-none">
+            {result.narrative.split('\n\n').map((paragraph, i) => (
+              <p key={i} className="text-gray-300 leading-relaxed mb-4 last:mb-0">
+                {paragraph}
+              </p>
             ))}
           </div>
         </div>
-      )}
-    </div>
-  );
-}
 
-interface MetricDisplayProps {
-  icon: React.ElementType;
-  label: string;
-  value: number;
-  unit: string;
-  color: 'rose' | 'blue' | 'amber' | 'emerald';
-}
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Recommended Actions
+          </h2>
+          <ul className="space-y-3">
+            {result.recommendations.map((rec, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <ChevronRight className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-gray-700 dark:text-gray-300">{rec}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-function MetricDisplay({ icon: Icon, label, value, unit, color }: MetricDisplayProps) {
-  const colorClasses = {
-    rose: 'text-rose-400',
-    blue: 'text-blue-400',
-    amber: 'text-amber-400',
-    emerald: 'text-primary',
-  };
+        <div className="bg-primary/10 dark:bg-primary/20 rounded-xl border border-primary/30 p-6 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Ready to Change Your Trajectory?
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            These projections can be altered. Physician-guided intervention based on your specific risk profile offers the clearest path to improved outcomes.
+          </p>
+          <a
+            href="https://aimd.health"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primaryDark text-white font-semibold rounded-xl transition-colors"
+          >
+            Consult with a Physician
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        </div>
 
-  return (
-    <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-2 sm:p-3">
-      <div className="flex items-center gap-1 sm:gap-2 mb-1">
-        <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${colorClasses[color]}`} />
-        <span className="text-gray-600 dark:text-gray-400 text-xs">{label}</span>
+        <div className="flex justify-center">
+          <button
+            onClick={() => {
+              setResult(null);
+              setState('ready');
+            }}
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Run New Simulation
+          </button>
+        </div>
+
+        <div className="text-center text-xs text-gray-500 dark:text-gray-500 pb-8">
+          <p>
+            This simulation is for informational purposes only and does not constitute medical advice, diagnosis, or treatment. Risk projections are based on population-level associations and may not reflect individual outcomes. Always consult a qualified healthcare provider for medical decisions.
+          </p>
+        </div>
       </div>
-      <p className="text-primaryDeep dark:text-white text-base sm:text-lg font-semibold">
-        {value.toLocaleString()}
-        {unit && <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm ml-1">{unit}</span>}
-      </p>
-    </div>
-  );
-}
+    );
+  }
 
-interface PredictionCardProps {
-  label: string;
-  value: number;
-  suffix: string;
-}
-
-function PredictionCard({ label, value, suffix }: PredictionCardProps) {
-  const isPositive = value >= 0;
-  return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg p-2 sm:p-3 text-center">
-      <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">{label}</p>
-      <div className="flex items-center justify-center gap-1">
-        {isPositive ? (
-          <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
-        ) : (
-          <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-rose-400" />
-        )}
-        <span className={`text-base sm:text-lg font-bold ${isPositive ? 'text-primary' : 'text-rose-400'}`}>
-          {isPositive ? '+' : ''}{value}{suffix}
-        </span>
-      </div>
-    </div>
-  );
+  return null;
 }

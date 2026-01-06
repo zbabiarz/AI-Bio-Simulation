@@ -713,9 +713,15 @@ export default function DevicesPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Devices & Data</h1>
+        <h1 className="text-2xl font-bold text-primaryDeep dark:text-white mb-2">Upload Your Data</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Connect wearable devices or upload health data files
+          Connect your wearable device or upload health data files for biosimulation analysis
+        </p>
+      </div>
+
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-4">
+        <p className="text-sm text-blue-800 dark:text-blue-300">
+          <span className="font-semibold">Required for Biosimulation:</span> Your data must include HRV (Heart Rate Variability) and Deep Sleep duration. At least 3 days of data is needed.
         </p>
       </div>
 

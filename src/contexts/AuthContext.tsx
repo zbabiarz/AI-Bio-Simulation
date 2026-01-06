@@ -12,6 +12,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ error: Error | null }>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,6 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }
 
+  async function refreshProfile() {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  }
+
   async function signUp(email: string, password: string, fullName: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -76,6 +83,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: data.user.id,
           email,
           full_name: fullName,
+          has_heart_failure: false,
+          has_diabetes: false,
+          has_chronic_kidney_disease: false,
+          intake_completed: false,
         });
 
       if (profileError) return { error: profileError };
@@ -123,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       updateProfile,
+      refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>

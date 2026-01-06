@@ -3,19 +3,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import {
-  LayoutDashboard,
-  Watch,
   Brain,
-  Target,
-  MessageSquare,
-  Award,
+  Upload,
+  User,
   Settings,
   LogOut,
   Menu,
   X,
   Shield,
   ChevronDown,
-  User,
   Moon,
   Sun,
 } from 'lucide-react';
@@ -25,12 +21,9 @@ interface LayoutProps {
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Devices', href: '/devices', icon: Watch },
-  { name: 'Simulations', href: '/simulations', icon: Brain },
-  { name: 'Goals', href: '/goals', icon: Target },
-  { name: 'Bio-Coach', href: '/coach', icon: MessageSquare },
-  { name: 'Achievements', href: '/achievements', icon: Award },
+  { name: 'Biosimulation', href: '/simulation', icon: Brain },
+  { name: 'Upload Data', href: '/devices', icon: Upload },
+  { name: 'Health Profile', href: '/intake', icon: User },
 ];
 
 export default function Layout({ children }: LayoutProps) {
@@ -61,7 +54,7 @@ export default function Layout({ children }: LayoutProps) {
         }`}
       >
         <div className="flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200">
-          <Link to="/dashboard" className="flex items-center">
+          <Link to="/simulation" className="flex items-center">
             <img
               src="https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695c45adca807cc717540ee9.png"
               alt="AIMD"

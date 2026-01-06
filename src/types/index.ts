@@ -5,6 +5,12 @@ export interface UserProfile {
   avatar_url: string | null;
   is_admin: boolean;
   onboarding_completed: boolean;
+  age: number | null;
+  sex: 'male' | 'female' | 'other' | null;
+  has_heart_failure: boolean;
+  has_diabetes: boolean;
+  has_chronic_kidney_disease: boolean;
+  intake_completed: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -33,77 +39,59 @@ export interface HealthMetric {
   created_at: string;
 }
 
-export interface HealthGoal {
-  id: string;
-  user_id: string;
-  metric_type: string;
-  target_value: number;
-  current_value: number;
-  unit: string;
-  title: string;
-  description: string | null;
-  start_date: string;
-  end_date: string | null;
-  status: 'active' | 'completed' | 'paused';
-  created_at: string;
-  updated_at: string;
+export type HRVClassification = 'low' | 'moderate' | 'favorable';
+export type DeepSleepClassification = 'inadequate' | 'borderline' | 'adequate';
+
+export interface RiskTrajectory {
+  current: number;
+  sixMonths: number;
+  oneYear: number;
+  fiveYears: number;
+  tenYears: number;
+  riskLevel: 'low' | 'moderate' | 'elevated' | 'high' | 'critical';
+  primaryDrivers: string[];
+  trend: 'improving' | 'stable' | 'worsening';
 }
 
-export interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  category: 'activity' | 'sleep' | 'consistency' | 'milestone' | 'simulation';
-  requirement_type: string;
-  requirement_value: number;
-  points: number;
-  created_at: string;
-}
-
-export interface UserBadge {
+export interface BiosimulationSession {
   id: string;
   user_id: string;
-  badge_id: string;
-  earned_at: string;
-  badge?: Badge;
-}
-
-export interface Simulation {
-  id: string;
-  user_id: string;
-  input_metrics: Record<string, number>;
-  changes: Record<string, number>;
-  predictions: SimulationPrediction;
+  hrv_classification: HRVClassification;
+  deep_sleep_classification: DeepSleepClassification;
+  avg_hrv: number;
+  avg_deep_sleep_minutes: number;
+  data_days_analyzed: number;
+  dementia_risk: RiskTrajectory;
+  cardiovascular_risk: RiskTrajectory;
+  heart_failure_risk: RiskTrajectory;
+  cognitive_decline_risk: RiskTrajectory;
+  metabolic_risk: RiskTrajectory;
+  clinical_narrative: string | null;
   recommendations: string[];
   created_at: string;
 }
 
-export interface SimulationPrediction {
-  fitness_impact: number;
-  stress_reduction: number;
-  recovery_improvement: number;
-  sleep_quality_change: number;
-  energy_level_change: number;
-  timeframe_days: number;
-  confidence: number;
+export interface PhysiologicalClassification {
+  hrv: {
+    value: number;
+    classification: HRVClassification;
+    percentile: number;
+    ageAdjusted: boolean;
+  };
+  deepSleep: {
+    value: number;
+    classification: DeepSleepClassification;
+    percentile: number;
+    ageAdjusted: boolean;
+  };
 }
 
-export interface ChatMessage {
-  id: string;
-  user_id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  metadata: Record<string, unknown> | null;
-  created_at: string;
-}
-
-export interface ActivityLog {
-  id: string;
-  user_id: string;
-  action: string;
-  details: Record<string, unknown> | null;
-  created_at: string;
+export interface HealthIntakeData {
+  age: number;
+  sex: 'male' | 'female' | 'other';
+  hasHeartFailure: boolean;
+  hasDiabetes: boolean;
+  hasChronicKidneyDisease: boolean;
 }
 
 export interface MetricsSummary {
@@ -111,6 +99,7 @@ export interface MetricsSummary {
   avgRestingHr: number | null;
   avgSleepDuration: number | null;
   avgSleepEfficiency: number | null;
+  avgDeepSleep: number | null;
   avgSteps: number | null;
   avgRecoveryScore: number | null;
   totalActiveDays: number;

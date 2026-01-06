@@ -3,13 +3,10 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/Layout';
 import AuthPage from './pages/AuthPage';
-import DashboardPage from './pages/DashboardPage';
 import DevicesPage from './pages/DevicesPage';
 import ConnectCallbackPage from './pages/ConnectCallbackPage';
 import SimulationsPage from './pages/SimulationsPage';
-import GoalsPage from './pages/GoalsPage';
-import CoachPage from './pages/CoachPage';
-import AchievementsPage from './pages/AchievementsPage';
+import IntakePage from './pages/IntakePage';
 import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -44,7 +41,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/simulation" replace />;
   }
 
   return <>{children}</>;
@@ -62,10 +59,10 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard"
+        path="/simulation"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <SimulationsPage />
           </ProtectedRoute>
         }
       />
@@ -78,8 +75,16 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/intake"
+        element={
+          <ProtectedRoute>
+            <IntakePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/upload"
-        element={<Navigate to="/devices?tab=upload" replace />}
+        element={<Navigate to="/devices" replace />}
       />
       <Route
         path="/connect"
@@ -90,38 +95,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ConnectCallbackPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/simulations"
-        element={
-          <ProtectedRoute>
-            <SimulationsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/goals"
-        element={
-          <ProtectedRoute>
-            <GoalsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/coach"
-        element={
-          <ProtectedRoute>
-            <CoachPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/achievements"
-        element={
-          <ProtectedRoute>
-            <AchievementsPage />
           </ProtectedRoute>
         }
       />
@@ -149,6 +122,11 @@ function AppRoutes() {
           </div>
         }
       />
+      <Route path="/dashboard" element={<Navigate to="/simulation" replace />} />
+      <Route path="/simulations" element={<Navigate to="/simulation" replace />} />
+      <Route path="/goals" element={<Navigate to="/simulation" replace />} />
+      <Route path="/achievements" element={<Navigate to="/simulation" replace />} />
+      <Route path="/coach" element={<Navigate to="/simulation" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
