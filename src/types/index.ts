@@ -67,7 +67,20 @@ export interface BiosimulationSession {
   cognitive_decline_risk: RiskTrajectory;
   metabolic_risk: RiskTrajectory;
   clinical_narrative: string | null;
+  ai_narrative: string | null;
+  ai_narrative_tokens_used: number;
   recommendations: string[];
+  created_at: string;
+}
+
+export interface AIExplanationCache {
+  id: string;
+  user_id: string;
+  explanation_type: 'narrative' | 'whatif';
+  input_hash: string;
+  prompt: string;
+  response: string;
+  tokens_used: number;
   created_at: string;
 }
 

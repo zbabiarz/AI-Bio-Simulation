@@ -5,9 +5,12 @@ import { supabase } from '../lib/supabase';
 import { generatePhysiologicalClassification } from '../lib/classification';
 import { generateAllRiskProjections, getWorstTrajectories } from '../lib/riskProjection';
 import { generateClinicalNarrative, generateRecommendations } from '../lib/narrativeGenerator';
+import { generateAIPersonalizedNarrative } from '../lib/aiNarrativeGenerator';
 import RiskTrajectoryChart from '../components/RiskTrajectoryChart';
 import ComparativeTrajectoryChart from '../components/ComparativeTrajectoryChart';
 import ClassificationBadge from '../components/ClassificationBadge';
+import AIProcessingAnimation from '../components/AIProcessingAnimation';
+import WhatIfExplanationPanel from '../components/WhatIfExplanationPanel';
 import type { HealthMetric, RiskTrajectory, HealthIntakeData, PhysiologicalClassification } from '../types';
 import {
   Brain,
@@ -24,10 +27,13 @@ import {
   Clock,
   History,
   ChevronDown,
+  Sparkles,
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 
 type SimulationState = 'checking' | 'needs-intake' | 'needs-data' | 'ready' | 'running' | 'complete';
+
+type AIProcessingStage = 'analyzing' | 'calculating' | 'personalizing' | 'generating';
 
 interface SimulationResult {
   classification: PhysiologicalClassification;
@@ -39,8 +45,10 @@ interface SimulationResult {
     metabolic: RiskTrajectory;
   };
   narrative: string;
+  aiNarrative: string | null;
   recommendations: string[];
   dataDays: number;
+  intake: HealthIntakeData;
 }
 
 export default function SimulationsPage() {
@@ -58,6 +66,7 @@ export default function SimulationsPage() {
   const [selectedTimeHorizon, setSelectedTimeHorizon] = useState<'sixMonths' | 'oneYear' | 'fiveYears' | 'tenYears'>('fiveYears');
   const [pastSessions, setPastSessions] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [aiProcessingStage, setAiProcessingStage] = useState<AIProcessingStage>('analyzing');
 
   useEffect(() => {
     if (user && profile) {
@@ -120,8 +129,7 @@ export default function SimulationsPage() {
     if (!profile || !user) return;
 
     setState('running');
-
-    await new Promise(r => setTimeout(r, 2000));
+    setAiProcessingStage('analyzing');
 
     const intake: HealthIntakeData = {
       age: profile.age!,
@@ -130,6 +138,9 @@ export default function SimulationsPage() {
       hasDiabetes: profile.has_diabetes,
       hasChronicKidneyDisease: profile.has_chronic_kidney_disease,
     };
+
+    await new Promise(r => setTimeout(r, 2000));
+    setAiProcessingStage('calculating');
 
     const classification = generatePhysiologicalClassification(avgHrv, avgDeepSleep, intake);
 
@@ -140,6 +151,9 @@ export default function SimulationsPage() {
       avgDeepSleep,
       intake,
     });
+
+    await new Promise(r => setTimeout(r, 2000));
+    setAiProcessingStage('personalizing');
 
     const narrative = generateClinicalNarrative({
       hrvClassification: classification.hrv.classification,
@@ -167,6 +181,25 @@ export default function SimulationsPage() {
       metabolic: projections.metabolic,
     });
 
+    let aiNarrative: string | null = null;
+    let aiTokensUsed = 0;
+
+    try {
+      setAiProcessingStage('generating');
+      const aiResult = await generateAIPersonalizedNarrative({
+        classification,
+        avgHrv,
+        avgDeepSleep,
+        intake,
+        projections,
+        templateNarrative: narrative,
+      });
+      aiNarrative = aiResult.narrative;
+      aiTokensUsed = aiResult.tokensUsed;
+    } catch (err) {
+      console.error('AI narrative generation failed, using template:', err);
+    }
+
     await supabase.from('biosimulation_sessions').insert({
       user_id: user.id,
       hrv_classification: classification.hrv.classification,
@@ -180,6 +213,8 @@ export default function SimulationsPage() {
       cognitive_decline_risk: projections.cognitiveDecline,
       metabolic_risk: projections.metabolic,
       clinical_narrative: narrative,
+      ai_narrative: aiNarrative,
+      ai_narrative_tokens_used: aiTokensUsed,
       recommendations,
     });
 
@@ -187,8 +222,10 @@ export default function SimulationsPage() {
       classification,
       projections,
       narrative,
+      aiNarrative,
       recommendations,
       dataDays: metrics.length,
+      intake,
     });
 
     setAdjustedHrv(avgHrv);
@@ -352,19 +389,7 @@ export default function SimulationsPage() {
   }
 
   if (state === 'running') {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-6" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Running Biosimulation
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Analyzing your physiological data and generating risk trajectories across five disease outcomes...
-          </p>
-        </div>
-      </div>
-    );
+    return <AIProcessingAnimation stage={aiProcessingStage} />;
   }
 
   if (state === 'complete' && result) {
@@ -687,6 +712,20 @@ export default function SimulationsPage() {
                       );
                     })}
                   </div>
+
+                  {user && (
+                    <WhatIfExplanationPanel
+                      userId={user.id}
+                      intake={result.intake}
+                      classification={result.classification}
+                      baselineHrv={avgHrv}
+                      baselineDeepSleep={avgDeepSleep}
+                      adjustedHrv={adjustedHrv}
+                      adjustedDeepSleep={adjustedDeepSleep}
+                      baselineProjections={result.projections}
+                      adjustedProjections={optimizedProjections}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -803,12 +842,20 @@ export default function SimulationsPage() {
         </div>
 
         <div className="bg-slate-900 dark:bg-slate-950 rounded-xl p-6 md:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <FileText className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Clinical Interpretation</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <FileText className="w-6 h-6 text-white" />
+              <h2 className="text-xl font-bold text-white">Clinical Interpretation</h2>
+            </div>
+            {result.aiNarrative && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full text-xs font-medium text-primary">
+                <Sparkles className="w-3.5 h-3.5" />
+                AI-Personalized
+              </span>
+            )}
           </div>
           <div className="prose prose-invert max-w-none">
-            {result.narrative.split('\n\n').map((paragraph, i) => (
+            {(result.aiNarrative || result.narrative).split('\n\n').map((paragraph, i) => (
               <p key={i} className="text-gray-300 leading-relaxed mb-4 last:mb-0">
                 {paragraph}
               </p>
