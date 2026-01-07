@@ -98,7 +98,8 @@ export default function ConnectCallbackPage() {
   }> {
     const clientId = import.meta.env[`VITE_${providerName.toUpperCase()}_CLIENT_ID`];
     const clientSecret = import.meta.env[`VITE_${providerName.toUpperCase()}_CLIENT_SECRET`];
-    const redirectUri = `${window.location.origin}/connect/callback/${providerName}`;
+    const envRedirectUri = import.meta.env[`VITE_${providerName.toUpperCase()}_REDIRECT_URI`];
+    const redirectUri = envRedirectUri || `${window.location.origin}/connect/callback/${providerName}`;
 
     if (!clientId || !clientSecret) {
       console.warn('OAuth credentials not configured, using demo mode');

@@ -6,13 +6,15 @@ interface OAuthConfig {
 }
 
 export function getOAuthConfig(provider: string): OAuthConfig | null {
-  const redirectUri = `${window.location.origin}/connect/callback/${provider}`;
   const clientId = import.meta.env[`VITE_${provider.toUpperCase()}_CLIENT_ID`];
 
   if (!clientId) {
     console.warn(`OAuth client ID not configured for ${provider}`);
     return null;
   }
+
+  const envRedirectUri = import.meta.env[`VITE_${provider.toUpperCase()}_REDIRECT_URI`];
+  const redirectUri = envRedirectUri || `${window.location.origin}/connect/callback/${provider}`;
 
   const configs: Record<string, { authUrl: string; scope: string }> = {
     oura: {
