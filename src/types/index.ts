@@ -11,6 +11,7 @@ export interface UserProfile {
   has_diabetes: boolean;
   has_chronic_kidney_disease: boolean;
   intake_completed: boolean;
+  install_prompt_count: number;
   created_at: string;
   updated_at: string;
 }

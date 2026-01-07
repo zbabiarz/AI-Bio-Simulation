@@ -1,0 +1,24 @@
+{
+  "name": "The AI-MD",
+  "short_name": "AI-MD",
+  "description": "AI-Powered Bio-Simulation for personalized health insights and predictions from your wearable data",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695ebd780597df5762a49f88.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695ebd780597df5762a49f88.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

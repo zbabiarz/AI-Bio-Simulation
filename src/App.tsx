@@ -10,6 +10,7 @@ import IntakePage from './pages/IntakePage';
 import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPage from './pages/PrivacyPage';
+import InstallPromptModal from './components/InstallPromptModal';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -137,6 +138,7 @@ export default function App() {
     <Router>
       <ThemeProvider>
         <AuthProvider>
+          <InstallPromptModal />
           <AppRoutes />
         </AuthProvider>
       </ThemeProvider>

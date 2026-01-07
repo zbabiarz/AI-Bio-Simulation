@@ -87,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           has_diabetes: false,
           has_chronic_kidney_disease: false,
           intake_completed: false,
+          install_prompt_count: 0,
         });
 
       if (profileError) return { error: profileError };
