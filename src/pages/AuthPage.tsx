@@ -28,11 +28,12 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) throw error;
+        navigate('/dashboard');
       } else {
         const { error } = await signUp(email, password, fullName, isAdminSignup);
         if (error) throw error;
+        navigate(isAdminSignup ? '/admin' : '/dashboard');
       }
-      navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

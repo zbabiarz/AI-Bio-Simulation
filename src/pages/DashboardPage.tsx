@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { HealthMetric, MetricsSummary, HealthGoal, UserBadge } from '../types';
@@ -50,12 +50,19 @@ interface WearableDataEntry {
 
 export default function DashboardPage() {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [metrics, setMetrics] = useState<HealthMetric[]>([]);
   const [summary, setSummary] = useState<MetricsSummary | null>(null);
   const [goals, setGoals] = useState<HealthGoal[]>([]);
   const [badges, setBadges] = useState<UserBadge[]>([]);
   const [latestWearable, setLatestWearable] = useState<WearableDataEntry | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (profile?.is_admin) {
+      navigate('/admin');
+    }
+  }, [profile, navigate]);
 
   useEffect(() => {
     if (user) {
