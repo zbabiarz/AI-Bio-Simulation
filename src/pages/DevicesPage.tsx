@@ -223,7 +223,17 @@ export default function DevicesPage() {
     setSyncing(connection.provider);
 
     try {
-      const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sync-oura-data`;
+      const syncFunctionMap: Record<string, string> = {
+        oura: 'sync-oura-data',
+        whoop: 'sync-whoop-data',
+      };
+
+      const functionName = syncFunctionMap[connection.provider];
+      if (!functionName) {
+        throw new Error(`Sync not supported for ${connection.provider}`);
+      }
+
+      const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`;
 
       const response = await fetch(edgeFunctionUrl, {
         method: 'POST',
