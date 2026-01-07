@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Lock, User, ArrowRight, Heart, Brain, Zap } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Heart, Brain, Zap, Shield, X } from 'lucide-react';
+
+const ADMIN_PASSCODE = '1234';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +12,10 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isAdminSignup, setIsAdminSignup] = useState(false);
+  const [showPasscodeModal, setShowPasscodeModal] = useState(false);
+  const [passcode, setPasscode] = useState(['', '', '', '']);
+  const [passcodeError, setPasscodeError] = useState('');
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -23,7 +29,7 @@ export default function AuthPage() {
         const { error } = await signIn(email, password);
         if (error) throw error;
       } else {
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await signUp(email, password, fullName, isAdminSignup);
         if (error) throw error;
       }
       navigate('/dashboard');
@@ -32,6 +38,57 @@ export default function AuthPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleAdminToggle() {
+    if (!isAdminSignup) {
+      setShowPasscodeModal(true);
+    } else {
+      setIsAdminSignup(false);
+    }
+  }
+
+  function handlePasscodeChange(index: number, value: string) {
+    if (value.length > 1) return;
+    if (value && !/^\d$/.test(value)) return;
+
+    const newPasscode = [...passcode];
+    newPasscode[index] = value;
+    setPasscode(newPasscode);
+    setPasscodeError('');
+
+    if (value && index < 3) {
+      const nextInput = document.getElementById(`passcode-${index + 1}`);
+      nextInput?.focus();
+    }
+  }
+
+  function handlePasscodeKeyDown(index: number, e: React.KeyboardEvent) {
+    if (e.key === 'Backspace' && !passcode[index] && index > 0) {
+      const prevInput = document.getElementById(`passcode-${index - 1}`);
+      prevInput?.focus();
+    }
+  }
+
+  function verifyPasscode() {
+    const enteredPasscode = passcode.join('');
+    if (enteredPasscode === ADMIN_PASSCODE) {
+      setIsAdminSignup(true);
+      setShowPasscodeModal(false);
+      setPasscode(['', '', '', '']);
+      setPasscodeError('');
+    } else {
+      setPasscodeError('Incorrect passcode. Please try again.');
+      setPasscode(['', '', '', '']);
+      const firstInput = document.getElementById('passcode-0');
+      firstInput?.focus();
+    }
+  }
+
+  function closePasscodeModal() {
+    setShowPasscodeModal(false);
+    setPasscode(['', '', '', '']);
+    setPasscodeError('');
   }
 
   return (
@@ -99,11 +156,18 @@ export default function AuthPage() {
           </div>
 
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 shadow-sm">
-            <h2 className="text-2xl font-bold text-[#0D2B6B] dark:text-white mb-2">
-              {isLogin ? 'Welcome back' : 'Create your account'}
-            </h2>
+            <div className="flex items-center gap-3 mb-2">
+              {isAdminSignup && !isLogin && (
+                <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-orange-500 rounded-lg flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-white" />
+                </div>
+              )}
+              <h2 className="text-2xl font-bold text-[#0D2B6B] dark:text-white">
+                {isLogin ? 'Welcome back' : isAdminSignup ? 'Create Admin Account' : 'Create your account'}
+              </h2>
+            </div>
             <p className="text-gray-600 dark:text-gray-400 mb-8">
-              {isLogin ? 'Sign in to access your health dashboard' : 'Start your personalized health journey'}
+              {isLogin ? 'Sign in to access your health dashboard' : isAdminSignup ? 'Set up your admin credentials' : 'Start your personalized health journey'}
             </p>
 
             {error && (
@@ -170,22 +234,46 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1A5BE9] hover:bg-[#0D2B6B] text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isAdminSignup && !isLogin
+                    ? 'bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white'
+                    : 'bg-[#1A5BE9] hover:bg-[#0D2B6B] text-white'
+                }`}
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    {isLogin ? 'Sign In' : 'Create Account'}
+                    {isLogin ? 'Sign In' : isAdminSignup ? 'Create Admin Account' : 'Create Account'}
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </button>
             </form>
 
+            {!isLogin && (
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={handleAdminToggle}
+                  className={`w-full py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                    isAdminSignup
+                      ? 'border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100'
+                      : 'border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  {isAdminSignup ? 'Switch to Regular Account' : 'Create Admin Account'}
+                </button>
+              </div>
+            )}
+
             <div className="mt-6 text-center">
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setIsAdminSignup(false);
+                }}
                 className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
               >
                 {isLogin ? "Don't have an account? " : 'Already have an account? '}
@@ -201,6 +289,60 @@ export default function AuthPage() {
           </p>
         </div>
       </div>
+
+      {showPasscodeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-sm border border-gray-200 dark:border-slate-700 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-orange-500 rounded-lg flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-[#0D2B6B] dark:text-white">Admin Verification</h3>
+              </div>
+              <button
+                onClick={closePasscodeModal}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+              Enter the 4-digit admin passcode to create an admin account.
+            </p>
+
+            <div className="flex justify-center gap-3 mb-4">
+              {passcode.map((digit, index) => (
+                <input
+                  key={index}
+                  id={`passcode-${index}`}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handlePasscodeChange(index, e.target.value)}
+                  onKeyDown={(e) => handlePasscodeKeyDown(index, e)}
+                  className="w-12 h-14 text-center text-2xl font-bold bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-[#0D2B6B] dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
+
+            {passcodeError && (
+              <p className="text-red-500 text-sm text-center mb-4">{passcodeError}</p>
+            )}
+
+            <button
+              onClick={verifyPasscode}
+              disabled={passcode.some(d => !d)}
+              className="w-full bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Verify Passcode
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
