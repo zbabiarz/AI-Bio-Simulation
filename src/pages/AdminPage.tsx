@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { UserProfile, ActivityLog } from '../types';
+import { UserProfile } from '../types';
 import {
   Shield,
   Users,
@@ -12,14 +12,12 @@ import {
   Upload,
   MessageSquare,
   TrendingUp,
-  Calendar,
   Search,
   Download,
   Eye,
   Trash2,
   ChevronLeft,
   ChevronRight,
-  FileSpreadsheet,
   Loader2,
 } from 'lucide-react';
 import { format, parseISO, subDays } from 'date-fns';
@@ -77,7 +75,6 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
   const [actionCounts, setActionCounts] = useState<ActionCount[]>([]);
   const [userGrowth, setUserGrowth] = useState<{ date: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,8 +131,6 @@ export default function AdminPage() {
     }
 
     if (activityRes.data) {
-      setRecentActivity(activityRes.data);
-
       const counts: Record<string, number> = {};
       activityRes.data.forEach((a) => {
         counts[a.action] = (counts[a.action] || 0) + 1;
@@ -166,22 +161,6 @@ export default function AdminPage() {
     });
 
     return growthData;
-  }
-
-  function getActionIcon(action: string) {
-    switch (action) {
-      case 'upload_data':
-        return <Upload className="w-4 h-4 text-primary" />;
-      case 'run_simulation':
-        return <Brain className="w-4 h-4 text-blue-400" />;
-      case 'create_goal':
-      case 'complete_goal':
-        return <Target className="w-4 h-4 text-amber-400" />;
-      case 'chat_with_coach':
-        return <MessageSquare className="w-4 h-4 text-primaryAccent" />;
-      default:
-        return <Activity className="w-4 h-4 text-gray-600" />;
-    }
   }
 
   function formatAction(action: string): string {
@@ -483,33 +462,6 @@ export default function AdminPage() {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
-        <h3 className="text-base sm:text-lg font-semibold text-primaryDeep dark:text-white mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-amber-400" />
-          Recent Activity
-        </h3>
-
-        <div className="space-y-3">
-          {recentActivity.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex items-center gap-3 sm:gap-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3"
-            >
-              {getActionIcon(activity.action)}
-              <div className="flex-1 min-w-0">
-                <p className="text-primaryDeep dark:text-white text-xs sm:text-sm truncate">{formatAction(activity.action)}</p>
-                <p className="text-gray-600 dark:text-gray-400 text-xs truncate">
-                  User: {activity.user_id.slice(0, 8)}...
-                </p>
-              </div>
-              <span className="text-gray-600 dark:text-gray-400 text-xs whitespace-nowrap">
-                {format(parseISO(activity.created_at), 'MMM d, h:mm a')}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {selectedUser && (
