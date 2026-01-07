@@ -59,19 +59,19 @@ Deno.serve(async (req: Request) => {
 
     const [cycleResponse, recoveryResponse, sleepResponse, workoutResponse] = await Promise.all([
       fetch(
-        `https://api.whoop.com/v1/cycle?start=${startDate}&end=${endDate}`,
+        `https://api.prod.whoop.com/developer/v1/cycle?start=${startDate}&end=${endDate}`,
         { headers }
       ),
       fetch(
-        `https://api.whoop.com/v1/recovery?start=${startDate}&end=${endDate}`,
+        `https://api.prod.whoop.com/developer/v1/recovery?start=${startDate}&end=${endDate}`,
         { headers }
       ),
       fetch(
-        `https://api.whoop.com/v1/sleep?start=${startDate}&end=${endDate}`,
+        `https://api.prod.whoop.com/developer/v1/sleep?start=${startDate}&end=${endDate}`,
         { headers }
       ),
       fetch(
-        `https://api.whoop.com/v1/workout?start=${startDate}&end=${endDate}`,
+        `https://api.prod.whoop.com/developer/v1/workout?start=${startDate}&end=${endDate}`,
         { headers }
       ),
     ]);

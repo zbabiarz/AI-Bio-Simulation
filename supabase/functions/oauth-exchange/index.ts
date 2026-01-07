@@ -28,7 +28,7 @@ Deno.serve(async (req: Request) => {
     const tokenEndpoints: Record<string, string> = {
       oura: 'https://api.ouraring.com/oauth/token',
       fitbit: 'https://api.fitbit.com/oauth2/token',
-      whoop: 'https://api.whoop.com/oauth/token',
+      whoop: 'https://app.whoop.com/oauth/oauth2/token',
       garmin: 'https://connectapi.garmin.com/oauth-service/oauth/access_token',
     };
 

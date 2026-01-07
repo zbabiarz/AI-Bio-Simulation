@@ -22,7 +22,7 @@ export function getOAuthConfig(provider: string): OAuthConfig | null {
       scope: 'email personal daily heartrate tag workout session spo2 ring_configuration stress heart_health',
     },
     whoop: {
-      authUrl: 'https://api.whoop.com/oauth/authorize',
+      authUrl: 'https://app.whoop.com/oauth/oauth2/auth',
       scope: 'read:recovery read:cycles read:sleep read:workout read:profile',
     },
     apple: {
