@@ -58,8 +58,18 @@ export function initiateOAuthFlow(provider: string): void {
 
   const state = generateState();
 
+  console.log('Initiating OAuth flow:', {
+    provider,
+    state,
+    redirectUri: config.redirectUri,
+    clientId: config.clientId.substring(0, 10) + '...',
+  });
+
   sessionStorage.setItem('oauth_state', state);
   sessionStorage.setItem('oauth_provider', provider);
+  localStorage.setItem('oauth_state', state);
+  localStorage.setItem('oauth_provider', provider);
+  localStorage.setItem('oauth_timestamp', Date.now().toString());
 
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -70,5 +80,6 @@ export function initiateOAuthFlow(provider: string): void {
   });
 
   const authUrl = `${config.authUrl}?${params.toString()}`;
+  console.log('Redirecting to:', authUrl);
   window.location.href = authUrl;
 }

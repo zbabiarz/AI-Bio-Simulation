@@ -31,11 +31,43 @@ export default function ConnectCallbackPage() {
         throw new Error(errorDescription || error);
       }
 
-      const savedState = sessionStorage.getItem('oauth_state');
-      const savedProvider = sessionStorage.getItem('oauth_provider');
+      let savedState = sessionStorage.getItem('oauth_state');
+      let savedProvider = sessionStorage.getItem('oauth_provider');
 
-      if (state !== savedState || provider !== savedProvider) {
-        throw new Error('Invalid OAuth state. Please try connecting again.');
+      // Fallback to localStorage if sessionStorage is empty
+      if (!savedState) {
+        savedState = localStorage.getItem('oauth_state');
+        savedProvider = localStorage.getItem('oauth_provider');
+        const timestamp = localStorage.getItem('oauth_timestamp');
+
+        // Check if localStorage data is not too old (5 minutes max)
+        if (timestamp && Date.now() - parseInt(timestamp) > 5 * 60 * 1000) {
+          localStorage.removeItem('oauth_state');
+          localStorage.removeItem('oauth_provider');
+          localStorage.removeItem('oauth_timestamp');
+          throw new Error('OAuth session expired. Please try connecting again.');
+        }
+      }
+
+      console.log('OAuth callback debug:', {
+        receivedState: state,
+        savedState,
+        receivedProvider: provider,
+        savedProvider,
+        stateMatch: state === savedState,
+        providerMatch: provider === savedProvider,
+      });
+
+      if (!savedState) {
+        throw new Error('OAuth session expired. Please try connecting again.');
+      }
+
+      if (state !== savedState) {
+        throw new Error('OAuth state mismatch. This may be a security issue or the session expired.');
+      }
+
+      if (provider !== savedProvider) {
+        throw new Error('Provider mismatch. Please try connecting again.');
       }
 
       if (!code) {
@@ -44,6 +76,9 @@ export default function ConnectCallbackPage() {
 
       sessionStorage.removeItem('oauth_state');
       sessionStorage.removeItem('oauth_provider');
+      localStorage.removeItem('oauth_state');
+      localStorage.removeItem('oauth_provider');
+      localStorage.removeItem('oauth_timestamp');
 
       const tokens = await exchangeCodeForTokens(provider!, code);
 
