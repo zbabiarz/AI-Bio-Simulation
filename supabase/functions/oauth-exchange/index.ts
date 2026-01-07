@@ -37,21 +37,63 @@ Deno.serve(async (req: Request) => {
       throw new Error(`Unknown provider: ${provider}`);
     }
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
+    // WHOOP requires credentials in the body, not in Authorization header
+    let headers: Record<string, string>;
+    let bodyParams: Record<string, string>;
+
+    if (provider === 'whoop') {
+      headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
-      },
-      body: new URLSearchParams({
+      };
+      bodyParams = {
         grant_type: 'authorization_code',
         code: code,
         redirect_uri: redirectUri,
-      }),
+        client_id: clientId,
+        client_secret: clientSecret,
+      };
+    } else {
+      // Other providers use Basic Auth
+      headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+      };
+      bodyParams = {
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirectUri,
+      };
+    }
+
+    console.log(`Making token exchange request to ${provider}:`, {
+      endpoint,
+      hasClientId: !!clientId,
+      hasClientSecret: !!clientSecret,
+      hasCode: !!code,
+      redirectUri,
+    });
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: new URLSearchParams(bodyParams),
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorText = await response.text();
+      console.error(`Token exchange failed for ${provider}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+      });
+
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error_description: errorText };
+      }
+
       throw new Error(errorData.error_description || `Failed to exchange code: ${response.statusText}`);
     }
 
