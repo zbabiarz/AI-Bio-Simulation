@@ -49,7 +49,7 @@ export default function Layout({ children }: LayoutProps) {
       />
 
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 bg-primaryDeep border-r border-primaryDark transform transition-transform lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-full w-64 bg-primaryDeep border-r border-gray-200 dark:border-primaryDark transform transition-transform lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
