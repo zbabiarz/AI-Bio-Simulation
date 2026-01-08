@@ -23,7 +23,7 @@ export default function DeviceLogo({ deviceId, deviceName, size = 'md', classNam
   if (!logoPath) {
     const initial = deviceName.charAt(0).toUpperCase();
     return (
-      <span className={`font-bold text-white ${className}`}>
+      <span className={`font-bold text-gray-700 dark:text-white ${className}`}>
         {initial}
       </span>
     );
