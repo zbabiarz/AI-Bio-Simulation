@@ -12,6 +12,7 @@ interface TokenExchangeRequest {
   redirectUri: string;
   clientId: string;
   clientSecret: string;
+  codeVerifier?: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -23,7 +24,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { provider, code, redirectUri, clientId, clientSecret }: TokenExchangeRequest = await req.json();
+    const { provider, code, redirectUri, clientId, clientSecret, codeVerifier }: TokenExchangeRequest = await req.json();
 
     const tokenEndpoints: Record<string, string> = {
       oura: 'https://api.ouraring.com/oauth/token',
@@ -37,7 +38,6 @@ Deno.serve(async (req: Request) => {
       throw new Error(`Unknown provider: ${provider}`);
     }
 
-    // WHOOP requires credentials in the body, not in Authorization header
     let headers: Record<string, string>;
     let bodyParams: Record<string, string>;
 
@@ -52,8 +52,20 @@ Deno.serve(async (req: Request) => {
         client_id: clientId,
         client_secret: clientSecret,
       };
+    } else if (provider === 'fitbit') {
+      headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+      };
+      bodyParams = {
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirectUri,
+      };
+      if (codeVerifier) {
+        bodyParams.code_verifier = codeVerifier;
+      }
     } else {
-      // Other providers use Basic Auth
       headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,

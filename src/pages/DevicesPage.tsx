@@ -90,6 +90,22 @@ const deviceProviders: DeviceProvider[] = [
     ],
   },
   {
+    id: 'fitbit',
+    name: 'Fitbit',
+    logo: 'F',
+    color: 'bg-gray-100 dark:bg-slate-700',
+    oauthSupported: true,
+    fileTypes: ['.csv', '.json'],
+    description: 'Sync heart rate, sleep, activity, HRV, and SpO2 data from your Fitbit device.',
+    exportInstructions: [
+      'Open the Fitbit app on your phone',
+      'Tap your profile picture',
+      'Go to Settings > Data Export',
+      'Select "Request Data" and wait for email',
+      'Download the ZIP file and extract CSV/JSON files',
+    ],
+  },
+  {
     id: 'whoop',
     name: 'WHOOP',
     logo: 'W',
@@ -104,22 +120,23 @@ const deviceProviders: DeviceProvider[] = [
       'Select date range and download',
     ],
   },
-  {
-    id: 'apple',
-    name: 'Apple Watch',
-    logo: 'A',
-    color: 'bg-gray-100 dark:bg-slate-700',
-    oauthSupported: true,
-    fileTypes: ['.xml', '.json'],
-    description: 'Sync heart rate, activity, sleep, and workout data from Apple Health.',
-    exportInstructions: [
-      'Open the Health app on your iPhone',
-      'Tap your profile picture in the top right',
-      'Scroll down and tap "Export All Health Data"',
-      'Wait for the export to complete and share the file',
-    ],
-  },
 ];
+
+const appleWatchProvider: DeviceProvider = {
+  id: 'apple',
+  name: 'Apple Watch',
+  logo: 'A',
+  color: 'bg-gray-100 dark:bg-slate-700',
+  oauthSupported: false,
+  fileTypes: ['.xml', '.json'],
+  description: 'Import heart rate, activity, sleep, and workout data from Apple Health.',
+  exportInstructions: [
+    'Open the Health app on your iPhone',
+    'Tap your profile picture in the top right',
+    'Scroll down and tap "Export All Health Data"',
+    'Wait for the export to complete and share the file',
+  ],
+};
 
 const otherDeviceProvider: DeviceProvider = {
   id: 'other',
@@ -128,7 +145,7 @@ const otherDeviceProvider: DeviceProvider = {
   color: 'bg-gray-500',
   oauthSupported: false,
   fileTypes: ['.csv', '.json', '.xml'],
-  description: 'Garmin, Fitbit, Samsung, Polar, and other wearables via file upload.',
+  description: 'Garmin, Samsung, Polar, and other wearables via file upload.',
   exportInstructions: [
     'Export your health data from your device app',
     'Most apps have an export option in Settings',
@@ -192,10 +209,10 @@ export default function DevicesPage() {
     return connections.find((c) => c.provider === providerId);
   }
 
-  function handleOAuthConnect(provider: DeviceProvider) {
+  async function handleOAuthConnect(provider: DeviceProvider) {
     try {
       setConnecting(provider.id);
-      initiateOAuthFlow(provider.id);
+      await initiateOAuthFlow(provider.id);
     } catch (error) {
       console.error('Failed to initiate OAuth flow:', error);
       setConnecting(null);
@@ -225,6 +242,7 @@ export default function DevicesPage() {
     try {
       const syncFunctionMap: Record<string, string> = {
         oura: 'sync-oura-data',
+        fitbit: 'sync-fitbit-data',
         whoop: 'sync-whoop-data',
       };
 
@@ -710,7 +728,8 @@ export default function DevicesPage() {
     (p) => !connections.find((c) => c.provider === p.id)
   );
 
-  const allDeviceProviders = [...deviceProviders, otherDeviceProvider];
+  const manualUploadProviders = [appleWatchProvider, otherDeviceProvider];
+  const allDeviceProviders = [...deviceProviders, ...manualUploadProviders];
   const getDeviceById = (id: string) => allDeviceProviders.find(d => d.id === id);
 
   if (loading) {
@@ -944,28 +963,48 @@ export default function DevicesPage() {
                   <Watch className="w-4 h-4" />
                   Other Devices (Manual Upload)
                 </h3>
-                <button
-                  onClick={() => changeTab('upload')}
-                  className="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-primary/50 transition-all flex items-center gap-4 text-left"
-                >
-                  <div className="w-10 h-10 bg-gray-500 rounded-xl flex items-center justify-center">
-                    <Watch className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-primaryDeep dark:text-white font-medium">Other Wearables</h4>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs">
-                      Garmin, Fitbit, Samsung, Polar, and more - upload via CSV/JSON files
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      setSelectedSource('apple');
+                      changeTab('upload');
+                    }}
+                    className="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-primary/50 transition-all flex items-center gap-4 text-left"
+                  >
+                    <div className={`w-10 h-10 ${appleWatchProvider.color} rounded-xl flex items-center justify-center`}>
+                      <DeviceLogo deviceId="apple" deviceName="Apple Watch" size="md" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-primaryDeep dark:text-white font-medium">Apple Watch</h4>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs">
+                        Import data from Apple Health via XML/JSON file export
+                      </p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </button>
+                  <button
+                    onClick={() => changeTab('upload')}
+                    className="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-primary/50 transition-all flex items-center gap-4 text-left"
+                  >
+                    <div className="w-10 h-10 bg-gray-500 rounded-xl flex items-center justify-center">
+                      <Watch className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-primaryDeep dark:text-white font-medium">Other Wearables</h4>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs">
+                        Garmin, Samsung, Polar, and more - upload via CSV/JSON files
+                      </p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
           {activeTab === 'upload' && (
             <div className="space-y-6">
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-5 gap-3">
                 {deviceProviders.map((device) => (
                   <button
                     key={device.id}
@@ -985,6 +1024,22 @@ export default function DevicesPage() {
                     <p className="text-gray-900 dark:text-white text-xs font-medium">{device.name}</p>
                   </button>
                 ))}
+                <button
+                  onClick={() => {
+                    setSelectedSource('apple');
+                    setShowInstructions('apple');
+                  }}
+                  className={`p-3 rounded-xl border text-center transition-all ${
+                    selectedSource === 'apple'
+                      ? 'bg-primary/10 border-primary'
+                      : 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:border-primary/50'
+                  }`}
+                >
+                  <div className={`w-10 h-10 ${appleWatchProvider.color} rounded-xl flex items-center justify-center mx-auto mb-2 text-gray-700 dark:text-gray-300`}>
+                    <DeviceLogo deviceId="apple" deviceName="Apple Watch" size="md" />
+                  </div>
+                  <p className="text-gray-900 dark:text-white text-xs font-medium">Apple</p>
+                </button>
                 <button
                   onClick={() => {
                     setSelectedSource('other');

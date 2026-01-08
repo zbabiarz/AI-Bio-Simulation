@@ -74,13 +74,20 @@ export default function ConnectCallbackPage() {
         throw new Error('No authorization code received.');
       }
 
+      let codeVerifier = sessionStorage.getItem('oauth_code_verifier');
+      if (!codeVerifier) {
+        codeVerifier = localStorage.getItem('oauth_code_verifier');
+      }
+
       sessionStorage.removeItem('oauth_state');
       sessionStorage.removeItem('oauth_provider');
+      sessionStorage.removeItem('oauth_code_verifier');
       localStorage.removeItem('oauth_state');
       localStorage.removeItem('oauth_provider');
       localStorage.removeItem('oauth_timestamp');
+      localStorage.removeItem('oauth_code_verifier');
 
-      const tokens = await exchangeCodeForTokens(provider!, code);
+      const tokens = await exchangeCodeForTokens(provider!, code, codeVerifier || undefined);
 
       const { error: dbError } = await supabase
         .from('user_connections')
@@ -125,7 +132,8 @@ export default function ConnectCallbackPage() {
 
   async function exchangeCodeForTokens(
     providerName: string,
-    code: string
+    code: string,
+    codeVerifier?: string
   ): Promise<{
     access_token: string;
     refresh_token?: string;
@@ -147,19 +155,25 @@ export default function ConnectCallbackPage() {
 
     const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/oauth-exchange`;
 
+    const requestBody: Record<string, string> = {
+      provider: providerName,
+      code,
+      redirectUri,
+      clientId,
+      clientSecret,
+    };
+
+    if (codeVerifier) {
+      requestBody.codeVerifier = codeVerifier;
+    }
+
     const response = await fetch(edgeFunctionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
       },
-      body: JSON.stringify({
-        provider: providerName,
-        code,
-        redirectUri,
-        clientId,
-        clientSecret,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
