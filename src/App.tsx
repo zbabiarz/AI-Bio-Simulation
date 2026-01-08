@@ -6,6 +6,7 @@ import AuthPage from './pages/AuthPage';
 import DevicesPage from './pages/DevicesPage';
 import ConnectCallbackPage from './pages/ConnectCallbackPage';
 import SimulationsPage from './pages/SimulationsPage';
+import AnalyticsDashboardPage from './pages/AnalyticsDashboardPage';
 import IntakePage from './pages/IntakePage';
 import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
@@ -42,7 +43,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (user) {
-    return <Navigate to="/simulation" replace />;
+    return <Navigate to="/analytics" replace />;
   }
 
   return <>{children}</>;
@@ -64,6 +65,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <SimulationsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <AnalyticsDashboardPage />
           </ProtectedRoute>
         }
       />
@@ -123,11 +132,11 @@ function AppRoutes() {
           </div>
         }
       />
-      <Route path="/dashboard" element={<Navigate to="/simulation" replace />} />
+      <Route path="/dashboard" element={<Navigate to="/analytics" replace />} />
       <Route path="/simulations" element={<Navigate to="/simulation" replace />} />
-      <Route path="/goals" element={<Navigate to="/simulation" replace />} />
-      <Route path="/achievements" element={<Navigate to="/simulation" replace />} />
-      <Route path="/coach" element={<Navigate to="/simulation" replace />} />
+      <Route path="/goals" element={<Navigate to="/analytics" replace />} />
+      <Route path="/achievements" element={<Navigate to="/analytics" replace />} />
+      <Route path="/coach" element={<Navigate to="/analytics" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

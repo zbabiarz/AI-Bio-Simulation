@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Moon,
   Sun,
+  BarChart3,
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -21,6 +22,7 @@ interface LayoutProps {
 }
 
 const navigation = [
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Biosimulation', href: '/simulation', icon: Brain },
   { name: 'Upload Data', href: '/devices', icon: Upload },
   { name: 'Health Profile', href: '/intake', icon: User },
