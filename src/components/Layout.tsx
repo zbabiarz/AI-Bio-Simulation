@@ -53,8 +53,8 @@ export default function Layout({ children }: LayoutProps) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200">
-          <Link to="/simulation" className="flex items-center">
+        <div className="flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200 w-full">
+          <Link to="/simulation" className="flex items-center flex-1">
             <img
               src="https://storage.googleapis.com/msgsndr/QFjnAi2H2A9Cpxi7l0ri/media/695c45adca807cc717540ee9.png"
               alt="AIMD"
@@ -63,7 +63,7 @@ export default function Layout({ children }: LayoutProps) {
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-600 hover:text-gray-900"
+            className="lg:hidden text-gray-600 hover:text-gray-900 flex-shrink-0"
           >
             <X className="w-6 h-6" />
           </button>
