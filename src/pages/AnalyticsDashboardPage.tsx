@@ -28,18 +28,19 @@ import PersonalRecordsCard from '../components/PersonalRecordsCard';
 import WeeklyComparisonCard from '../components/WeeklyComparisonCard';
 import AnomalyAlertBanner from '../components/AnomalyAlertBanner';
 import AIInsightsCarousel from '../components/AIInsightsCarousel';
+import BottomSheet from '../components/mobile/BottomSheet';
 import {
   Activity,
   Download,
   RefreshCw,
   ChevronRight,
   FileText,
-  BarChart3,
-  Sparkles,
+  Brain,
   AlertCircle,
   Check,
+  X,
 } from 'lucide-react';
-import { format, subDays, startOfWeek, endOfWeek, subWeeks } from 'date-fns';
+import { format, startOfWeek, endOfWeek, subWeeks } from 'date-fns';
 
 type ExportModalState = 'closed' | 'selecting' | 'exporting';
 
@@ -311,20 +312,20 @@ export default function AnalyticsDashboardPage() {
 
   if (!profile?.intake_completed) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-8 text-center">
-          <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Activity className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="card-mobile-elevated text-center py-10">
+          <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-800/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Activity className="w-10 h-10 text-amber-600 dark:text-amber-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
             Complete Your Health Profile
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-base text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">
             To generate your personalized health score and analytics, we need some basic information about you.
           </p>
           <button
             onClick={() => navigate('/intake')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primaryDark text-white font-semibold rounded-xl transition-colors"
+            className="btn-primary"
           >
             Complete Health Profile
             <ChevronRight className="w-5 h-5" />
@@ -335,56 +336,57 @@ export default function AnalyticsDashboardPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-7xl mx-auto space-y-4 lg:space-y-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Health Analytics</h1>
-          <p className="text-gray-500 dark:text-gray-400">
-            Your personalized health intelligence dashboard
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Health Analytics
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            Your personalized health intelligence
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setExportModal('selecting')}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 h-10 px-4 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-xl transition-all active:scale-[0.98] touch-target text-sm font-medium"
           >
             <Download className="w-4 h-4" />
-            Export
+            <span className="hidden sm:inline">Export</span>
           </button>
           <button
             onClick={handleCalculateScore}
             disabled={calculatingScore}
-            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryDark text-white rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-2 h-10 px-4 bg-gradient-to-r from-primary to-primaryAccent hover:from-primaryDark hover:to-primary text-white rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 touch-target text-sm font-medium"
           >
-            {calculatingScore ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Calculating...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-4 h-4" />
-                Refresh Score
-              </>
-            )}
+            <RefreshCw className={`w-4 h-4 ${calculatingScore ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{calculatingScore ? 'Updating...' : 'Refresh'}</span>
           </button>
         </div>
       </div>
 
       {message && (
         <div
-          className={`flex items-center gap-2 p-4 rounded-lg ${
+          className={`flex items-center justify-between gap-3 p-4 rounded-2xl animate-fade-in-up ${
             message.type === 'success'
               ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
               : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
           }`}
         >
-          {message.type === 'success' ? (
-            <Check className="w-5 h-5" />
-          ) : (
-            <AlertCircle className="w-5 h-5" />
-          )}
-          {message.text}
+          <div className="flex items-center gap-3">
+            {message.type === 'success' ? (
+              <Check className="w-5 h-5 flex-shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            )}
+            <span className="text-sm font-medium">{message.text}</span>
+          </div>
+          <button
+            onClick={() => setMessage(null)}
+            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -396,160 +398,235 @@ export default function AnalyticsDashboardPage() {
         />
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <HealthScoreGauge
-            score={currentScore?.overallScore || 0}
-            previousScore={previousScore}
-            components={
-              currentScore?.components || {
-                hrv: { score: 0, weight: 0.25 },
-                sleep: { score: 0, weight: 0.25 },
-                recovery: { score: 0, weight: 0.25 },
-                activity: { score: 0, weight: 0.25 },
-              }
-            }
-            aiReasoning={currentScore?.aiReasoning}
-            loading={loading || calculatingScore}
-          />
-        </div>
+      <HealthScoreGauge
+        score={currentScore?.overallScore || 0}
+        previousScore={previousScore}
+        components={
+          currentScore?.components || {
+            hrv: { score: 0, weight: 0.25 },
+            sleep: { score: 0, weight: 0.25 },
+            recovery: { score: 0, weight: 0.25 },
+            activity: { score: 0, weight: 0.25 },
+          }
+        }
+        aiReasoning={currentScore?.aiReasoning}
+        loading={loading || calculatingScore}
+      />
 
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PersonalRecordsCard records={records} loading={loading} />
-          <AIInsightsCarousel
-            insights={insights}
+      <AIInsightsCarousel
+        insights={insights}
+        loading={loading}
+        onRefresh={handleGenerateInsights}
+        refreshLoading={insightsLoading}
+        lastRefreshBlocked={insightsRateLimited}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        <PersonalRecordsCard records={records} loading={loading} />
+        {thisWeekData && (
+          <WeeklyComparisonCard
+            thisWeekData={thisWeekData}
+            lastWeekData={lastWeekData}
             loading={loading}
-            onRefresh={handleGenerateInsights}
-            refreshLoading={insightsLoading}
-            lastRefreshBlocked={insightsRateLimited}
           />
-        </div>
+        )}
       </div>
 
-      {thisWeekData && (
-        <WeeklyComparisonCard
-          thisWeekData={thisWeekData}
-          lastWeekData={lastWeekData}
-          loading={loading}
-        />
-      )}
+      <button
+        onClick={() => navigate('/simulation')}
+        className="w-full card-mobile-elevated press-scale-sm group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-primaryAccent/10 dark:from-primary/20 dark:to-primaryAccent/20 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+            <Brain className="w-6 h-6 text-primary" />
+          </div>
+          <div className="flex-1 text-left">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              Run Biosimulation
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              See your long-term health risk trajectories
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+        </div>
+      </button>
 
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-primary" />
+      <BottomSheet
+        isOpen={exportModal !== 'closed'}
+        onClose={() => setExportModal('closed')}
+        title="Export Health Data"
+      >
+        {exportModal === 'selecting' && (
+          <div className="p-4 space-y-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Choose the level of detail for your export:
+            </p>
+
+            <div className="space-y-3">
+              {[
+                {
+                  value: 'basic' as ExportFormat,
+                  label: 'Basic',
+                  description: 'Raw daily metrics only',
+                },
+                {
+                  value: 'standard' as ExportFormat,
+                  label: 'Standard',
+                  description: 'Metrics + health scores and trends',
+                },
+                {
+                  value: 'research' as ExportFormat,
+                  label: 'Research',
+                  description: 'Full export with anomaly flags and AI insights',
+                },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setSelectedExportFormat(option.value)}
+                  className={`w-full flex items-start gap-4 p-4 rounded-2xl border transition-all active:scale-[0.98] text-left ${
+                    selectedExportFormat === option.value
+                      ? 'bg-primary/10 border-primary dark:bg-primary/20'
+                      : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                      selectedExportFormat === option.value
+                        ? 'border-primary bg-primary'
+                        : 'border-gray-300 dark:border-slate-600'
+                    }`}
+                  >
+                    {selectedExportFormat === option.value && (
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">{option.label}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {option.description}
+                    </p>
+                  </div>
+                </button>
+              ))}
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Advanced Analysis
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Deep-dive into your health trajectories
-              </p>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setExportModal('closed')}
+                className="flex-1 btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleExport}
+                className="flex-1 btn-primary"
+              >
+                <FileText className="w-4 h-4" />
+                Export CSV
+              </button>
             </div>
           </div>
-          <button
-            onClick={() => navigate('/simulation')}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
-          >
-            Open Biosimulation
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
-          Run a comprehensive biosimulation to see your long-term health risk trajectories based on your HRV and sleep data. Get personalized projections for dementia, cardiovascular disease, and more.
-        </p>
-      </div>
+        )}
 
-      {exportModal !== 'closed' && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 max-w-md w-full">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary" />
+        {exportModal === 'exporting' && (
+          <div className="p-8 text-center">
+            <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">Preparing your export...</p>
+          </div>
+        )}
+      </BottomSheet>
+
+      <div className="hidden lg:block">
+        {exportModal !== 'closed' && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-6 max-w-md w-full animate-scale-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Export Health Data
+                </h3>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Export Health Data
-              </h3>
-            </div>
 
-            {exportModal === 'selecting' && (
-              <>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                  Choose the level of detail for your export:
-                </p>
+              {exportModal === 'selecting' && (
+                <>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                    Choose the level of detail for your export:
+                  </p>
 
-                <div className="space-y-3 mb-6">
-                  {[
-                    {
-                      value: 'basic' as ExportFormat,
-                      label: 'Basic',
-                      description: 'Raw daily metrics only',
-                    },
-                    {
-                      value: 'standard' as ExportFormat,
-                      label: 'Standard',
-                      description: 'Metrics + health scores and trends',
-                    },
-                    {
-                      value: 'research' as ExportFormat,
-                      label: 'Research',
-                      description: 'Full export with anomaly flags and AI insights',
-                    },
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-all ${
-                        selectedExportFormat === option.value
-                          ? 'bg-primary/10 border-primary'
-                          : 'bg-gray-50 dark:bg-slate-700/50 border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500'
-                      }`}
+                  <div className="space-y-3 mb-6">
+                    {[
+                      {
+                        value: 'basic' as ExportFormat,
+                        label: 'Basic',
+                        description: 'Raw daily metrics only',
+                      },
+                      {
+                        value: 'standard' as ExportFormat,
+                        label: 'Standard',
+                        description: 'Metrics + health scores and trends',
+                      },
+                      {
+                        value: 'research' as ExportFormat,
+                        label: 'Research',
+                        description: 'Full export with anomaly flags and AI insights',
+                      },
+                    ].map((option) => (
+                      <label
+                        key={option.value}
+                        className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+                          selectedExportFormat === option.value
+                            ? 'bg-primary/10 border-primary'
+                            : 'bg-gray-50 dark:bg-slate-700/50 border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="exportFormat"
+                          value={option.value}
+                          checked={selectedExportFormat === option.value}
+                          onChange={(e) => setSelectedExportFormat(e.target.value as ExportFormat)}
+                          className="mt-1"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{option.label}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {option.description}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setExportModal('closed')}
+                      className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-xl transition-colors font-medium"
                     >
-                      <input
-                        type="radio"
-                        name="exportFormat"
-                        value={option.value}
-                        checked={selectedExportFormat === option.value}
-                        onChange={(e) => setSelectedExportFormat(e.target.value as ExportFormat)}
-                        className="mt-1"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{option.label}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {option.description}
-                        </p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleExport}
+                      className="flex-1 px-4 py-2.5 bg-primary hover:bg-primaryDark text-white rounded-xl transition-colors font-medium"
+                    >
+                      Export CSV
+                    </button>
+                  </div>
+                </>
+              )}
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setExportModal('closed')}
-                    className="flex-1 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleExport}
-                    className="flex-1 px-4 py-2 bg-primary hover:bg-primaryDark text-white rounded-lg transition-colors"
-                  >
-                    Export CSV
-                  </button>
+              {exportModal === 'exporting' && (
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400">Preparing your export...</p>
                 </div>
-              </>
-            )}
-
-            {exportModal === 'exporting' && (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">Preparing your export...</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
