@@ -296,16 +296,32 @@ Deno.serve(async (req: Request) => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const { data: recentMetrics } = await supabase
+    const dateRangeStart = thirtyDaysAgo.toISOString().split('T')[0];
+    console.log(`Querying health_metrics for user ${user.id} from ${dateRangeStart}`);
+
+    const { data: recentMetrics, error: metricsError } = await supabase
       .from('health_metrics')
       .select('hrv, resting_heart_rate, deep_sleep_minutes, sleep_score, recovery_score, steps, date')
       .eq('user_id', user.id)
-      .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
+      .gte('date', dateRangeStart)
       .order('date', { ascending: true });
+
+    console.log(`Found ${recentMetrics?.length || 0} health metrics`);
+    if (recentMetrics && recentMetrics.length > 0) {
+      console.log('Date range of available metrics:', recentMetrics[0].date, 'to', recentMetrics[recentMetrics.length - 1].date);
+    }
+
+    if (metricsError) {
+      console.error('Database error fetching metrics:', metricsError);
+    }
 
     if (!recentMetrics || recentMetrics.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'No health metrics found' }),
+        JSON.stringify({
+          error: 'No health metrics found in the last 30 days',
+          dateRangeChecked: `${dateRangeStart} to ${new Date().toISOString().split('T')[0]}`,
+          suggestion: 'Upload health metrics data first'
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

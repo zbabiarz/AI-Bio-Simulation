@@ -13,10 +13,12 @@ import {
   markAllAlertsAsSeen,
   calculateAndSaveBaselines,
   checkHasHealthMetrics,
+  getDataDebugInfo,
   type HealthScore,
   type PersonalRecord,
   type AnomalyAlert,
   type AIInsight,
+  type DataDebugInfo,
 } from '../lib/analytics';
 import {
   downloadCSV,
@@ -40,6 +42,8 @@ import {
   AlertCircle,
   Check,
   X,
+  Info,
+  Database,
 } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, subWeeks } from 'date-fns';
 
@@ -64,12 +68,25 @@ export default function AnalyticsDashboardPage() {
   const [exportModal, setExportModal] = useState<ExportModalState>('closed');
   const [selectedExportFormat, setSelectedExportFormat] = useState<ExportFormat>('standard');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [debugInfo, setDebugInfo] = useState<DataDebugInfo | null>(null);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
 
   useEffect(() => {
     if (user && profile) {
       loadAnalyticsData();
+      loadDebugInfo();
     }
   }, [user, profile]);
+
+  async function loadDebugInfo() {
+    try {
+      const info = await getDataDebugInfo();
+      setDebugInfo(info);
+      console.log('Debug info:', info);
+    } catch (error) {
+      console.error('Error loading debug info:', error);
+    }
+  }
 
   async function loadAnalyticsData() {
     if (!user) return;
@@ -109,11 +126,22 @@ export default function AnalyticsDashboardPage() {
           }
         } catch (error: any) {
           console.error('Auto-calculation failed:', error);
-          setMessage({
-            type: 'error',
-            text: 'Could not calculate health score. Try clicking Refresh.'
+          console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
           });
-          setTimeout(() => setMessage(null), 5000);
+
+          let errorText = 'Could not calculate health score.';
+          if (error.message?.includes('No health metrics')) {
+            errorText = 'No recent health data found. Please upload or sync your data.';
+          } else if (error.message?.includes('profile')) {
+            errorText = 'Complete your health profile to calculate score.';
+          } else {
+            errorText = error.message || 'Try clicking Refresh.';
+          }
+
+          setMessage({ type: 'error', text: errorText });
+          setTimeout(() => setMessage(null), 8000);
         }
       }
 
@@ -435,6 +463,50 @@ export default function AnalyticsDashboardPage() {
           >
             <X className="w-4 h-4" />
           </button>
+        </div>
+      )}
+
+      {!hasHealthData && debugInfo && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
+          <div className="flex items-start gap-3">
+            <Database className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                Health Data Status
+              </h3>
+              <div className="space-y-1 text-sm text-amber-800 dark:text-amber-200">
+                <p>Total metrics in database: <strong>{debugInfo.totalMetrics}</strong></p>
+                {debugInfo.dateRange ? (
+                  <p>
+                    Date range: <strong>{debugInfo.dateRange.oldest}</strong> to <strong>{debugInfo.dateRange.newest}</strong>
+                  </p>
+                ) : (
+                  <p className="font-semibold">No metrics found in database</p>
+                )}
+                <div className="mt-2 pt-2 border-t border-amber-200 dark:border-amber-800">
+                  <p className="font-medium mb-1">Metrics with data:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>HRV: {debugInfo.metricsWithData.hrv}</div>
+                    <div>Sleep: {debugInfo.metricsWithData.sleep}</div>
+                    <div>Recovery: {debugInfo.metricsWithData.recovery}</div>
+                    <div>Steps: {debugInfo.metricsWithData.steps}</div>
+                  </div>
+                </div>
+                {debugInfo.recentDates.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-amber-200 dark:border-amber-800">
+                    <p className="font-medium mb-1">Recent dates:</p>
+                    <p className="text-xs">{debugInfo.recentDates.join(', ')}</p>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setShowDebugPanel(!showDebugPanel)}
+                className="mt-3 text-xs font-medium text-amber-700 dark:text-amber-300 hover:underline"
+              >
+                {showDebugPanel ? 'Hide' : 'Show'} technical details
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

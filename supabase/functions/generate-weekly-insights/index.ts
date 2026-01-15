@@ -223,42 +223,50 @@ Deno.serve(async (req: Request) => {
     }
 
     const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
     const [thisWeekMetrics, lastWeekMetrics, thisWeekScores, lastWeekScores] = await Promise.all([
       supabase
         .from('health_metrics')
         .select('date, hrv, deep_sleep_minutes, sleep_score, recovery_score, steps, resting_heart_rate')
         .eq('user_id', user.id)
-        .gte('date', oneWeekAgo.toISOString().split('T')[0])
+        .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
         .order('date', { ascending: true }),
       supabase
         .from('health_metrics')
         .select('date, hrv, deep_sleep_minutes, sleep_score, recovery_score, steps, resting_heart_rate')
         .eq('user_id', user.id)
-        .gte('date', twoWeeksAgo.toISOString().split('T')[0])
-        .lt('date', oneWeekAgo.toISOString().split('T')[0])
+        .gte('date', sixtyDaysAgo.toISOString().split('T')[0])
+        .lt('date', thirtyDaysAgo.toISOString().split('T')[0])
         .order('date', { ascending: true }),
       supabase
         .from('health_scores')
         .select('date, overall_score, hrv_score, sleep_score, recovery_score, activity_score')
         .eq('user_id', user.id)
-        .gte('date', oneWeekAgo.toISOString().split('T')[0]),
+        .gte('date', thirtyDaysAgo.toISOString().split('T')[0]),
       supabase
         .from('health_scores')
         .select('date, overall_score, hrv_score, sleep_score, recovery_score, activity_score')
         .eq('user_id', user.id)
-        .gte('date', twoWeeksAgo.toISOString().split('T')[0])
-        .lt('date', oneWeekAgo.toISOString().split('T')[0]),
+        .gte('date', sixtyDaysAgo.toISOString().split('T')[0])
+        .lt('date', thirtyDaysAgo.toISOString().split('T')[0]),
     ]);
+
+    console.log(`Found ${thisWeekMetrics.data?.length || 0} metrics in last 30 days`);
+    console.log(`Date range checked: ${thirtyDaysAgo.toISOString().split('T')[0]} to ${now.toISOString().split('T')[0]}`);
+
+    if (thisWeekMetrics.data && thisWeekMetrics.data.length > 0) {
+      console.log('Available metric dates:', thisWeekMetrics.data.map(m => m.date));
+    }
 
     if (!thisWeekMetrics.data || thisWeekMetrics.data.length === 0) {
       return new Response(
         JSON.stringify({
-          error: 'No health data available to generate insights',
+          error: 'No health data available in the last 30 days',
           needsDataSync: true,
-          suggestion: 'Sync your wearable device data first, then try generating insights again.'
+          dateRangeChecked: `${thirtyDaysAgo.toISOString().split('T')[0]} to ${now.toISOString().split('T')[0]}`,
+          suggestion: 'Upload health metrics data or sync your wearable device first.'
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

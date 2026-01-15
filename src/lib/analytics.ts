@@ -71,6 +71,7 @@ export async function calculateHealthScore(date?: string): Promise<HealthScore |
 
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-health-score`;
   console.log('Calculating health score, API URL:', url);
+  console.log('Request date:', date || 'today');
 
   const response = await fetch(url, {
     method: 'POST',
@@ -86,12 +87,22 @@ export async function calculateHealthScore(date?: string): Promise<HealthScore |
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    console.error('Health score calculation error:', errorData);
-    throw new Error(errorData.error || 'Failed to calculate health score');
+    console.error('Health score calculation error details:', {
+      status: response.status,
+      error: errorData.error,
+      fullResponse: errorData
+    });
+
+    const errorMessage = errorData.error || 'Failed to calculate health score';
+    if (response.status === 400 && errorMessage.includes('No health metrics')) {
+      throw new Error('No health metrics found. Please upload or sync your health data first.');
+    }
+
+    throw new Error(errorMessage);
   }
 
   const result = await response.json();
-  console.log('Health score calculated:', result);
+  console.log('Health score calculated successfully:', result);
   return result;
 }
 
@@ -224,16 +235,26 @@ export async function fetchActiveInsights(): Promise<AIInsight[]> {
 
 export async function checkHasHealthMetrics(): Promise<boolean> {
   const { data: sessionData } = await supabase.auth.getSession();
-  if (!sessionData.session?.user) return false;
+  if (!sessionData.session?.user) {
+    console.log('No session user found');
+    return false;
+  }
 
   const { data, error } = await supabase
     .from('health_metrics')
-    .select('id')
+    .select('id, date')
     .eq('user_id', sessionData.session.user.id)
-    .limit(1);
+    .order('date', { ascending: false })
+    .limit(5);
 
-  if (error) return false;
-  return (data || []).length > 0;
+  if (error) {
+    console.error('Error checking for health metrics:', error);
+    return false;
+  }
+
+  const hasData = (data || []).length > 0;
+  console.log(`Health metrics check: found ${data?.length || 0} records`, hasData ? data : 'none');
+  return hasData;
 }
 
 export async function generateNewInsights(): Promise<AIInsight[]> {
@@ -486,4 +507,71 @@ export function formatMetricValue(metricType: string, value: number): string {
   if (metricType.includes('steps')) return value.toLocaleString();
   if (metricType.includes('hr')) return `${value.toFixed(0)}bpm`;
   return value.toFixed(1);
+}
+
+export interface DataDebugInfo {
+  totalMetrics: number;
+  dateRange: { oldest: string; newest: string } | null;
+  metricsWithData: {
+    hrv: number;
+    sleep: number;
+    recovery: number;
+    steps: number;
+  };
+  profileComplete: boolean;
+  profileAge: number | null;
+  recentDates: string[];
+}
+
+export async function getDataDebugInfo(): Promise<DataDebugInfo> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session?.user) {
+    return {
+      totalMetrics: 0,
+      dateRange: null,
+      metricsWithData: { hrv: 0, sleep: 0, recovery: 0, steps: 0 },
+      profileComplete: false,
+      profileAge: null,
+      recentDates: [],
+    };
+  }
+
+  const userId = sessionData.session.user.id;
+
+  const [metricsResult, profileResult] = await Promise.all([
+    supabase
+      .from('health_metrics')
+      .select('date, hrv, deep_sleep_minutes, recovery_score, steps')
+      .eq('user_id', userId)
+      .order('date', { ascending: false }),
+    supabase
+      .from('user_profiles')
+      .select('age, intake_completed')
+      .eq('id', userId)
+      .maybeSingle(),
+  ]);
+
+  const metrics = metricsResult.data || [];
+  const profile = profileResult.data;
+
+  const dateRange = metrics.length > 0
+    ? {
+        oldest: metrics[metrics.length - 1].date,
+        newest: metrics[0].date,
+      }
+    : null;
+
+  return {
+    totalMetrics: metrics.length,
+    dateRange,
+    metricsWithData: {
+      hrv: metrics.filter(m => m.hrv !== null).length,
+      sleep: metrics.filter(m => m.deep_sleep_minutes !== null).length,
+      recovery: metrics.filter(m => m.recovery_score !== null).length,
+      steps: metrics.filter(m => m.steps !== null).length,
+    },
+    profileComplete: profile?.intake_completed || false,
+    profileAge: profile?.age || null,
+    recentDates: metrics.slice(0, 10).map(m => m.date),
+  };
 }
