@@ -65,28 +65,34 @@ export async function calculateHealthScore(date?: string): Promise<HealthScore |
   const token = sessionData.session?.access_token;
 
   if (!token) {
+    console.error('No authentication token for health score calculation');
     throw new Error('Authentication required');
   }
 
-  const response = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-health-score`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify({ date }),
-    }
-  );
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-health-score`;
+  console.log('Calculating health score, API URL:', url);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ date }),
+  });
+
+  console.log('Health score API response status:', response.status);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    console.error('Health score calculation error:', errorData);
     throw new Error(errorData.error || 'Failed to calculate health score');
   }
 
-  return response.json();
+  const result = await response.json();
+  console.log('Health score calculated:', result);
+  return result;
 }
 
 export async function fetchHealthScores(days: number = 30): Promise<HealthScore[]> {
@@ -235,24 +241,28 @@ export async function generateNewInsights(): Promise<AIInsight[]> {
   const token = sessionData.session?.access_token;
 
   if (!token) {
+    console.error('No authentication token available');
     throw new Error('Authentication required');
   }
 
-  const response = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-weekly-insights`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify({}),
-    }
-  );
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-weekly-insights`;
+  console.log('Calling insights API:', url);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({}),
+  });
+
+  console.log('Insights API response status:', response.status);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    console.error('Insights API error:', errorData);
     if (errorData.rateLimited) {
       throw new Error('RATE_LIMITED');
     }
@@ -263,6 +273,8 @@ export async function generateNewInsights(): Promise<AIInsight[]> {
   }
 
   const result = await response.json();
+  console.log('Insights API response:', result);
+
   return result.insights.map((i: any, idx: number) => ({
     id: `new-${idx}`,
     text: i.text,

@@ -98,6 +98,23 @@ export default function AnalyticsDashboardPage() {
         if (scoresData.length > 1) {
           setPreviousScore(scoresData[1].overallScore);
         }
+      } else if (hasData) {
+        console.log('No health scores found, but metrics exist. Auto-calculating...');
+        try {
+          const newScore = await calculateHealthScore();
+          if (newScore) {
+            setCurrentScore(newScore);
+            setMessage({ type: 'success', text: 'Health score calculated!' });
+            setTimeout(() => setMessage(null), 3000);
+          }
+        } catch (error: any) {
+          console.error('Auto-calculation failed:', error);
+          setMessage({
+            type: 'error',
+            text: 'Could not calculate health score. Try clicking Refresh.'
+          });
+          setTimeout(() => setMessage(null), 5000);
+        }
       }
 
       await loadWeeklyComparison();
@@ -185,7 +202,11 @@ export default function AnalyticsDashboardPage() {
   }
 
   async function handleGenerateInsights() {
+    console.log('Generate Insights button clicked');
+    console.log('Has health data:', hasHealthData);
+
     if (!hasHealthData) {
+      console.log('No health data, showing error');
       setMessage({
         type: 'error',
         text: 'No health data available. Please sync your wearable device first.'
@@ -195,13 +216,17 @@ export default function AnalyticsDashboardPage() {
     }
 
     setInsightsLoading(true);
+    console.log('Starting insights generation...');
+
     try {
       const newInsights = await generateNewInsights();
+      console.log('Insights generated successfully:', newInsights);
       setInsights(newInsights);
       setInsightsRateLimited(false);
       setMessage({ type: 'success', text: 'New insights generated!' });
       setTimeout(() => setMessage(null), 3000);
     } catch (error: any) {
+      console.error('Insights generation error:', error);
       if (error.message === 'RATE_LIMITED') {
         setInsightsRateLimited(true);
         setMessage({ type: 'error', text: 'Insights limited to once per day' });
@@ -212,11 +237,14 @@ export default function AnalyticsDashboardPage() {
           text: 'No health data available. Please sync your wearable device first.'
         });
       } else {
-        setMessage({ type: 'error', text: error.message || 'Failed to generate insights' });
+        const errorMsg = error.message || 'Failed to generate insights';
+        console.error('Unexpected error:', errorMsg);
+        setMessage({ type: 'error', text: errorMsg });
       }
       setTimeout(() => setMessage(null), 5000);
     } finally {
       setInsightsLoading(false);
+      console.log('Insights loading state reset');
     }
   }
 
