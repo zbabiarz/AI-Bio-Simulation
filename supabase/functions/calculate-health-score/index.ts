@@ -10,7 +10,7 @@ const corsHeaders = {
 
 interface HealthMetrics {
   hrv: number | null;
-  resting_hr: number | null;
+  resting_heart_rate: number | null;
   deep_sleep_minutes: number | null;
   sleep_score: number | null;
   recovery_score: number | null;
@@ -116,7 +116,7 @@ function calculateComponentScores(metrics: HealthMetrics, age: number): Componen
       ? normalizeDeepSleep(metrics.deep_sleep_minutes, age)
       : (metrics.sleep_score !== null ? metrics.sleep_score : 50),
     recoveryScore: normalizeRecovery(metrics.recovery_score),
-    activityScore: normalizeActivity(metrics.steps, metrics.resting_hr),
+    activityScore: normalizeActivity(metrics.steps, metrics.resting_heart_rate),
   };
 }
 
@@ -214,7 +214,7 @@ function checkForAnomalies(
         currentValue = metrics.deep_sleep_minutes;
         break;
       case 'resting_hr':
-        currentValue = metrics.resting_hr;
+        currentValue = metrics.resting_heart_rate;
         break;
       case 'steps':
         currentValue = metrics.steps;
@@ -298,7 +298,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: recentMetrics } = await supabase
       .from('health_metrics')
-      .select('hrv, resting_hr, deep_sleep_minutes, sleep_score, recovery_score, steps, date')
+      .select('hrv, resting_heart_rate, deep_sleep_minutes, sleep_score, recovery_score, steps, date')
       .eq('user_id', user.id)
       .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
       .order('date', { ascending: true });

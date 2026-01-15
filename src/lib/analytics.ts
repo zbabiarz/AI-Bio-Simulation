@@ -301,7 +301,7 @@ export async function calculateAndSaveBaselines(): Promise<void> {
 
   const { data: metrics } = await supabase
     .from('health_metrics')
-    .select('hrv, deep_sleep_minutes, resting_hr, steps, recovery_score')
+    .select('hrv, deep_sleep_minutes, resting_heart_rate, steps, recovery_score')
     .eq('user_id', userId)
     .gte('date', fourteenDaysAgo.toISOString().split('T')[0]);
 
@@ -318,7 +318,7 @@ export async function calculateAndSaveBaselines(): Promise<void> {
   const metricTypes = [
     { type: 'hrv', extractor: (m: any) => m.hrv },
     { type: 'deep_sleep', extractor: (m: any) => m.deep_sleep_minutes },
-    { type: 'resting_hr', extractor: (m: any) => m.resting_hr },
+    { type: 'resting_hr', extractor: (m: any) => m.resting_heart_rate },
     { type: 'steps', extractor: (m: any) => m.steps },
     { type: 'recovery', extractor: (m: any) => m.recovery_score },
   ];

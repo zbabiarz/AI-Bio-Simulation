@@ -19,7 +19,7 @@ interface HealthMetric {
   sleep_score: number | null;
   recovery_score: number | null;
   steps: number | null;
-  resting_hr: number | null;
+  resting_heart_rate: number | null;
 }
 
 interface HealthScore {
@@ -229,13 +229,13 @@ Deno.serve(async (req: Request) => {
     const [thisWeekMetrics, lastWeekMetrics, thisWeekScores, lastWeekScores] = await Promise.all([
       supabase
         .from('health_metrics')
-        .select('date, hrv, deep_sleep_minutes, sleep_score, recovery_score, steps, resting_hr')
+        .select('date, hrv, deep_sleep_minutes, sleep_score, recovery_score, steps, resting_heart_rate')
         .eq('user_id', user.id)
         .gte('date', oneWeekAgo.toISOString().split('T')[0])
         .order('date', { ascending: true }),
       supabase
         .from('health_metrics')
-        .select('date, hrv, deep_sleep_minutes, sleep_score, recovery_score, steps, resting_hr')
+        .select('date, hrv, deep_sleep_minutes, sleep_score, recovery_score, steps, resting_heart_rate')
         .eq('user_id', user.id)
         .gte('date', twoWeeksAgo.toISOString().split('T')[0])
         .lt('date', oneWeekAgo.toISOString().split('T')[0])
