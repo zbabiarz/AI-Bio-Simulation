@@ -1,11 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { BarChart3, Brain, Upload, User, Settings } from 'lucide-react';
+import { BarChart3, Brain, Smartphone, User, Settings } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const navItems = [
   { name: 'Home', href: '/analytics', icon: BarChart3 },
   { name: 'Simulate', href: '/simulation', icon: Brain },
-  { name: 'Upload', href: '/devices', icon: Upload },
+  { name: 'Connect', href: '/devices', icon: Smartphone },
   { name: 'Profile', href: '/settings', icon: User },
 ];
 

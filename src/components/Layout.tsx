@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import {
   Brain,
-  Upload,
+  Smartphone,
   User,
   Settings,
   LogOut,
@@ -24,7 +24,7 @@ interface LayoutProps {
 const navigation = [
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Biosimulation', href: '/simulation', icon: Brain },
-  { name: 'Upload Data', href: '/devices', icon: Upload },
+  { name: 'Connect Device', href: '/devices', icon: Smartphone },
   { name: 'Health Profile', href: '/intake', icon: User },
 ];
 

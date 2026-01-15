@@ -749,12 +749,29 @@ export default function SimulationsPage() {
           )}
         </div>
 
-        <div className="card-mobile-elevated !p-4">
-          <PillTabs
-            tabs={timeHorizonTabs}
-            activeTab={selectedTimeHorizon}
-            onChange={setSelectedTimeHorizon}
-          />
+        <div className="card-mobile-elevated !p-4 lg:!p-6 lg:bg-white lg:dark:bg-slate-800">
+          <div className="hidden lg:flex lg:items-center lg:justify-center lg:gap-3">
+            {timeHorizonTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedTimeHorizon(tab.key)}
+                className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  selectedTimeHorizon === tab.key
+                    ? 'bg-primary text-white shadow-md'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="lg:hidden">
+            <PillTabs
+              tabs={timeHorizonTabs}
+              activeTab={selectedTimeHorizon}
+              onChange={setSelectedTimeHorizon}
+            />
+          </div>
         </div>
 
         <div>
