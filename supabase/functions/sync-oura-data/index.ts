@@ -57,9 +57,9 @@ Deno.serve(async (req: Request) => {
       Authorization: `Bearer ${userConnection.access_token}`,
     };
 
-    const [sleepResponse, activityResponse, readinessResponse] = await Promise.all([
+    const [sleepResponse, activityResponse, readinessResponse, heartRateResponse] = await Promise.all([
       fetch(
-        `https://api.ouraring.com/v2/usercollection/daily_sleep?start_date=${startDate}&end_date=${endDate}`,
+        `https://api.ouraring.com/v2/usercollection/sleep?start_date=${startDate}&end_date=${endDate}`,
         { headers }
       ),
       fetch(
@@ -70,15 +70,38 @@ Deno.serve(async (req: Request) => {
         `https://api.ouraring.com/v2/usercollection/daily_readiness?start_date=${startDate}&end_date=${endDate}`,
         { headers }
       ),
+      fetch(
+        `https://api.ouraring.com/v2/usercollection/heartrate?start_date=${startDate}&end_date=${endDate}`,
+        { headers }
+      ),
     ]);
 
-    if (!sleepResponse.ok || !activityResponse.ok || !readinessResponse.ok) {
-      throw new Error("Failed to fetch data from Oura API");
+    if (!sleepResponse.ok) {
+      const errorText = await sleepResponse.text();
+      console.error("Sleep API error:", sleepResponse.status, errorText);
+      throw new Error(`Failed to fetch sleep data: ${sleepResponse.status}`);
+    }
+
+    if (!activityResponse.ok) {
+      const errorText = await activityResponse.text();
+      console.error("Activity API error:", activityResponse.status, errorText);
+      throw new Error(`Failed to fetch activity data: ${activityResponse.status}`);
+    }
+
+    if (!readinessResponse.ok) {
+      const errorText = await readinessResponse.text();
+      console.error("Readiness API error:", readinessResponse.status, errorText);
+      throw new Error(`Failed to fetch readiness data: ${readinessResponse.status}`);
     }
 
     const sleepData = await sleepResponse.json();
     const activityData = await activityResponse.json();
     const readinessData = await readinessResponse.json();
+
+    let heartRateData: { data?: any[] } = { data: [] };
+    if (heartRateResponse.ok) {
+      heartRateData = await heartRateResponse.json();
+    }
 
     const metricsMap = new Map<string, any>();
 
@@ -88,13 +111,28 @@ Deno.serve(async (req: Request) => {
         metricsMap.set(date, { date, user_id, source: "oura" });
       }
       const metric = metricsMap.get(date);
-      metric.sleep_duration_minutes = sleep.contributors?.total_sleep_time || 0;
-      metric.deep_sleep_minutes = sleep.contributors?.deep_sleep || 0;
-      metric.rem_sleep_minutes = sleep.contributors?.rem_sleep || 0;
-      metric.light_sleep_minutes = sleep.contributors?.light_sleep || 0;
-      metric.sleep_efficiency = sleep.contributors?.sleep_efficiency;
-      metric.resting_heart_rate = sleep.contributors?.resting_heart_rate;
-      metric.hrv = sleep.contributors?.hrv_balance;
+
+      if (sleep.total_sleep_duration !== undefined) {
+        metric.sleep_duration_minutes = Math.round(sleep.total_sleep_duration / 60);
+      }
+      if (sleep.deep_sleep_duration !== undefined) {
+        metric.deep_sleep_minutes = Math.round(sleep.deep_sleep_duration / 60);
+      }
+      if (sleep.rem_sleep_duration !== undefined) {
+        metric.rem_sleep_minutes = Math.round(sleep.rem_sleep_duration / 60);
+      }
+      if (sleep.light_sleep_duration !== undefined) {
+        metric.light_sleep_minutes = Math.round(sleep.light_sleep_duration / 60);
+      }
+      if (sleep.efficiency !== undefined) {
+        metric.sleep_efficiency = sleep.efficiency;
+      }
+      if (sleep.average_hrv !== undefined) {
+        metric.hrv = Math.round(sleep.average_hrv);
+      }
+      if (sleep.lowest_heart_rate !== undefined) {
+        metric.resting_heart_rate = sleep.lowest_heart_rate;
+      }
     });
 
     activityData.data?.forEach((activity: any) => {
@@ -103,12 +141,20 @@ Deno.serve(async (req: Request) => {
         metricsMap.set(date, { date, user_id, source: "oura" });
       }
       const metric = metricsMap.get(date);
-      metric.steps = activity.steps;
-      metric.active_calories = activity.active_calories;
-      metric.total_calories = activity.total_calories;
-      metric.activity_minutes = activity.high_activity_time
-        ? Math.round(activity.high_activity_time / 60)
-        : 0;
+      if (activity.steps !== undefined) {
+        metric.steps = activity.steps;
+      }
+      if (activity.active_calories !== undefined) {
+        metric.active_calories = activity.active_calories;
+      }
+      if (activity.total_calories !== undefined) {
+        metric.total_calories = activity.total_calories;
+      }
+      if (activity.high_activity_time !== undefined) {
+        metric.activity_minutes = Math.round(activity.high_activity_time / 60);
+      } else if (activity.medium_activity_time !== undefined) {
+        metric.activity_minutes = Math.round(activity.medium_activity_time / 60);
+      }
     });
 
     readinessData.data?.forEach((readiness: any) => {
@@ -117,16 +163,40 @@ Deno.serve(async (req: Request) => {
         metricsMap.set(date, { date, user_id, source: "oura" });
       }
       const metric = metricsMap.get(date);
-      metric.recovery_score = readiness.score;
-      if (readiness.contributors?.hrv_balance) {
-        metric.hrv = readiness.contributors.hrv_balance;
-      }
-      if (readiness.contributors?.resting_heart_rate) {
-        metric.resting_heart_rate = readiness.contributors.resting_heart_rate;
+      if (readiness.score !== undefined) {
+        metric.recovery_score = readiness.score;
       }
     });
 
-    const metrics = Array.from(metricsMap.values());
+    if (heartRateData.data && heartRateData.data.length > 0) {
+      const hrByDate = new Map<string, number[]>();
+      heartRateData.data.forEach((hr: any) => {
+        if (hr.timestamp && hr.bpm) {
+          const date = hr.timestamp.split("T")[0];
+          if (!hrByDate.has(date)) {
+            hrByDate.set(date, []);
+          }
+          hrByDate.get(date)!.push(hr.bpm);
+        }
+      });
+
+      hrByDate.forEach((bpmValues, date) => {
+        if (metricsMap.has(date)) {
+          const metric = metricsMap.get(date);
+          if (!metric.resting_heart_rate) {
+            const minHr = Math.min(...bpmValues);
+            metric.resting_heart_rate = minHr;
+          }
+        }
+      });
+    }
+
+    const metrics = Array.from(metricsMap.values()).filter(m => {
+      return m.sleep_duration_minutes !== undefined ||
+             m.steps !== undefined ||
+             m.recovery_score !== undefined ||
+             m.hrv !== undefined;
+    });
 
     if (metrics.length > 0) {
       const { error: metricsError } = await supabase
@@ -138,15 +208,27 @@ Deno.serve(async (req: Request) => {
         throw new Error("Failed to save metrics");
       }
 
-      const latestMetric = metrics[metrics.length - 1];
+      const sortedMetrics = [...metrics].sort((a, b) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      const latestMetric = sortedMetrics[0];
+
       const normalized = {
         hrv: latestMetric.hrv,
         resting_hr: latestMetric.resting_heart_rate,
         sleep_hours: latestMetric.sleep_duration_minutes
           ? Math.round((latestMetric.sleep_duration_minutes / 60) * 10) / 10
           : undefined,
+        deep_sleep_hours: latestMetric.deep_sleep_minutes
+          ? Math.round((latestMetric.deep_sleep_minutes / 60) * 10) / 10
+          : undefined,
+        rem_sleep_hours: latestMetric.rem_sleep_minutes
+          ? Math.round((latestMetric.rem_sleep_minutes / 60) * 10) / 10
+          : undefined,
+        sleep_efficiency: latestMetric.sleep_efficiency,
         steps: latestMetric.steps,
         recovery_score: latestMetric.recovery_score,
+        active_calories: latestMetric.active_calories,
       };
 
       await supabase.from("wearable_data").insert({
