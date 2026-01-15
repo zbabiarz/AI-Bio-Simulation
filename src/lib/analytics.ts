@@ -216,6 +216,20 @@ export async function fetchActiveInsights(): Promise<AIInsight[]> {
   }));
 }
 
+export async function checkHasHealthMetrics(): Promise<boolean> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session?.user) return false;
+
+  const { data, error } = await supabase
+    .from('health_metrics')
+    .select('id')
+    .eq('user_id', sessionData.session.user.id)
+    .limit(1);
+
+  if (error) return false;
+  return (data || []).length > 0;
+}
+
 export async function generateNewInsights(): Promise<AIInsight[]> {
   const { data: sessionData } = await supabase.auth.getSession();
   const token = sessionData.session?.access_token;
@@ -241,6 +255,9 @@ export async function generateNewInsights(): Promise<AIInsight[]> {
     const errorData = await response.json().catch(() => ({}));
     if (errorData.rateLimited) {
       throw new Error('RATE_LIMITED');
+    }
+    if (errorData.needsDataSync) {
+      throw new Error('NO_DATA');
     }
     throw new Error(errorData.error || 'Failed to generate insights');
   }

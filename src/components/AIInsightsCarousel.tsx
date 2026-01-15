@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Sparkles,
   ChevronLeft,
@@ -8,6 +9,7 @@ import {
   Award,
   RefreshCw,
   ChevronDown,
+  Database,
 } from 'lucide-react';
 import type { AIInsight } from '../lib/analytics';
 import { formatDistanceToNow, parseISO } from 'date-fns';
@@ -18,6 +20,7 @@ interface AIInsightsCarouselProps {
   onRefresh: () => void;
   refreshLoading?: boolean;
   lastRefreshBlocked?: boolean;
+  hasHealthData?: boolean;
 }
 
 export default function AIInsightsCarousel({
@@ -26,7 +29,9 @@ export default function AIInsightsCarousel({
   onRefresh,
   refreshLoading = false,
   lastRefreshBlocked = false,
+  hasHealthData = true,
 }: AIInsightsCarouselProps) {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showWhyItMatters, setShowWhyItMatters] = useState(false);
 
@@ -113,27 +118,48 @@ export default function AIInsightsCarousel({
           </div>
         </div>
         <div className="text-center py-8">
-          <Sparkles className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-            No insights available yet. Generate personalized insights based on your health data.
-          </p>
-          <button
-            onClick={onRefresh}
-            disabled={refreshLoading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryDark text-white rounded-lg transition-colors disabled:opacity-50"
-          >
-            {refreshLoading ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Generate Insights
-              </>
-            )}
-          </button>
+          {!hasHealthData ? (
+            <>
+              <Database className="w-12 h-12 text-amber-500 dark:text-amber-400 mx-auto mb-3" />
+              <p className="text-gray-900 dark:text-white font-medium mb-2">
+                No Health Data Available
+              </p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                Sync your wearable device first to generate personalized AI insights.
+              </p>
+              <button
+                onClick={() => navigate('/devices')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryDark text-white rounded-lg transition-colors"
+              >
+                <Database className="w-4 h-4" />
+                Sync Your Device
+              </button>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                No insights available yet. Generate personalized insights based on your health data.
+              </p>
+              <button
+                onClick={onRefresh}
+                disabled={refreshLoading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryDark text-white rounded-lg transition-colors disabled:opacity-50"
+              >
+                {refreshLoading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate Insights
+                  </>
+                )}
+              </button>
+            </>
+          )}
         </div>
       </div>
     );

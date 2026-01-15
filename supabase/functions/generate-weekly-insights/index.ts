@@ -255,7 +255,11 @@ Deno.serve(async (req: Request) => {
 
     if (!thisWeekMetrics.data || thisWeekMetrics.data.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'No metrics data available for this week' }),
+        JSON.stringify({
+          error: 'No health data available to generate insights',
+          needsDataSync: true,
+          suggestion: 'Sync your wearable device data first, then try generating insights again.'
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

@@ -12,6 +12,7 @@ import {
   markAlertAsSeen,
   markAllAlertsAsSeen,
   calculateAndSaveBaselines,
+  checkHasHealthMetrics,
   type HealthScore,
   type PersonalRecord,
   type AnomalyAlert,
@@ -57,6 +58,7 @@ export default function AnalyticsDashboardPage() {
   const [insights, setInsights] = useState<AIInsight[]>([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [insightsRateLimited, setInsightsRateLimited] = useState(false);
+  const [hasHealthData, setHasHealthData] = useState(true);
   const [thisWeekData, setThisWeekData] = useState<any>(null);
   const [lastWeekData, setLastWeekData] = useState<any>(null);
   const [exportModal, setExportModal] = useState<ExportModalState>('closed');
@@ -75,6 +77,9 @@ export default function AnalyticsDashboardPage() {
     setLoading(true);
 
     try {
+      const hasData = await checkHasHealthMetrics();
+      setHasHealthData(hasData);
+
       await calculateAndSaveBaselines();
 
       const [scoresData, recordsData, alertsData, insightsData] = await Promise.all([
@@ -180,6 +185,15 @@ export default function AnalyticsDashboardPage() {
   }
 
   async function handleGenerateInsights() {
+    if (!hasHealthData) {
+      setMessage({
+        type: 'error',
+        text: 'No health data available. Please sync your wearable device first.'
+      });
+      setTimeout(() => setMessage(null), 5000);
+      return;
+    }
+
     setInsightsLoading(true);
     try {
       const newInsights = await generateNewInsights();
@@ -191,6 +205,12 @@ export default function AnalyticsDashboardPage() {
       if (error.message === 'RATE_LIMITED') {
         setInsightsRateLimited(true);
         setMessage({ type: 'error', text: 'Insights limited to once per day' });
+      } else if (error.message === 'NO_DATA') {
+        setHasHealthData(false);
+        setMessage({
+          type: 'error',
+          text: 'No health data available. Please sync your wearable device first.'
+        });
       } else {
         setMessage({ type: 'error', text: error.message || 'Failed to generate insights' });
       }
@@ -419,6 +439,7 @@ export default function AnalyticsDashboardPage() {
         onRefresh={handleGenerateInsights}
         refreshLoading={insightsLoading}
         lastRefreshBlocked={insightsRateLimited}
+        hasHealthData={hasHealthData}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
