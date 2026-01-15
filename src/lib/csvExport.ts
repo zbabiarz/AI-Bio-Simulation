@@ -6,7 +6,7 @@ export type ExportFormat = 'basic' | 'standard' | 'research';
 interface HealthMetricRow {
   date: string;
   hrv: number | null;
-  resting_hr: number | null;
+  resting_heart_rate: number | null;
   deep_sleep_minutes: number | null;
   sleep_score: number | null;
   recovery_score: number | null;
@@ -289,7 +289,7 @@ export function generateHealthMetricsCSV(
       return [
         escapeCSV(format(parsedDate, 'yyyy-MM-dd')),
         escapeCSV(metric.hrv?.toFixed(1)),
-        escapeCSV(metric.resting_hr?.toFixed(0)),
+        escapeCSV(metric.resting_heart_rate?.toFixed(0)),
         escapeCSV(metric.deep_sleep_minutes?.toFixed(0)),
         escapeCSV(metric.sleep_score?.toFixed(0)),
         escapeCSV(metric.recovery_score?.toFixed(0)),
@@ -300,7 +300,7 @@ export function generateHealthMetricsCSV(
         escapeCSV(format(parsedDate, 'yyyy-MM-dd')),
         escapeCSV(getWeek(parsedDate)),
         escapeCSV(metric.hrv?.toFixed(1)),
-        escapeCSV(metric.resting_hr?.toFixed(0)),
+        escapeCSV(metric.resting_heart_rate?.toFixed(0)),
         escapeCSV(metric.deep_sleep_minutes?.toFixed(0)),
         escapeCSV(metric.sleep_score?.toFixed(0)),
         escapeCSV(metric.recovery_score?.toFixed(0)),
@@ -317,7 +317,7 @@ export function generateHealthMetricsCSV(
         escapeCSV(getWeek(parsedDate)),
         escapeCSV(getYear(parsedDate)),
         escapeCSV(metric.hrv?.toFixed(1)),
-        escapeCSV(metric.resting_hr?.toFixed(0)),
+        escapeCSV(metric.resting_heart_rate?.toFixed(0)),
         escapeCSV(metric.deep_sleep_minutes?.toFixed(0)),
         escapeCSV(metric.sleep_score?.toFixed(0)),
         escapeCSV(metric.recovery_score?.toFixed(0)),

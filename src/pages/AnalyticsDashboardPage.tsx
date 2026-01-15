@@ -227,7 +227,7 @@ export default function AnalyticsDashboardPage() {
       const [metricsRes, scoresRes, anomaliesRes, recordsRes, insightsRes] = await Promise.all([
         supabase
           .from('health_metrics')
-          .select('date, hrv, resting_hr, deep_sleep_minutes, sleep_score, recovery_score, steps')
+          .select('date, hrv, resting_heart_rate, deep_sleep_minutes, sleep_score, recovery_score, steps')
           .eq('user_id', user.id)
           .order('date', { ascending: false }),
         supabase
